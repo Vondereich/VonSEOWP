@@ -83,8 +83,7 @@ class VonSEOWP_TOC {
         $headings = array();
         if (empty($content)) return $headings;
 
-        // Strip tags we don't want to parse (like script/style)
-        $clean_content = preg_replace('/<(script|style|pre|code)[^>]*>.*?<\/\1>/is', '', $content);
+        $clean_content = $this->remove_ignored_blocks($content);
 
         if (preg_match_all('/<(h[1-6])([^>]*)>(.*?)<\/h[1-6]>/is', $clean_content, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
@@ -102,6 +101,123 @@ class VonSEOWP_TOC {
         }
 
         return $headings;
+    }
+
+    /**
+     * Remove blocks that must not contribute headings without treating HTML as a regular language.
+     */
+    private function remove_ignored_blocks(string $content): string {
+        $ignored_names = array('script', 'style', 'pre', 'code');
+        $output = '';
+        $ignored_name = '';
+        $index = 0;
+        $length = strlen($content);
+
+        while ($index < $length) {
+            if ($ignored_name !== '') {
+                $closing_prefix = '</' . $ignored_name;
+                $prefix_length = strlen($closing_prefix);
+                $possible_closing_tag = substr($content, $index, $prefix_length);
+                $boundary = $content[$index + $prefix_length] ?? '';
+                $has_boundary = $boundary === '' || ctype_space($boundary) || $boundary === '/' || $boundary === '>';
+
+                if (strtolower($possible_closing_tag) === $closing_prefix && $has_boundary) {
+                    $tag_end = $this->find_tag_end($content, $index);
+                    if ($tag_end < 0) {
+                        break;
+                    }
+
+                    $ignored_name = '';
+                    $output .= ' ';
+                    $index = $tag_end + 1;
+                    continue;
+                }
+
+                $index++;
+                continue;
+            }
+
+            if ($content[$index] !== '<') {
+                $output .= $content[$index];
+                $index++;
+                continue;
+            }
+
+            $tag_end = $this->find_tag_end($content, $index);
+            if ($tag_end < 0) {
+                $output .= substr($content, $index);
+                break;
+            }
+
+            $tag_source = substr($content, $index, $tag_end - $index + 1);
+            $tag = $this->parse_tag($tag_source);
+            if (in_array($tag['name'], $ignored_names, true) && !$tag['closing']) {
+                $ignored_name = $tag['name'];
+            } else {
+                $output .= $tag_source;
+            }
+
+            $index = $tag_end + 1;
+        }
+
+        return $output;
+    }
+
+    private function find_tag_end(string $content, int $start): int {
+        $quote = '';
+        $length = strlen($content);
+
+        for ($index = $start + 1; $index < $length; $index++) {
+            $character = $content[$index];
+            if ($quote !== '') {
+                if ($character === $quote) {
+                    $quote = '';
+                }
+                continue;
+            }
+
+            if ($character === '"' || $character === "'") {
+                $quote = $character;
+            } elseif ($character === '>') {
+                return $index;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * @return array{name: string, closing: bool}
+     */
+    private function parse_tag(string $tag): array {
+        $index = 1;
+        $length = strlen($tag);
+        $closing = false;
+
+        while ($index < $length && ctype_space($tag[$index])) {
+            $index++;
+        }
+        if ($index < $length && $tag[$index] === '/') {
+            $closing = true;
+            $index++;
+        }
+        while ($index < $length && ctype_space($tag[$index])) {
+            $index++;
+        }
+
+        $start = $index;
+        while ($index < $length) {
+            $character = $tag[$index];
+            if (!ctype_alnum($character) && $character !== ':' && $character !== '-') {
+                break;
+            }
+            $index++;
+        }
+
+        return array(
+            'name' => strtolower(substr($tag, $start, $index - $start)),
+            'closing' => $closing,
+        );
     }
 
     /**

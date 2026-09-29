@@ -89,14 +89,74 @@ Goal: clear the remaining WordPress Plugin Check output without changing Site Au
 - [x] Re-run WordPress Plugin Check against the packaged plugin and require zero escaping errors.
 - [ ] Publish the fix as a new `2.4.1` release instead of modifying the existing `2.4.0` tag.
 
+## v2.4.3 - HTML Parsing Hardening (Ready for Release)
+
+Goal: clear the CodeQL bad HTML filtering regexp finding without treating analyzer text extraction as an HTML sanitizer.
+
+- [x] Replace script/style filtering regexes with browser DOM parsing and a non-regex fallback tokenizer.
+- [x] Cover whitespace and attributes in malformed script/style end tags with focused regression tests.
+- [x] Harden equivalent ignored-block parsing in the Table of Contents generator and cover browser-tolerated closing tags.
+- [x] Re-run regressions, packaged Plugin Check, CodeQL-pattern verification, native upgrade, browser probe, and localhost smoke.
+- [ ] Publish only after the exact `2.4.3` artifact passes every release gate.
+
+## v2.5.x - Publisher Coverage and Portability (Planned)
+
+Series goal: extend the proven post/page SEO workflow to publisher content structures without turning VonSEO into a heavy all-purpose suite.
+
+### Series-Wide Release Gates
+
+- [ ] Preserve existing `post` and `page` behavior and stored metadata across every upgrade.
+- [ ] Run the full official Plugin Check against each packaged artifact, including readme and compatibility metadata checks.
+- [ ] Pass focused regressions, PHP lint, package integrity, fresh activation, previous-version upgrade, and localhost frontend smoke before release.
+- [ ] Keep every release local-first: no custom database tables, telemetry, background crawler, or required external service.
+
+### v2.5.0 - Custom Post Type Foundation
+
+Goal: safely extend the existing editor and technical SEO workflow to selected public custom post types.
+
+- [ ] Discover eligible public custom post types while excluding attachments and internal/non-public types.
+- [ ] Add an opt-in settings control, with `post` and `page` enabled by default for backward compatibility.
+- [ ] Enable VonSEO metadata, social fields, schema, noindex, editor analysis, and admin score tools only for selected types.
+- [ ] Include selected types in XML sitemap generation and Site Audit batches while excluding noindex content.
+- [ ] Handle removed or deactivated post types without warnings, stale output, or settings loss.
+- [ ] Add regression fixtures for selection, save behavior, frontend output, sitemap inclusion, audit coverage, and upgrade defaults.
+
+### v2.5.1 - Taxonomy Archive SEO
+
+Goal: give publishers controlled SEO output for category, tag, and selected public-taxonomy archives.
+
+- [ ] Add opt-in taxonomy selection with category and tag enabled by default.
+- [ ] Add term controls for SEO title, description, canonical URL, social description, and noindex.
+- [ ] Apply saved term metadata to document titles, canonical, robots, Open Graph, and Twitter output with safe WordPress fallbacks.
+- [ ] Include indexable selected taxonomy archives in sitemap coverage and exclude noindex terms.
+- [ ] Require taxonomy-specific capabilities, nonces, unslashing, sanitization, and late output escaping.
+- [ ] Add regression fixtures for empty fallbacks, pagination canonicals, noindex behavior, sitemap inclusion, and unauthorized saves.
+
+### v2.5.2 - Settings Portability
+
+Goal: make VonSEO site configuration portable without creating a second storage system.
+
+- [ ] Export a versioned JSON document containing supported VonSEO site settings and no credentials or transient data.
+- [ ] Validate file type, schema version, field allowlist, and field values before accepting an import.
+- [ ] Show an import preview and require explicit confirmation before replacing any saved settings.
+- [ ] Apply imports through the existing sanitization contract and preserve the previous settings when validation fails.
+- [ ] Document that normal WordPress content export remains responsible for per-post and per-term metadata migration.
+- [ ] Add round-trip, malformed-payload, unsupported-version, capability, nonce, and rollback regression coverage.
+
+### v2.5.3 - Reserved Stability Release
+
+Goal: ship only if real-world use of v2.5.0-v2.5.2 reveals a verified regression or compatibility issue.
+
+- [ ] Do not add a feature merely to fill this version number.
+- [ ] Limit changes to confirmed compatibility fixes, performance corrections, documentation, and regression coverage.
+
 ## Parking Lot
 
-These may be useful, but should not be built until the lean analyzer and local audit are proven.
+These are outside the v2.5.x scope and need separate evidence and planning after the publisher series stabilizes.
 
-- [ ] Publisher schema variants such as NewsArticle or ScholarlyArticle.
+- [ ] Additional niche schema variants such as ScholarlyArticle.
 - [ ] Internal link suggestions based on current post content and existing titles.
 - [ ] Smart image ALT suggestions using local filename/title/context only.
-- [ ] Import/export settings for migration between sites.
 
 ## Avoid for Now
 

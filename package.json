@@ -1,6 +1,6 @@
 {
   "name": "vonseo",
-  "version": "2.4.1",
+  "version": "2.4.3",
   "description": "Premium Lightweight SEO Toolkit for WordPress",
   "main": "vonseo.php",
   "scripts": {
@@ -8,6 +8,7 @@
     "test:analyzer": "node scripts/test-analyzer.cjs",
     "test:columns-score": "php scripts/test-columns-score.php",
     "test:site-audit": "php scripts/test-site-audit.php",
+    "test:toc": "php scripts/test-toc.php",
     "test:frontend-meta": "node scripts/test-frontend-meta.cjs",
     "test:security": "node scripts/test-security-audit.cjs"
   },

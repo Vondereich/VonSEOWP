@@ -19,6 +19,29 @@ const analyzer = context.module.exports || context.window.VonSEOWPAnalyzer;
 assert.ok(analyzer, 'analyzer should export a public API');
 assert.strictEqual(typeof analyzer.analyze, 'function', 'analyzer should expose analyze()');
 
+assert.strictEqual(
+  analyzer.stripHtml(
+    '<p>Visible copy</p><script>hidden script copy</script ><style>hidden style copy</style data-test="1"><p>Final copy</p>',
+  ),
+  'Visible copy Final copy',
+  'stripHtml should discard script/style content when malformed end tags contain whitespace or attributes',
+);
+assert.strictEqual(
+  analyzer.stripHtml('<p>Before</p><script type="text/javascript">hidden</script foo="bar"><p>After</p>'),
+  'Before After',
+  'stripHtml should handle browser-tolerated script end-tag attributes',
+);
+assert.strictEqual(
+  analyzer.stripHtml('<p>Before</p><script>if (a < b) { window.hidden = true; }</script ><p>After</p>'),
+  'Before After',
+  'stripHtml fallback should ignore less-than operators inside scripts',
+);
+assert.strictEqual(
+  analyzer.stripHtml('<p>Before</p><script/>hidden script copy</script><p>After</p>'),
+  'Before After',
+  'stripHtml fallback should follow HTML semantics for self-closing syntax on script elements',
+);
+
 function getCheck(result, codeName) {
   return result.checks.find((check) => check.code === codeName);
 }

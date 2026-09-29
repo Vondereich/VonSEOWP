@@ -29,15 +29,127 @@
       .replace(/&#39;/gi, "'")
       .replace(/&amp;/gi, "&");
 
-  const stripHtml = (html) =>
-    decodeEntities(html)
-      .replace(/<script[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style[\s\S]*?<\/style>/gi, " ")
-      .replace(/<\/(p|div|li|h[1-6]|blockquote|section|article)>/gi, " ")
-      .replace(/<br\s*\/?>/gi, " ")
-      .replace(/<[^>]+>/g, " ")
+  const normalizeExtractedText = (value) =>
+    String(value || "")
       .replace(/\s+/g, " ")
       .trim();
+
+  const findTagEnd = (html, start) => {
+    let quote = "";
+
+    for (let index = start + 1; index < html.length; index += 1) {
+      const character = html.charAt(index);
+
+      if (quote) {
+        if (character === quote) {
+          quote = "";
+        }
+        continue;
+      }
+
+      if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === ">") {
+        return index;
+      }
+    }
+
+    return -1;
+  };
+
+  const parseTag = (tag) => {
+    let index = 1;
+    let closing = false;
+
+    while (/\s/.test(tag.charAt(index))) {
+      index += 1;
+    }
+    if (tag.charAt(index) === "/") {
+      closing = true;
+      index += 1;
+    }
+    while (/\s/.test(tag.charAt(index))) {
+      index += 1;
+    }
+
+    const start = index;
+    while (/[a-z0-9:-]/i.test(tag.charAt(index))) {
+      index += 1;
+    }
+
+    return {
+      closing,
+      name: tag.slice(start, index).toLowerCase(),
+    };
+  };
+
+  const stripHtmlWithoutDom = (html) => {
+    let output = "";
+    let ignoredTag = "";
+    let index = 0;
+
+    while (index < html.length) {
+      if (ignoredTag) {
+        const closingPrefix = `</${ignoredTag}`;
+        const possibleClosingTag = html.slice(index, index + closingPrefix.length);
+        const boundary = html.charAt(index + closingPrefix.length);
+
+        if (
+          possibleClosingTag.toLowerCase() === closingPrefix &&
+          (!boundary || /[\s/>]/.test(boundary))
+        ) {
+          const tagEnd = findTagEnd(html, index);
+          if (tagEnd < 0) {
+            break;
+          }
+          ignoredTag = "";
+          output += " ";
+          index = tagEnd + 1;
+          continue;
+        }
+
+        index += 1;
+        continue;
+      }
+
+      if (html.charAt(index) !== "<") {
+        output += html.charAt(index);
+        index += 1;
+        continue;
+      }
+
+      const tagEnd = findTagEnd(html, index);
+      if (tagEnd < 0) {
+        output += " " + html.slice(index + 1);
+        break;
+      }
+
+      const tag = parseTag(html.slice(index, tagEnd + 1));
+      if (tag.name === "script" || tag.name === "style") {
+        if (!tag.closing) {
+          ignoredTag = tag.name;
+        }
+      } else {
+        output += " ";
+      }
+
+      index = tagEnd + 1;
+    }
+
+    return normalizeExtractedText(output);
+  };
+
+  const stripHtml = (html) => {
+    const decoded = decodeEntities(html);
+
+    if (typeof DOMParser === "function") {
+      const documentNode = new DOMParser().parseFromString(decoded, "text/html");
+      documentNode.querySelectorAll("script, style").forEach((node) => node.remove());
+      return normalizeExtractedText(documentNode.body ? documentNode.body.textContent : "");
+    }
+
+    return stripHtmlWithoutDom(decoded);
+  };
 
   const wordsFromText = (text) => {
     const matches = String(text || "")

@@ -2,6 +2,14 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.4.3] - 2026-09-29
+### Fixed
+- **Analyzer HTML Parsing**: Replaced script/style filtering regexes with browser DOM parsing and a non-regex fallback tokenizer so malformed end tags cannot leak hidden content into SEO analysis.
+- **Table of Contents Parsing**: Replaced ignored-block filtering regexes with a stateful tokenizer so malformed closing tags cannot contribute false headings.
+
+### Dev
+- Added regression coverage for whitespace and attributes in browser-tolerated script/style end tags.
+
 ## [2.4.1] - 2026-09-20
 ### Fixed
 - **Site Audit Pagination Escaping**: Escaped the final formatted batch label to clear the remaining WordPress Coding Standards output warning without changing pagination behavior.
