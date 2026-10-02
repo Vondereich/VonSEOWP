@@ -9,6 +9,9 @@ const metaboxSource = fs.readFileSync(metaboxPath, 'utf8');
 const sitemapPath = path.join(__dirname, '..', 'includes', 'class-vonseowp-sitemap.php');
 const sitemapSource = fs.readFileSync(sitemapPath, 'utf8');
 
+assert.ok(source.includes('!post_password_required($post)'), 'Post metadata must respect the native password-cookie state');
+assert.equal((source.match(/if \(\$this->can_output_post_metadata\(\$post\)\)/g) || []).length, 4, 'Title, meta, social and article schema must share the visibility guard');
+
 assert.ok(
   !source.includes('Premium SEO'),
   'frontend meta output should not expose the old Premium SEO comment',

@@ -319,6 +319,7 @@ class VonSEOWP_Site_Audit {
         return trim($parts[0] ?? '');
     }
 
+    /** @param WP_Post $post */
     private function get_effective_description($post, string $custom_description): string {
         if ($custom_description !== '') {
             return $custom_description;

@@ -7,18 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     toggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
             const container = this.closest('.vonseo-toc-container');
-            const list = container.querySelector('.vonseo-toc-list');
+            const list = container && container.querySelector('.vonseo-toc-list');
+            if (!list) return;
             const isExpanded = this.getAttribute('aria-expanded') === 'true';
             
-            if (isExpanded) {
-                list.style.display = 'none';
-                this.setAttribute('aria-expanded', 'false');
-                this.textContent = '[show]';
-            } else {
-                list.style.display = 'block';
-                this.setAttribute('aria-expanded', 'true');
-                this.textContent = '[hide]';
-            }
+            list.hidden = isExpanded;
+            this.setAttribute('aria-expanded', String(!isExpanded));
+            this.textContent = this.getAttribute(isExpanded ? 'data-show-label' : 'data-hide-label');
         });
     });
 });

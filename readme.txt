@@ -4,7 +4,7 @@ Tags: seo, toc, schema, sitemap, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.4.3
+Stable tag: 2.4.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,6 +88,20 @@ Yes. VonSEO avoids custom tables and includes uninstall cleanup for its stored o
 Yes. VonSEO requires PHP 7.4+ and is fully optimized for PHP 8.2/8.3.
 
 == Changelog ==
+
+= 2.4.5 =
+*   Improved: Simplified donation styling with aligned coffee icons, readable labels, visible keyboard focus, and responsive placement.
+*   Improved: Replaced the decorative donation panel with a compact support section while retaining the existing PayPal destination.
+
+= 2.4.4 =
+*   Security: Password-protected posts no longer expose protected descriptions, social fields, FAQ/video schema or custom SEO titles before the correct password is supplied.
+*   Fixed: Avoided quadratic work for repeated TOC headings and retained direct theme shortcode rendering with native password protection.
+*   Fixed: TOC links now target unique heading IDs, preserving valid existing IDs and inline heading markup.
+*   Fixed: Manual TOC shortcodes resolve against rendered content even when automatic TOC is disabled, without duplicate TOCs.
+*   Fixed: Packaged and conditionally loaded TOC assets with accessible, translated show/hide controls and corrected dark-mode styles.
+*   Fixed: Clamped saved and legacy TOC minimum heading counts to 1-10.
+*   Fixed: Integrated robots directives with the native WordPress filter, retaining embed noindex and independent crawler restrictions with one robots tag.
+*   Dev: Expanded TOC, toggle, robots, and asset regressions and added them to release checks.
 
 = 2.4.3 =
 *   Fixed: Replaced analyzer script/style filtering regexes with browser DOM parsing and a safe non-DOM fallback.

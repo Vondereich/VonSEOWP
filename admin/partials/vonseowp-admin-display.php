@@ -64,12 +64,15 @@ if (false) {
 
             <!-- Support Card -->
             <div class="von-support-card">
-                <span class="von-support-kicker"><?php esc_html_e('Independent SEO tool', 'vonseo'); ?></span>
-                <h4><span class="dashicons dashicons-heart"></span> <?php esc_html_e('Keep VonSEO Free', 'vonseo'); ?></h4>
-                <p><?php esc_html_e('If VonSEO saves you time, a small tip helps keep updates fast, private, and bloat-free.', 'vonseo'); ?></p>
+                <div class="von-support-copy">
+                    <span class="von-support-kicker"><?php esc_html_e('Independent SEO tool', 'vonseo'); ?></span>
+                    <h4><?php esc_html_e('Keep VonSEO Free', 'vonseo'); ?></h4>
+                    <p><?php esc_html_e('Support ongoing maintenance and free updates for VonSEO.', 'vonseo'); ?></p>
+                </div>
                 <div class="von-center-row">
                     <a href="https://paypal.me/kurama87" target="_blank" rel="noopener noreferrer" class="von-btn-donate">
-                        <span class="dashicons dashicons-coffee"></span> <?php esc_html_e('Buy me a coffee', 'vonseo'); ?>
+                        <span class="dashicons dashicons-coffee" aria-hidden="true"></span>
+                        <span class="von-donate-label"><?php esc_html_e('Buy me a coffee', 'vonseo'); ?></span>
                     </a>
                 </div>
             </div>
@@ -489,18 +492,14 @@ if (false) {
                     </div>
 
                     <!-- Support Development -->
-                    <div class="von-card von-donate-card">
-                        <div class="von-card-body">
+                    <div class="von-donate-section">
+                        <div class="von-donate-body">
                             <span class="von-donate-eyebrow"><?php esc_html_e('Support independent development', 'vonseo'); ?></span>
-                            <h2><?php esc_html_e('Help keep VonSEO free, fast, and private.', 'vonseo'); ?></h2>
-                            <p><?php esc_html_e('VonSEO is built as a lightweight alternative to bloated SEO suites. If it helps your site, your support keeps the project moving without telemetry, lock-ins, or paywalls.', 'vonseo'); ?></p>
-                            <div class="von-donate-points" aria-label="<?php esc_attr_e('Project values', 'vonseo'); ?>">
-                                <span><span class="dashicons dashicons-yes-alt"></span><?php esc_html_e('No tracking', 'vonseo'); ?></span>
-                                <span><span class="dashicons dashicons-yes-alt"></span><?php esc_html_e('Free updates', 'vonseo'); ?></span>
-                                <span><span class="dashicons dashicons-yes-alt"></span><?php esc_html_e('Zero bloat', 'vonseo'); ?></span>
-                            </div>
+                            <h2><?php esc_html_e('Support VonSEO development', 'vonseo'); ?></h2>
+                            <p><?php esc_html_e('Your support helps fund maintenance, compatibility testing, and future updates.', 'vonseo'); ?></p>
                             <a href="https://paypal.me/kurama87" target="_blank" rel="noopener noreferrer" class="von-btn-donate von-btn-donate-large">
-                                <span class="dashicons dashicons-coffee"></span> <?php esc_html_e('Buy me a coffee', 'vonseo'); ?>
+                                <span class="dashicons dashicons-coffee" aria-hidden="true"></span>
+                                <span class="von-donate-label"><?php esc_html_e('Buy me a coffee', 'vonseo'); ?></span>
                             </a>
                         </div>
                     </div>

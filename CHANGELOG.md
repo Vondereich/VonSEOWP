@@ -2,6 +2,25 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.4.5] - 2026-10-02
+### Improved
+- **Donate Controls**: Use restrained WordPress-style buttons with aligned decorative coffee icons, wrapping labels, 44px minimum height, clear hover/keyboard-focus states, and reduced-motion support.
+- **Support Layout**: Simplify the sidebar support block and Tutorial donation section; keep the existing PayPal destination and safe new-tab attributes.
+
+## [2.4.4] - 2026-10-02
+### Fixed
+- **Protected Post Privacy**: Respect WordPress password-cookie checks for per-post titles, descriptions, social fields, images, and article/FAQ/video schema while retaining public canonical and site-level output.
+- **TOC Scaling**: Reuse duplicate-anchor suffix cursors and reconstruct heading tags in one pass; preserve direct theme shortcode rendering without exposing protected headings.
+- **TOC Anchors**: Assign unique heading IDs by source position, preserve valid author IDs and inline markup, and avoid collisions with other content IDs.
+- **Manual TOC**: Resolve shortcodes after content rendering so automatic-off and shortcode-generated headings work without duplicate TOCs.
+- **TOC Controls**: Package and conditionally enqueue frontend CSS/JS, associate each toggle with its list, use translated labels, and scope dark-mode text colors correctly.
+- **TOC Settings**: Clamp new and legacy minimum heading values to 1-10.
+- **Native Robots**: Use the WordPress `wp_robots` filter instead of replacing its emitter; retain core embed restrictions and independent third-party directives without conflicting index/follow values.
+
+### Dev
+- Expanded TOC and crawler-directive regressions, added translated toggle tests and optional native WordPress password-cookie integration tests, and included TOC tests in release CI.
+- Release validation now requires both frontend TOC assets.
+
 ## [2.4.3] - 2026-09-29
 ### Fixed
 - **Analyzer HTML Parsing**: Replaced script/style filtering regexes with browser DOM parsing and a non-regex fallback tokenizer so malformed end tags cannot leak hidden content into SEO analysis.

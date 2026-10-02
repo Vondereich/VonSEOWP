@@ -228,7 +228,7 @@ class VonSEOWP_Admin {
             $sanitized['toc_position'] = sanitize_text_field(wp_unslash($input['toc_position']));
         }
         if (isset($input['toc_min_headings'])) {
-            $sanitized['toc_min_headings'] = (int) $input['toc_min_headings'];
+            $sanitized['toc_min_headings'] = max(1, min(10, (int) $input['toc_min_headings']));
         }
 
         // --- AI & LLM ---

@@ -7,7 +7,7 @@ import zipfile
 
 PLUGIN_SLUG = "vonseo"
 DIST_DIR = "dist"
-INCLUDE_DIRS = ["admin", "includes", "assets", "languages"]
+INCLUDE_DIRS = ["admin", "includes", "assets", "languages", "public"]
 INCLUDE_FILES = [
     "vonseo.php",
     "readme.txt",
@@ -99,6 +99,9 @@ def collect_source_files():
 
 
 def validate_runtime_dependencies(source_files):
+    for asset in ("public/css/vonseowp-public.css", "public/js/vonseowp-public.js"):
+        if asset not in source_files:
+            raise RuntimeError(f"Required TOC asset is missing: {asset}")
     dependency_pattern = re.compile(
         r"require(?:_once)?\s+VONSEOWP_PATH\s*\.\s*['\"]([^'\"]+)['\"]"
     )

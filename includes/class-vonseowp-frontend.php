@@ -18,13 +18,33 @@ class VonSEOWP_Frontend {
         add_filter('robots_txt', array($this, 'handle_robots_txt'), 99, 2);
         add_action('init', array($this, 'add_robots_rewrite_rule'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
-        add_action('wp_head', array($this, 'force_remove_wp_robots'), 0);
+        add_filter('wp_robots', array($this, 'filter_robots'), 99);
         remove_action('wp_head', 'rel_canonical');
         remove_action('wp_head', 'wp_generator');
     }
 
-    public function force_remove_wp_robots(): void {
-        remove_action('wp_head', 'wp_robots', 1);
+    public function filter_robots(array $robots): array {
+        $post = get_post();
+        $noindex = !get_option('blog_public') || is_search() || is_404()
+            || (is_singular() && $post && get_post_meta($post->ID, '_vonseowp_noindex', true) === '1');
+        if ($noindex) {
+            $robots['noindex'] = true;
+            $robots['nofollow'] = true;
+        }
+        if (!empty($robots['noindex'])) {
+            unset($robots['index']);
+        } else {
+            $robots['index'] = true;
+            if (!isset($robots['max-image-preview']) && empty($robots['noimageindex'])) {
+                $robots['max-image-preview'] = 'large';
+            }
+        }
+        if (!empty($robots['nofollow'])) {
+            unset($robots['follow']);
+        } elseif (!isset($robots['follow']) && empty($robots['noindex'])) {
+            $robots['follow'] = true;
+        }
+        return $robots;
     }
 
     public function add_robots_rewrite_rule(): void {
@@ -32,9 +52,23 @@ class VonSEOWP_Frontend {
     }
 
     public function enqueue_assets(): void {
-        // Temporarily disabled to prevent 404 console errors until public assets are ready
-        // wp_enqueue_style('vonseo-public-css', VONSEOWP_URL . 'public/css/vonseowp-public.css', array(), VONSEOWP_VERSION);
-        // wp_enqueue_script('vonseo-public-js', VONSEOWP_URL . 'public/js/vonseowp-public.js', array(), VONSEOWP_VERSION, true);
+        global $wp_query;
+        $options = get_option('vonseowp_settings', array());
+        $post = get_post();
+        $automatic = is_singular() && $post && !empty($options['enable_toc'])
+            && get_post_meta($post->ID, '_vonseowp_disable_toc', true) !== '1';
+        $manual = $post && has_shortcode($post->post_content, 'vonseo_toc');
+        if (!$manual && isset($wp_query->posts)) {
+            foreach ($wp_query->posts as $query_post) {
+                if (isset($query_post->post_content) && has_shortcode($query_post->post_content, 'vonseo_toc')) {
+                    $manual = true;
+                    break;
+                }
+            }
+        }
+        if (!$automatic && !$manual) return;
+        wp_enqueue_style('vonseo-public-css', VONSEOWP_URL . 'public/css/vonseowp-public.css', array(), VONSEOWP_VERSION);
+        wp_enqueue_script('vonseo-public-js', VONSEOWP_URL . 'public/js/vonseowp-public.js', array(), VONSEOWP_VERSION, true);
     }
 
     private function get_canonical_url(): string {
@@ -73,7 +107,7 @@ class VonSEOWP_Frontend {
         }
 
         // Single Post/Page Override
-        if (is_singular() && $post) {
+        if ($this->can_output_post_metadata($post)) {
             $custom_title = get_post_meta($post->ID, '_vonseowp_title', true);
             if (!empty($custom_title)) {
                 return $custom_title;
@@ -81,6 +115,12 @@ class VonSEOWP_Frontend {
         }
 
         return $title;
+    }
+
+    /** @param WP_Post|null $post */
+    private function can_output_post_metadata($post): bool {
+        // Direct post/meta reads must respect WordPress's current password-cookie state.
+        return is_singular() && $post && !post_password_required($post);
     }
 
     public function output_meta_tags() {
@@ -101,22 +141,15 @@ class VonSEOWP_Frontend {
         $image_is_site_icon = false;
         $url = $this->get_canonical_url();
         $type = 'website';
-        $noindex = false;
-
-        // Respect core site visibility, search results, and 404 pages
-        if (!get_option('blog_public') || is_search() || is_404()) {
-            $noindex = true;
-        }
 
         $social_enabled = !isset($options['enable_og']) || (int) $options['enable_og'] === 1;
 
         // Per-post overrides
-        if (is_singular() && $post) {
+        if ($this->can_output_post_metadata($post)) {
             // $custom_title handled by filter
             $custom_desc = get_post_meta($post->ID, '_vonseowp_description', true);
             $custom_keywords = get_post_meta($post->ID, '_vonseowp_keywords', true);
             $custom_image = get_post_meta($post->ID, '_vonseowp_image', true);
-            $noindex = $noindex || get_post_meta($post->ID, '_vonseowp_noindex', true) === '1';
 
             if ($custom_desc) {
                 $desc = $custom_desc;
@@ -139,7 +172,7 @@ class VonSEOWP_Frontend {
         // Social Overrides
         $social_title = '';
         $social_desc = '';
-        if (is_singular() && $post) {
+        if ($this->can_output_post_metadata($post)) {
             $social_title = get_post_meta($post->ID, '_vonseowp_social_title', true);
             $social_desc = get_post_meta($post->ID, '_vonseowp_social_desc', true);
         }
@@ -170,13 +203,6 @@ class VonSEOWP_Frontend {
         if (!empty($options['google_verify'])) echo '<meta name="google-site-verification" content="' . esc_attr($options['google_verify']) . '" />' . "\n";
         if (!empty($options['bing_verify'])) echo '<meta name="msvalidate.01" content="' . esc_attr($options['bing_verify']) . '" />' . "\n";
         
-        // Robots
-        if ($noindex) {
-            echo '<meta name="robots" content="noindex, nofollow" />' . "\n";
-        } else {
-            echo '<meta name="robots" content="index, follow, max-image-preview:large" />' . "\n";
-        }
-
         if ($social_enabled) {
             // Open Graph
             echo '<meta property="og:locale" content="' . esc_attr(get_locale()) . '" />' . "\n";
@@ -284,7 +310,7 @@ class VonSEOWP_Frontend {
         );
 
         // 3. BlogPosting (for singular posts/pages)
-        if (is_singular() && $post) {
+        if ($this->can_output_post_metadata($post)) {
             $custom_desc = get_post_meta($post->ID, '_vonseowp_description', true);
             $desc = $custom_desc ?: self::get_content_fallback_description((string) $post->post_content);
             $image_url = '';
