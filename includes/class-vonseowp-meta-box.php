@@ -21,6 +21,8 @@ class VonSEOWP_Meta_Box {
 
     public function enqueue_assets(string $hook): void {
         if ($hook !== 'post.php' && $hook !== 'post-new.php') return;
+        $screen = get_current_screen();
+        if (!$screen || !VonSEOWP_Content_Types::is_enabled((string) $screen->post_type)) return;
         wp_enqueue_media();
         wp_enqueue_style('vonseowp-metabox-css', VONSEOWP_URL . 'admin/css/vonseowp-admin.css', array(), VONSEOWP_VERSION);
         wp_enqueue_style('vonseowp-sidebar-css', VONSEOWP_URL . 'admin/css/vonseowp-sidebar.css', array(), VONSEOWP_VERSION);
@@ -93,7 +95,7 @@ class VonSEOWP_Meta_Box {
     }
 
     public function add_meta_box() {
-        $screens = array('post', 'page');
+        $screens = VonSEOWP_Content_Types::get_enabled();
         foreach ($screens as $screen) {
             add_meta_box(
                 'vonseowp_meta_box',
@@ -116,8 +118,9 @@ class VonSEOWP_Meta_Box {
         if (!wp_verify_nonce(sanitize_key(wp_unslash($_POST['vonseowp_meta_box_nonce'])), 'vonseowp_meta_box')) return;
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
         if (!current_user_can('edit_post', $post_id)) return;
+        if (wp_is_post_revision($post_id) || !VonSEOWP_Content_Types::is_enabled((string) get_post_type($post_id))) return;
 
-        $fields = array('title', 'description', 'keywords', 'image', 'schema_type', 'rating', 'rating_count', 'social_title', 'social_desc');
+        $fields = array('title', 'description', 'keywords', 'image', 'schema_type', 'rating', 'rating_count', 'reviewed_product', 'social_title', 'social_desc');
         foreach ($fields as $field) {
             if (isset($_POST['vonseowp_' . $field])) {
                 if ($field === 'description') {

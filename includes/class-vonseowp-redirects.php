@@ -39,30 +39,109 @@ class VonSEOWP_Redirects {
         if (empty($this->redirects)) return;
 
         $current_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
-        $path = wp_parse_url($current_uri, PHP_URL_PATH);
-
-        if (empty($path)) {
-            return;
-        }
-
-        // Simple Match
-        if (isset($this->redirects[$path])) {
-            wp_safe_redirect($this->redirects[$path], 301);
+        $target = $this->get_redirect_target($current_uri);
+        if ($target !== '' && wp_safe_redirect($target, 301)) {
             exit;
         }
+    }
 
-        // Check for trailing slash variations
-        $untrail = untrailingslashit($path);
-        if (isset($this->redirects[$untrail])) {
-            wp_safe_redirect($this->redirects[$untrail], 301);
-            exit;
+    public function get_redirect_target(string $request_uri): string {
+        $path = wp_parse_url($request_uri, PHP_URL_PATH);
+        if (!is_string($path) || $path === '' || $path[0] !== '/') return '';
+        foreach (array_unique(array($path, untrailingslashit($path), trailingslashit($path))) as $match) {
+            if (isset($this->redirects[$match])) {
+                return $this->validate_target($this->redirects[$match], $request_uri);
+            }
         }
+        return '';
+    }
 
-        $trail = trailingslashit($path);
-        if (isset($this->redirects[$trail])) {
-            wp_safe_redirect($this->redirects[$trail], 301);
-            exit;
+    private function validate_target(string $target, string $request_uri): string {
+        $target = wp_sanitize_redirect($target);
+        if ($target === '') return '';
+        if ($target[0] !== '/' && !wp_parse_url($target, PHP_URL_SCHEME)) {
+            $path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+            if ($target[0] === '?' || $target[0] === '#') {
+                $target = $path . ($target[0] === '#' && wp_parse_url($request_uri, PHP_URL_QUERY)
+                    ? '?' . wp_parse_url($request_uri, PHP_URL_QUERY) : '') . $target;
+            } else {
+                $base = substr($path, -1) === '/' ? $path : trailingslashit(dirname($path));
+                $target = $base . $target;
+            }
         }
+        $target = wp_validate_redirect($target, '');
+        if ($target === '') return '';
+        $home = wp_parse_url(home_url('/'));
+        if (!is_array($home) || empty($home['host'])) return '';
+        $request_host = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST'])
+            ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : $home['host'];
+        if (!isset($_SERVER['HTTP_HOST']) && isset($home['port'])) $request_host .= ':' . $home['port'];
+        $origin = (is_ssl() ? 'https' : 'http') . '://' . $request_host;
+        // REQUEST_URI already contains any WordPress subdirectory.
+        $current = $this->url_identity($origin . $request_uri);
+        $destination = $target[0] === '/' ? $origin . $target : $target;
+        $destination_identity = $this->url_identity($destination);
+        return $current === $destination_identity || $this->is_canonical_rebound($current, $destination_identity)
+            ? '' : $target;
+    }
+
+    private function is_canonical_rebound(array $current, array $destination): bool {
+        if (array_slice($current, 0, 3) !== array_slice($destination, 0, 3)
+            || !get_option('permalink_structure') || empty($destination[4])) return false;
+
+        $query = array();
+        wp_parse_str($destination[4], $query);
+        global $wp;
+        if (!isset($wp->public_query_vars) || !is_array($wp->public_query_vars)) return false;
+        $identity_keys = array('p', 'page_id', 'attachment_id', 'name');
+        if (!array_intersect(array_keys($query), $identity_keys)
+            || array_diff(array_intersect(array_keys($query), $wp->public_query_vars),
+                array_merge($identity_keys, array('post_type')))) return false;
+        $post = null;
+        foreach (array('p', 'page_id', 'attachment_id') as $key) {
+            if (!isset($query[$key])) continue;
+            if (!is_string($query[$key]) || !ctype_digit($query[$key]) || (int) $query[$key] < 1) return false;
+            $candidate = get_post((int) $query[$key]);
+            if (!$candidate || ($post && $post->ID !== $candidate->ID)
+                || ($key === 'page_id' && $candidate->post_type !== 'page')
+                || ($key === 'attachment_id' && $candidate->post_type !== 'attachment')) return false;
+            $post = $candidate;
+        }
+        if (!$post && $current[3] === $destination[3]
+            && isset($query['name']) && is_string($query['name']) && is_singular()) {
+            $candidate = get_post();
+            if ($candidate && $candidate->post_name === $query['name']
+                && !in_array($candidate->post_type, array('page', 'attachment'), true)) $post = $candidate;
+        }
+        if (!$post || !in_array($post->post_status, array('publish', 'inherit'), true)) return false;
+        if (isset($query['name']) && (!is_string($query['name']) || $query['name'] !== $post->post_name)) return false;
+        if (isset($query['post_type']) && $query['post_type'] !== $post->post_type) return false;
+        $permalink = get_permalink($post->ID);
+        if (!$permalink) return false;
+
+        // Core removes identity parameters; this manager matches paths regardless of the remaining query.
+        return array_slice($this->url_identity($permalink), 0, 4) === array_slice($current, 0, 4);
+    }
+
+    private function url_identity(string $url): array {
+        $parts = wp_parse_url($url);
+        if (!is_array($parts)) return array();
+        $scheme = strtolower($parts['scheme'] ?? '');
+        $port = $parts['port'] ?? ($scheme === 'https' ? 443 : 80);
+        $path = rawurldecode($parts['path'] ?? '/');
+        $segments = array();
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '.') continue;
+            if ($segment === '..') {
+                array_pop($segments);
+            } else {
+                $segments[] = $segment;
+            }
+        }
+        $path = implode('/', $segments);
+        // Treat slash variants as equivalent to avoid canonical redirect loops.
+        return array($scheme, strtolower($parts['host'] ?? ''), $port,
+            untrailingslashit($path), $parts['query'] ?? '');
     }
 
     public function redirect_attachment_page() {
@@ -93,13 +172,9 @@ class VonSEOWP_Redirects {
             return;
         }
 
-        $current_url = isset($_SERVER['REQUEST_URI']) ? home_url(esc_url_raw(wp_unslash($_SERVER['REQUEST_URI']))) : '';
-        if (!empty($current_url) && untrailingslashit($current_url) === untrailingslashit($target_url)) {
-            return;
-        }
-
-        wp_safe_redirect($target_url, 301);
-        exit;
+        $current_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+        $target_url = $this->validate_target($target_url, $current_uri);
+        if ($target_url !== '' && wp_safe_redirect($target_url, 301)) exit;
     }
 
     public function log_404_error() {

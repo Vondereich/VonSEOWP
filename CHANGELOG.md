@@ -2,6 +2,26 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.5.0] - 2026-10-14
+### Added
+- **Content Type Opt-In**: Discover public/queryable custom post types and apply existing per-content SEO tools only to selected types; keep post/page upgrade defaults and retain unavailable saved types.
+- **CPT Admin Coverage**: Extend editor analysis, metadata, social fields, native noindex, Quick Edit, score columns and 25-item Site Audit batches to selected types.
+
+### Fixed
+- **Sitemap Selection And Pagination**: Count and query the same published, non-password, non-noindex selection before pagination; emit the homepage once, deduplicate a static front page, and return 404 for invalid batches.
+- **Self Redirects**: Reject same-destination rules across slash, relative, fragment, port and subfolder variants without blocking a valid HTTP-to-HTTPS upgrade; exit only after a successful safe redirect.
+- **Canonical Rebound Guard**: Reject ordinary same-resource WordPress identity-query redirects that would return to the source path; preserve registered query modifiers, multipage targets and different-path same-slug CPT destinations.
+- **Competitor Permissions**: Authorize the submitted selected post with its native `edit_post` capability instead of requiring built-in post editing rights; reject malformed IDs/URLs before cache or network access.
+- **IndexNow Publication Policy**: Require explicit enablement and current public/published, non-password, non-noindex, selected-type eligibility at the outbound boundary; canonicalize native post aliases instead of forwarding attached query data. Keep previously saved enablement.
+- **Deferred IndexNow Work**: Use native `wp_after_insert_post` and deduplicated 60-second single cron events to accommodate legacy block-editor metabox saves; re-read eligibility before delivery and clear queued work on deactivation/uninstall.
+- **llms.txt Visibility**: Return uncached noindex/nofollow 404 responses on non-public sites or when disabled, covering rewritten and query-alias endpoints while preserving public curated/default output; serve the literal endpoint before native canonical slash redirects.
+- **Settings Consent**: Preserve explicit OFF/ON checkbox values through first-save double sanitization and core Site Title/Tagline synchronization; do not treat a stored zero as checked.
+- **Type-Specific Schema**: Emit distinct Product, Product Review and Service objects; require a real rating/count for Product and a named reviewed product/rating/author for Review. Preserve saved fields and use WebPage output when rated-schema data is incomplete, without inventing ratings or counts.
+- **Head-Time Schema Author**: Resolve the actual post author explicitly before the theme Loop starts; do not borrow unrelated Loop authors or emit empty Person nodes. Valid Product Reviews retain their Review type.
+- **Audit Pagination Alignment**: Center Previous/Next arrow glyphs against native WordPress button styles and give both controls matching minimum widths, including mobile and disabled states.
+- **Legacy Theme SEO Titles**: Apply saved SEO titles through `wp_title()` as well as the modern document-title hook. Preserve theme-owned site-name/separator assembly and native fallback titles; escape legacy output and retain selected-content/password visibility rules.
+- **Multiple-Identity Redirects**: Reject coherent same-resource `p` plus `name` canonical cycles while retaining cross-resource redirects and registered pagination/feed modifiers.
+
 ## [2.4.5] - 2026-10-02
 ### Improved
 - **Donate Controls**: Use restrained WordPress-style buttons with aligned decorative coffee icons, wrapping labels, 44px minimum height, clear hover/keyboard-focus states, and reduced-motion support.

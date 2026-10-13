@@ -21,11 +21,16 @@ class VonSEOWP_Competitors {
     public function ajax_scan_competitor() {
         check_ajax_referer('vonseowp_meta_box', 'nonce');
 
-        if (!current_user_can('edit_posts')) {
+        $raw_post_id = isset($_POST['post_id']) && (is_string($_POST['post_id']) || is_int($_POST['post_id']))
+            ? sanitize_text_field(wp_unslash($_POST['post_id'])) : '';
+        $post_id = ctype_digit($raw_post_id) ? (int) $raw_post_id : 0;
+        $post = $post_id > 0 ? get_post($post_id) : null;
+        if (!$post || !VonSEOWP_Content_Types::is_enabled((string) $post->post_type)
+            || !current_user_can('edit_post', $post_id)) {
             wp_send_json_error(array('message' => __('Unauthorized', 'vonseo')));
         }
 
-        $url = isset($_POST['url']) ? esc_url_raw(wp_unslash($_POST['url'])) : '';
+        $url = isset($_POST['url']) && is_string($_POST['url']) ? esc_url_raw(wp_unslash($_POST['url'])) : '';
         
         if (empty($url)) {
             wp_send_json_error(array('message' => __('Invalid URL', 'vonseo')));

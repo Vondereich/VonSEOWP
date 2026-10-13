@@ -19,6 +19,15 @@ jQuery(document).ready(function ($) {
     $("#" + $(this).data("tab")).addClass("active");
   });
 
+  const updateSchemaFields = () => {
+    const type = $("#vonseowp_schema_type").val();
+    $("#row-review-rating").toggle(type === "Product" || type === "Review");
+    $("input[name='vonseowp_rating_count']").closest("div").toggle(type === "Product");
+    $("#row-reviewed-product").toggle(type === "Review");
+  };
+  $("#vonseowp_schema_type").on("change", updateSchemaFields);
+  updateSchemaFields();
+
   // --- LIVE PREVIEW & COUNT LOGIC ---
   const updatePreview = () => {
     let title = $("#vonseowp_title").val() || $("#title").val() || "Post Title"; // Support WP classic editor title check

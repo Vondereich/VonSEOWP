@@ -15,6 +15,7 @@ global $wp_version;
 define('VONSEOWP_URL', plugins_url('vonseo/'));
 define('VONSEOWP_VERSION', 'integration-test');
 require_once dirname(__DIR__) . '/includes/class-vonseowp-toc.php';
+require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';
 $settings = array('enable_toc' => 1, 'toc_min_headings' => 1);
 $public = 1;

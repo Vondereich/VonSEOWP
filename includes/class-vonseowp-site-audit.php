@@ -69,16 +69,17 @@ class VonSEOWP_Site_Audit {
     }
 
     public function run_audit(int $page = 1): array {
+        $post_types = VonSEOWP_Content_Types::get_enabled();
         $total = $this->get_published_total();
         $pages = max(1, (int) ceil($total / self::MAX_POSTS));
         $page = max(1, min($page, $pages));
 
-        $post_ids = get_posts(array(
-            'post_type'           => array('post', 'page'),
+        $post_ids = empty($post_types) ? array() : get_posts(array(
+            'post_type'           => $post_types,
             'post_status'         => 'publish',
             'posts_per_page'      => self::MAX_POSTS,
             'paged'                => $page,
-            'orderby'             => 'modified',
+            'orderby'             => array('modified' => 'DESC', 'ID' => 'DESC'),
             'order'               => 'DESC',
             'fields'              => 'ids',
             'no_found_rows'       => true,
@@ -125,6 +126,7 @@ class VonSEOWP_Site_Audit {
 
         return array(
             'version'      => VONSEOWP_VERSION,
+            'post_types'   => $post_types,
             'generated_at' => time(),
             'scanned'      => $scanned,
             'total'        => $total,
@@ -218,6 +220,8 @@ class VonSEOWP_Site_Audit {
         if (!is_array($vonseowp_audit_results)
             || !isset($vonseowp_audit_results['version'])
             || $vonseowp_audit_results['version'] !== VONSEOWP_VERSION
+            || !isset($vonseowp_audit_results['post_types'])
+            || $vonseowp_audit_results['post_types'] !== VonSEOWP_Content_Types::get_enabled()
         ) {
             $vonseowp_audit_results = array();
         }
@@ -235,7 +239,7 @@ class VonSEOWP_Site_Audit {
     private function get_published_total(): int {
         $total = 0;
 
-        foreach (array('post', 'page') as $post_type) {
+        foreach (VonSEOWP_Content_Types::get_enabled() as $post_type) {
             $counts = wp_count_posts($post_type);
             if (is_object($counts) && isset($counts->publish)) {
                 $total += (int) $counts->publish;
@@ -254,8 +258,7 @@ class VonSEOWP_Site_Audit {
         $site_public = (bool) get_option('blog_public');
         $permalink_structure = trim((string) get_option('permalink_structure'));
         $sitemap_enabled = !isset($options['enable_sitemap']) || (int) $options['enable_sitemap'] === 1;
-        $sitemap_has_content = (!isset($options['sitemap_posts']) || (int) $options['sitemap_posts'] === 1)
-            || (!isset($options['sitemap_pages']) || (int) $options['sitemap_pages'] === 1);
+        $sitemap_has_content = !empty(VonSEOWP_Content_Types::get_sitemap_types($options));
         $home_title = isset($options['home_title']) ? trim((string) $options['home_title']) : '';
         $home_description = isset($options['home_desc']) ? trim((string) $options['home_desc']) : '';
         if ($home_title === '') {

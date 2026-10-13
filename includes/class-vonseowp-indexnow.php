@@ -23,7 +23,8 @@ class VonSEOWP_IndexNow {
         }
 
         // Hooks
-        add_action('save_post', array($this, 'auto_submit_url'), 10, 3);
+        add_action('wp_after_insert_post', array($this, 'auto_submit_url'), 10, 3);
+        add_action('vonseowp_indexnow_submit', array($this, 'submit_post'));
         add_action('init', array($this, 'serve_key_file'));
         
         // Admin Options
@@ -73,31 +74,49 @@ class VonSEOWP_IndexNow {
     }
 
     /**
-     * Auto-submit URL on Publish/Update
+     * Queue eligible updates after saved metadata is available.
      */
     public function auto_submit_url(int $post_id, object $post, bool $update): void {
-        $options = get_option('vonseowp_settings', array());
-        $enabled = isset($options['enable_indexnow']) ? (bool) $options['enable_indexnow'] : true;
-        if (!$enabled) return;
-
-        // Check if pubished
-        if ($post->post_status !== 'publish') return;
-
-        // Skip revisions and autosaves
-        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) return;
-
-        $url = get_permalink($post_id);
-        $this->submit_url($url);
+        $args = array($post_id);
+        if (!$this->is_eligible($post_id)) {
+            wp_clear_scheduled_hook('vonseowp_indexnow_submit', $args);
+            return;
+        }
+        // Gutenberg saves legacy metaboxes in a second request; recheck later.
+        if (!wp_next_scheduled('vonseowp_indexnow_submit', $args)) {
+            wp_schedule_single_event(time() + 60, 'vonseowp_indexnow_submit', $args);
+        }
     }
 
     /**
-     * Send Ping to IndexNow API
+     * Resolve a singular URL without forwarding query or fragment data.
      */
     public function submit_url(string $url): void {
-        if (empty($url)) {
-            return;
-        }
+        if ($url === '') return;
+        $this->submit_post(url_to_postid($url));
+    }
+
+    private function is_eligible(int $post_id): bool {
+        if ($post_id < 1) return false;
+        $options = get_option('vonseowp_settings', array());
+        $options = is_array($options) ? $options : array();
+        $enabled = isset($options['enable_indexnow']) && in_array($options['enable_indexnow'], array(1, '1', true), true);
+        $post = get_post($post_id);
+        return $enabled && (bool) get_option('blog_public') && $post
+            && $post->post_status === 'publish' && $post->post_password === ''
+            && !wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id)
+            && VonSEOWP_Content_Types::is_enabled($post->post_type)
+            && get_post_meta($post_id, '_vonseowp_noindex', true) !== '1';
+    }
+
+    /** Re-read current saved eligibility at the outbound boundary. */
+    public function submit_post(int $post_id): void {
+        if (!$this->is_eligible($post_id)) return;
+        $url = get_permalink($post_id);
         $host = wp_parse_url(home_url(), PHP_URL_HOST);
+        if (!is_string($url) || $url === '' || !is_string($host) || $host === '') return;
+        $url_host = wp_parse_url($url, PHP_URL_HOST);
+        if (!is_string($url_host) || strcasecmp($host, $url_host) !== 0) return;
         $key = $this->api_key;
         $key_location = home_url('/' . ltrim((string) $this->key_location, '/'));
 
@@ -109,7 +128,7 @@ class VonSEOWP_IndexNow {
         );
 
         $args = array(
-            'body' => json_encode($body),
+            'body' => wp_json_encode($body),
             'headers' => array('Content-Type' => 'application/json; charset=utf-8'),
             'timeout' => 5,
             'blocking' => false // Async request

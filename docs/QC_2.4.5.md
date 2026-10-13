@@ -35,3 +35,7 @@ Date: 2026-10-02. Scope: 2.4.4 source fixes, Donate polish, version bump and the
 Donate screenshots are generated native-API/style previews, not authenticated wp-admin end-to-end tests. Native activation/upgrading and frontend browser checks used the actual 2.4.5 ZIP. The existing theme still emits the duplicate IDs noted in the prior checkpoint; VonSEO heading targets are unique and the theme was not changed.
 
 The actual WordPress 6.0/PHP 7.4 minimum-version runtime is still unverified; no PHP 7.4 binary is present in Laragon. PHP 7.4 is configured in release CI, but that tag-triggered workflow was not run here. Production, membership/cache/CDN/Multisite combinations and external crawler/IndexNow delivery are unverified. These local passes are not a claim that every SEO behavior is correct or that all declared-version release gates passed. The historical [2.4.4 checkpoint](QC_2.4.4.md) remains the source-audit baseline.
+
+## Later Compatibility Checkpoint - 2026-10-09
+
+The unchanged exact 2.4.5 ZIP was subsequently installed and activated successfully on isolated official WordPress 6.0/PHP 7.4.33. Further native privacy/TOC/robots tests used the current development source, so they are not retroactively attributed to this unchanged artifact. See [2.5.0 development QC](QC_2.5.0_HISTORY.md#development-checkpoint) for the dated scope and cleanup proof; the 2026-10-02 limitations above remain historical evidence.

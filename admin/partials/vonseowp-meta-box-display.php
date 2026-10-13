@@ -23,6 +23,7 @@ $vonseowp_seo_disable_toc = get_post_meta($post->ID, '_vonseowp_disable_toc', tr
 $vonseowp_seo_schema_type = get_post_meta($post->ID, '_vonseowp_schema_type', true);
 $vonseowp_seo_rating = get_post_meta($post->ID, '_vonseowp_rating', true);
 $vonseowp_seo_rating_count = get_post_meta($post->ID, '_vonseowp_rating_count', true);
+$vonseowp_seo_reviewed_product = get_post_meta($post->ID, '_vonseowp_reviewed_product', true);
 $vonseowp_seo_faq = get_post_meta($post->ID, '_vonseowp_faq', true);
 $vonseowp_seo_video = get_post_meta($post->ID, '_vonseowp_video', true) ?: array();
 if (!is_array($vonseowp_seo_faq)) {
@@ -194,12 +195,13 @@ $vonseowp_permalink = get_permalink($post->ID);
         <div class="von-sidebar-section">
             <label><?php esc_html_e('Schema Type', 'vonseo'); ?></label>
             <select name="vonseowp_schema_type" id="vonseowp_schema_type" class="von-input-sm">
+                <option value="" <?php selected($vonseowp_seo_schema_type, ''); ?>><?php esc_html_e('Default', 'vonseo'); ?></option>
                 <option value="Article" <?php selected($vonseowp_seo_schema_type, 'Article'); ?>><?php esc_html_e('Article', 'vonseo'); ?></option>
                 <option value="NewsArticle" <?php selected($vonseowp_seo_schema_type, 'NewsArticle'); ?>><?php esc_html_e('News Article', 'vonseo'); ?></option>
                 <option value="BlogPosting" <?php selected($vonseowp_seo_schema_type, 'BlogPosting'); ?>><?php esc_html_e('Blog Posting', 'vonseo'); ?></option>
                 <option value="Product" <?php selected($vonseowp_seo_schema_type, 'Product'); ?>><?php esc_html_e('Product', 'vonseo'); ?></option>
                 <option value="Service" <?php selected($vonseowp_seo_schema_type, 'Service'); ?>><?php esc_html_e('Service', 'vonseo'); ?></option>
-                <option value="Review" <?php selected($vonseowp_seo_schema_type, 'Review'); ?>><?php esc_html_e('Review', 'vonseo'); ?></option>
+                <option value="Review" <?php selected($vonseowp_seo_schema_type, 'Review'); ?>><?php esc_html_e('Product Review', 'vonseo'); ?></option>
             </select>
             <div class="von-field-hint"><?php esc_html_e('Override default schema.', 'vonseo'); ?></div>
         </div>
@@ -207,14 +209,19 @@ $vonseowp_permalink = get_permalink($post->ID);
         <div class="von-sidebar-section" id="row-review-rating">
             <div style="display: flex; gap: 10px;">
                 <div style="flex: 1;">
-                    <label><?php esc_html_e('Rating (0-5)', 'vonseo'); ?></label>
-                    <input type="number" step="0.1" min="0" max="5" name="vonseowp_rating" value="<?php echo esc_attr($vonseowp_seo_rating); ?>" class="von-input-sm">
+                    <label><?php esc_html_e('Rating (1-5)', 'vonseo'); ?></label>
+                    <input type="number" step="0.1" min="1" max="5" name="vonseowp_rating" value="<?php echo esc_attr($vonseowp_seo_rating); ?>" class="von-input-sm">
                 </div>
                 <div style="flex: 1;">
                     <label><?php esc_html_e('Rating Count', 'vonseo'); ?></label>
-                    <input type="number" min="1" name="vonseowp_rating_count" value="<?php echo esc_attr($vonseowp_seo_rating_count ?: 1); ?>" class="von-input-sm">
+                    <input type="number" min="1" name="vonseowp_rating_count" value="<?php echo esc_attr($vonseowp_seo_rating_count); ?>" class="von-input-sm">
                 </div>
             </div>
+        </div>
+
+        <div class="von-sidebar-section" id="row-reviewed-product">
+            <label for="vonseowp_reviewed_product"><?php esc_html_e('Reviewed Product Name', 'vonseo'); ?></label>
+            <input type="text" id="vonseowp_reviewed_product" name="vonseowp_reviewed_product" value="<?php echo esc_attr($vonseowp_seo_reviewed_product); ?>" class="von-input-sm">
         </div>
 
         <hr>

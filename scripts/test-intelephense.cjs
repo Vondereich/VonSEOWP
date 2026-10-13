@@ -9,6 +9,7 @@ if (!serverPath || !fs.existsSync(serverPath)) throw new Error('Pass an already-
 const root = path.resolve(__dirname, '..');
 const localSettings = JSON.parse(fs.readFileSync(path.join(root, '.vscode/settings.json'), 'utf8'));
 const files = ['includes/class-vonseowp-frontend.php', 'includes/class-vonseowp-toc.php', 'includes/class-vonseowp-site-audit.php', 'scripts/test-toc.php', 'scripts/qc-wordpress-package.php', 'scripts/test-wordpress-privacy.php', 'scripts/test-wordpress-toc-robots.php'];
+files.push(...process.argv.slice(3));
 const settings = {
   environment: { includePaths: localSettings['intelephense.environment.includePaths'] },
   diagnostics: { undefinedParameters: true },

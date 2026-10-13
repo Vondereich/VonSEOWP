@@ -11,7 +11,7 @@ $assertions = 0;
 function add_filter($hook, $callback, $priority = 10, $accepted_args = 1) { $GLOBALS['hooks'][$hook][] = $callback; }
 function add_action($hook, $callback, $priority = 10, $accepted_args = 1) { add_filter($hook, $callback, $priority, $accepted_args); }
 function remove_action($hook, $callback, $priority = 10) { $GLOBALS['removed'][] = $callback; }
-function get_post() { return $GLOBALS['context']['post'] ?? (object)array('ID' => 7, 'post_content' => ''); }
+function get_post() { return $GLOBALS['context']['post'] ?? (object)array('ID' => 7, 'post_type' => 'post', 'post_content' => ''); }
 function get_option($name, $default = false) { return $GLOBALS['context'][$name] ?? $default; }
 function get_post_meta($id, $key, $single = false) { return $GLOBALS['context'][$key] ?? ''; }
 function is_singular() { return $GLOBALS['context']['singular'] ?? true; }
@@ -20,6 +20,11 @@ function is_404() { return $GLOBALS['context']['404'] ?? false; }
 function has_shortcode($content, $tag) { return strpos($content, '[' . $tag . ']') !== false; }
 function wp_enqueue_style($handle, $url, $dependencies, $version) { $GLOBALS['assets'][$handle] = $url; }
 function wp_enqueue_script($handle, $url, $dependencies, $version, $footer) { $GLOBALS['assets'][$handle] = $url; }
+function get_post_types(array $args = array(), string $output = 'names'): array {
+    return array('post' => (object) array(), 'page' => (object) array());
+}
+function sanitize_key(string $key): string { return strtolower(preg_replace('/[^a-z0-9_\-]/i', '', $key)); }
+require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';
 function check($condition, $message) { $GLOBALS['assertions']++; if (!$condition) throw new RuntimeException($message); }
 $frontend = new VonSEOWP_Frontend();

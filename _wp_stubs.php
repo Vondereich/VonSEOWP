@@ -223,6 +223,10 @@ if (!function_exists('wp_parse_args')) {
     }
 }
 
+if (!function_exists('wp_parse_str')) {
+    function wp_parse_str(string $input, array &$result): void { parse_str($input, $result); }
+}
+
 if (!function_exists('home_url')) {
     function home_url(string $path = '', ?string $scheme = null): string { return $path; }
 }
@@ -656,6 +660,7 @@ if (!class_exists('WP_Query')) {
     class WP_Query {
         public array $posts = array();
         public int $post_count = 0;
+        public int $found_posts = 0;
         public bool $is_single = false;
         public bool $is_singular = false;
         public bool $is_page = false;
@@ -672,4 +677,29 @@ if (!class_exists('WP_Query')) {
 
 if (!function_exists('wp_clear_scheduled_hook')) {
     function wp_clear_scheduled_hook(string $hook, array $args = array(), bool $wp_error = false): int|bool { return true; }
+}
+
+if (!class_exists('WP_Post_Type')) {
+    class WP_Post_Type {
+        public bool $_builtin = false;
+        public bool $public = false;
+        public bool $publicly_queryable = false;
+        public object $labels;
+    }
+}
+if (!function_exists('get_post_types')) {
+    /** @return array<string, WP_Post_Type>|array<string, string> */
+    function get_post_types(array $args = array(), string $output = 'names', string $operator = 'and'): array { return array(); }
+}
+if (!function_exists('get_post_type_object')) {
+    function get_post_type_object(string $post_type): ?WP_Post_Type { return null; }
+}
+if (!function_exists('get_post_type')) {
+    function get_post_type(int|WP_Post|null $post = null): string|false { return false; }
+}
+if (!function_exists('wp_sanitize_redirect')) {
+    function wp_sanitize_redirect(string $location): string { return $location; }
+}
+if (!function_exists('wp_validate_redirect')) {
+    function wp_validate_redirect(string $location, string $fallback = ''): string { return $location; }
 }

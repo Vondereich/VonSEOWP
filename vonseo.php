@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       VonSEO
  * Description:       A lightweight, premium SEO toolkit. Features a modern dashboard, automated JSON-LD Schema, Open Graph, Twitter Cards, and per-post SEO controls without the bloat.
- * Version:           2.4.5
+ * Version:           2.5.0
  * Requires at least: 6.0
  * Tested up to:      7.1
  * Requires PHP:      7.4
@@ -36,7 +36,7 @@ if (version_compare(PHP_VERSION, '7.4', '<')) {
     return;
 }
 
-define('VONSEOWP_VERSION', '2.4.5');
+define('VONSEOWP_VERSION', '2.5.0');
 define('VONSEOWP_PATH', plugin_dir_path(__FILE__));
 define('VONSEOWP_URL', plugin_dir_url(__FILE__));
 
@@ -58,6 +58,7 @@ class VonSEOWP {
         add_action('plugins_loaded', array($this, 'init'));
         add_action('init', array($this, 'maybe_flush_rewrites'), 999);
         register_activation_hook(__FILE__, array($this, 'activation'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivation'));
     }
 
     public function activation() {
@@ -65,6 +66,10 @@ class VonSEOWP {
         if (!get_option('vonseowp_flush_sitemap')) {
             add_option('vonseowp_flush_sitemap', true);
         }
+    }
+
+    public function deactivation(): void {
+        wp_unschedule_hook('vonseowp_indexnow_submit');
     }
 
     public function init() {
@@ -116,6 +121,7 @@ class VonSEOWP {
 }
 
 // Include modules (Moved below class definition for architectural consistency).
+require_once VONSEOWP_PATH . 'includes/class-vonseowp-content-types.php';
 require_once VONSEOWP_PATH . 'includes/class-vonseowp-admin.php';
 require_once VONSEOWP_PATH . 'includes/class-vonseowp-meta-box.php';
 require_once VONSEOWP_PATH . 'includes/class-vonseowp-frontend.php';

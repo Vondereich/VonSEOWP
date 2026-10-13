@@ -13,6 +13,7 @@ class VonSEOWP_Frontend {
 
     public function __construct() {
         add_filter('pre_get_document_title', array($this, 'filter_document_title'), 15);
+        add_filter('wp_title', array($this, 'filter_legacy_title'), 15, 3);
         add_action('wp_head', array($this, 'output_meta_tags'), 1);
         add_action('wp_head', array($this, 'output_json_ld'), 99);
         add_filter('robots_txt', array($this, 'handle_robots_txt'), 99, 2);
@@ -26,7 +27,8 @@ class VonSEOWP_Frontend {
     public function filter_robots(array $robots): array {
         $post = get_post();
         $noindex = !get_option('blog_public') || is_search() || is_404()
-            || (is_singular() && $post && get_post_meta($post->ID, '_vonseowp_noindex', true) === '1');
+            || (is_singular() && $post && VonSEOWP_Content_Types::is_enabled((string) $post->post_type)
+                && get_post_meta($post->ID, '_vonseowp_noindex', true) === '1');
         if ($noindex) {
             $robots['noindex'] = true;
             $robots['nofollow'] = true;
@@ -117,10 +119,23 @@ class VonSEOWP_Frontend {
         return $title;
     }
 
+    public function filter_legacy_title(string $title, string $separator, string $separator_location): string {
+        $custom_title = $this->filter_document_title('');
+        if ($custom_title === '') return $title;
+
+        // Legacy themes may append the site name themselves; keep core separator placement.
+        $custom_title = esc_html($custom_title);
+        if ($separator === '') return $custom_title;
+        $separator = ' ' . esc_html($separator) . ' ';
+        return $separator_location === 'right' ? $custom_title . $separator : $separator . $custom_title;
+    }
+
     /** @param WP_Post|null $post */
     private function can_output_post_metadata($post): bool {
         // Direct post/meta reads must respect WordPress's current password-cookie state.
-        return is_singular() && $post && !post_password_required($post);
+        return is_singular() && $post
+            && VonSEOWP_Content_Types::is_enabled((string) $post->post_type)
+            && !post_password_required($post);
     }
 
     public function output_meta_tags() {
@@ -322,60 +337,9 @@ class VonSEOWP_Frontend {
                 $image_url = get_the_post_thumbnail_url($post->ID, 'large');
             }
 
-            // Custom Schema Type
-            $custom_type = get_post_meta($post->ID, '_vonseowp_schema_type', true);
-            $type = !empty($custom_type) ? $custom_type : (is_page() ? 'WebPage' : 'BlogPosting');
-            
-            // Custom ID anchor
-            $anchor = is_page() ? 'webpage' : 'article';
-            if ($type === 'Product') $anchor = 'product';
-            if ($type === 'Review') $anchor = 'review';
-            if ($type === 'Service') $anchor = 'service';
-
-            $article = array(
-                '@type' => $type,
-                '@id' => get_permalink() . '#' . $anchor,
-                'headline' => wp_strip_all_tags(get_the_title()),
-                'description' => esc_attr(wp_strip_all_tags($desc)),
-                'datePublished' => get_the_date('c'),
-                'dateModified' => get_the_modified_date('c'),
-                'author' => array(
-                    '@type' => 'Person',
-                    'name' => wp_strip_all_tags(get_the_author()),
-                    'url' => get_author_posts_url(get_the_author_meta('ID'))
-                ),
-                'publisher' => array('@id' => home_url('/#' . strtolower($schema_type))),
-                'mainEntityOfPage' => array(
-                    '@type' => 'WebPage',
-                    '@id' => get_permalink()
-                )
+            $schema['@graph'][] = $this->build_content_schema(
+                $post, home_url('/#' . strtolower($schema_type)), (string) $desc, (string) $image_url
             );
-
-            // Add Rating for Reviews/Products
-            $rating = get_post_meta($post->ID, '_vonseowp_rating', true);
-            if (is_numeric($rating) && $rating > 0) {
-                $rating_count = get_post_meta($post->ID, '_vonseowp_rating_count', true);
-                if (!$rating_count || !is_numeric($rating_count)) {
-                    $rating_count = 1; // Fallback
-                }
-                
-                $article['aggregateRating'] = array(
-                    '@type' => 'AggregateRating',
-                    'ratingValue' => $rating,
-                    'bestRating' => '5',
-                    'worstRating' => '1',
-                    'ratingCount' => (int) $rating_count
-                );
-            }
-
-            if ($image_url) {
-                $article['image'] = array(
-                    '@type' => 'ImageObject',
-                    'url' => $image_url
-                );
-            }
-
-            $schema['@graph'][] = $article;
 
             // 3.1 FAQ Schema
             $faqs = get_post_meta($post->ID, '_vonseowp_faq', true);
@@ -459,6 +423,66 @@ class VonSEOWP_Frontend {
         echo '<script type="application/ld+json" class="vonseowp-schema">' . "\n";
         echo wp_json_encode($schema);
         echo "\n</script>\n";
+    }
+
+    private function build_content_schema(object $post, string $publisher_id, string $description, string $image_url): array {
+        $custom_type = get_post_meta($post->ID, '_vonseowp_schema_type', true);
+        $types = array('Article', 'NewsArticle', 'BlogPosting', 'WebPage', 'Product', 'Review', 'Service');
+        $type = in_array($custom_type, $types, true) ? $custom_type : (is_page() ? 'WebPage' : 'BlogPosting');
+        $name = wp_strip_all_tags(get_the_title($post->ID));
+        // wp_head can run before the Loop has populated its author globals.
+        $author_id = (int) ($post->post_author ?? 0);
+        $author_name = $author_id > 0 ? wp_strip_all_tags((string) get_the_author_meta('display_name', $author_id)) : '';
+        $rating = get_post_meta($post->ID, '_vonseowp_rating', true);
+        $rating_valid = is_numeric($rating) && (float) $rating >= 1 && (float) $rating <= 5;
+        $count = get_post_meta($post->ID, '_vonseowp_rating_count', true);
+        $count_valid = (is_int($count) || (is_string($count) && ctype_digit($count))) && (int) $count > 0;
+        $reviewed_product = get_post_meta($post->ID, '_vonseowp_reviewed_product', true);
+        $reviewed_product = is_string($reviewed_product) ? trim(wp_strip_all_tags($reviewed_product)) : '';
+
+        // Keep saved choices/data, but do not publish incomplete rated objects or invent missing fields.
+        if (($type === 'Product' && (!$rating_valid || !$count_valid || trim($name) === ''))
+            || ($type === 'Review' && (!$rating_valid || $reviewed_product === '' || trim($author_name) === ''))) {
+            $type = 'WebPage';
+        }
+        $anchors = array('Product' => 'product', 'Review' => 'review', 'Service' => 'service', 'WebPage' => 'webpage');
+        $url = get_permalink($post->ID);
+        $node = array(
+            '@type' => $type,
+            '@id' => $url . '#' . ($anchors[$type] ?? 'article'),
+            'description' => wp_strip_all_tags($description),
+            'url' => $url,
+            'mainEntityOfPage' => array('@type' => 'WebPage', '@id' => $url)
+        );
+        if ($type === 'Product') {
+            $node['name'] = $name;
+            $node['aggregateRating'] = array(
+                '@type' => 'AggregateRating', 'ratingValue' => (float) $rating,
+                'bestRating' => 5, 'worstRating' => 1, 'ratingCount' => (int) $count
+            );
+        } elseif ($type === 'Service') {
+            $node['name'] = $name;
+            $node['provider'] = array('@id' => $publisher_id);
+        } else {
+            $node[$type === 'Review' ? 'name' : 'headline'] = $name;
+            $node['datePublished'] = get_the_date('c');
+            $node['dateModified'] = get_the_modified_date('c');
+            if (trim($author_name) !== '') {
+                $node['author'] = array(
+                    '@type' => 'Person', 'name' => $author_name,
+                    'url' => get_author_posts_url($author_id)
+                );
+            }
+            $node['publisher'] = array('@id' => $publisher_id);
+            if ($type === 'Review') {
+                $node['itemReviewed'] = array('@type' => 'Product', 'name' => $reviewed_product);
+                $node['reviewRating'] = array(
+                    '@type' => 'Rating', 'ratingValue' => (float) $rating, 'bestRating' => 5, 'worstRating' => 1
+                );
+            }
+        }
+        if ($image_url !== '') $node['image'] = array('@type' => 'ImageObject', 'url' => $image_url);
+        return $node;
     }
 
     /**

@@ -52,3 +52,4 @@ foreach ($vonseowp_meta_keys as $vonseowp_key) {
 
 // 3. Clear any scheduled crons
 wp_clear_scheduled_hook('vonseowp_daily_cleanup');
+wp_unschedule_hook('vonseowp_indexnow_submit');

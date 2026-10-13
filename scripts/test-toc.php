@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 define('ABSPATH', __DIR__);
+require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 $settings = array('enable_toc' => 1, 'toc_min_headings' => 1);
 $disabled = '';
 $singular = true;

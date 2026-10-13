@@ -10,6 +10,8 @@ desktop.ini
 # Build Artifacts
 __pycache__/
 *.zip
+backups/
+.local-qc/
 
 # IDEs & Tools
 .vscode/

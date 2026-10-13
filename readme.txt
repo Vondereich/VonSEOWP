@@ -4,7 +4,7 @@ Tags: seo, toc, schema, sitemap, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.4.5
+Stable tag: 2.5.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,7 +22,7 @@ Most SEO plugins become increasingly heavy over time, trading performance for ov
 
 *   **Zero-Waste Architecture**: No custom database tables. We use native WordPress `post_meta` and `wp_options` for maximum speed and compatibility.
 *   **Enterprise Heritage**: Built with the same performance DNA as VonCMS.
-*   **Privacy as a Feature**: No tracking. No telemetry. No "phoning home." Your data stays on your server.
+*   **Privacy as a Feature**: No tracking or telemetry. Editor analysis and Site Audit stay local; optional IndexNow notifications and manual Competitor scans make the outbound requests described below.
 *   **No Paywalls**: What you see is what you get. No hidden “Pro” tabs or forced upgrades.
 
 ### The Professional Toolkit
@@ -36,7 +36,7 @@ A clean, focused editorial workflow designed for speed and usability.
 
 #### 2. Advanced Technical Engine
 *   **Dynamic Sitemap Indexing**: Automated scaling with `sitemap_index.xml` and 1,000-post pagination.
-*   **Instant Indexing (IndexNow)**: Instantly notify Bing and Yandex when content is updated.
+*   **IndexNow Notifications**: Opt in to notify Bing and Yandex about eligible published updates using native WordPress cron.
 *   **Surgical JSON-LD Schema**: Pure, optimized structured data (Article, FAQ, Video, Review, Breadcrumbs).
 *   **SEO Table of Contents (TOC)**: Lightweight, anchor-based TOC with zero external dependencies.
 
@@ -55,13 +55,22 @@ A clean, focused editorial workflow designed for speed and usability.
 == Frequently Asked Questions ==
 
 = Does this plugin slow down my site? =
-No. VonSEO is engineered with a lightweight-first architecture using native WordPress storage and minimal frontend overhead.
+VonSEO uses native WordPress storage, runs editor analysis in your browser and processes manual Site Audit results in 25-item batches. Actual performance depends on your content, theme, hosting and other plugins.
 
 = Where is the content analyzer? =
-Open any Post or Page editor and use the VonSEO Content Intelligence sidebar/metabox. The analyzer does not run on the public frontend.
+Open an enabled post, page or public custom post type editor and use the VonSEO Content Intelligence sidebar/metabox. The analyzer does not run on the public frontend.
 
 = Does the analyzer send my draft content anywhere? =
-No. The v2.3.4 analyzer runs locally in the editor screen. It checks the current draft content in your browser and does not require an external API.
+No. Content analysis runs locally in your browser and does not send draft text to an external API. Optional IndexNow notifications and manual Competitor scans make the requests described in the external-services section below.
+
+= Does VonSEO support custom post types? =
+Yes. Enable eligible public custom post types in SEO Content Types. Selected types receive the existing editor tools, metadata, schema, Quick Edit, Site Audit and sitemap coverage. Attachments and non-public types are excluded; posts and pages remain enabled by default.
+
+= Can Site Audit check thousands of posts? =
+Yes. Each run checks 25 items, with Previous/Next navigation through all published content in the selected types. It does not load or crawl thousands of posts in one request.
+
+= Does the SEO Title work with older themes? =
+VonSEO supports the modern WordPress document-title API and the legacy wp_title() API used by themes such as Twenty Eleven. Legacy themes may still append the site name themselves. Empty overrides keep the native title, and protected content does not expose its saved SEO title until the password is accepted.
 
 = Does VonSEO create custom database tables? =
 No. VonSEO uses native WordPress options and post meta so it stays portable, backup-friendly, and easy to remove.
@@ -73,21 +82,54 @@ No. VonSEO is built as a complete lightweight toolkit without hidden Pro tabs or
 Yes. The editor tools are designed to read content from the WordPress editor and include a fallback for classic editor content.
 
 = Does VonSEO generate schema automatically? =
-Yes. VonSEO can output optimized JSON-LD schema such as Article, FAQ, Video, Review, and Breadcrumbs depending on the saved post settings.
+Yes. Supported output includes article variants, WebPage, Product, Product Review, Service, FAQ, Video and Breadcrumbs, according to the saved settings and available data. Incomplete rated Product/Review objects fall back to WebPage rather than inventing ratings. Schema output does not guarantee search-engine rich results.
 
 = Does VonSEO support large sites? =
 Yes. The sitemap system supports sitemap indexing and paginates large post sets to avoid one oversized sitemap file.
 
 = Does IndexNow require an external account? =
-No external account is required. IndexNow uses a site key and notifies supported search engines when enabled.
+No external account is required. IndexNow is optional and defaults to off unless enablement was previously saved. Eligible canonical URLs are queued with native WordPress cron and checked again before delivery; drafts, password-protected and noindex content are excluded. Delivery timing depends on cron/site traffic, and notification does not guarantee indexing.
 
 = Can I remove VonSEO cleanly? =
-Yes. VonSEO avoids custom tables and includes uninstall cleanup for its stored options and metadata.
+Deactivation keeps your saved data. Deleting the plugin runs cleanup for its stored options and SEO metadata, so take a backup first. Pending IndexNow events are cleared on both deactivation and deletion.
 
-= Is this compatible with PHP 8.2? =
-Yes. VonSEO requires PHP 7.4+ and is fully optimized for PHP 8.2/8.3.
+= What are the minimum requirements? =
+WordPress 6.0 or later and PHP 7.4 or later. The current regression checks cover PHP 7.4 and 8.3; third-party theme/plugin compatibility should also be tested on your own site.
+
+== External services and public discovery ==
+
+= IndexNow (Bing and Yandex) =
+IndexNow is optional and defaults to off when no enablement has been saved. When enabled, eligible published posts/pages and selected public custom post types are queued for notification after 60 seconds using native WordPress cron; delivery can occur later depending on site traffic or cron configuration. Saved site visibility, password, noindex and content-type eligibility are checked again immediately before notification. Repeated pending updates to the same post share one event. Deactivation and uninstall remove queued events.
+
+The server sends the canonical content URL, site hostname, IndexNow verification key and key-file location to https://www.bing.com/indexnow and https://yandex.com/indexnow. Post bodies, draft text and SEO descriptions are not included. The receiving services can also observe the server's IP address and normal HTTP request information. Notification does not guarantee indexing.
+
+Documentation: https://www.indexnow.org/documentation
+Terms: https://www.indexnow.org/terms
+Microsoft privacy: https://www.microsoft.com/en-us/privacy/privacystatement
+Yandex privacy: https://yandex.com/legal/confidential/en/
+
+= Manual Competitor scans =
+When an authorized editor requests a Competitor scan, the WordPress server fetches that editor-supplied URL directly, using the VonSEOWP-Bot/1.0 user agent. The destination website sees the requested URL, server IP address and ordinary HTTP request information; its own terms/privacy policy apply. Current editor content is not sent to that website or an AI service. Successful analysis metrics are cached in a local WordPress transient for 12 hours.
+
+= llms.txt =
+This is a public, curated text endpoint, not an access-control feature or automatic protected-post export. Publish only material intended for public reading. When search-engine visibility is off, or the feature is disabled, both the rewritten endpoint and its query alias return an uncached 404 with noindex/nofollow instead of curated/default text.
 
 == Changelog ==
+
+= 2.5.0 =
+* Added opt-in SEO tools for public custom post types, with post/page defaults and retained unavailable selections.
+* Extended editor analysis, metadata, social fields, noindex, Quick Edit, score columns and Site Audit to selected types.
+* Fixed sitemap selection/count/pagination, homepage duplication and invalid batch handling.
+* Blocked self-redirect loops while preserving safe redirects and valid HTTP-to-HTTPS upgrades.
+* Guarded ordinary WordPress identity-query canonical loops without blocking multipage or different-path same-slug CPT redirects.
+* Fixed Competitor access for editors with custom CPT capabilities, with post-specific authorization and validated input.
+* Made IndexNow explicit opt-in and blocked password, noindex, private-site and unselected content at the outbound boundary.
+* Deferred/deduplicated automatic IndexNow work until after metadata saves, rechecking current eligibility before native-cron delivery.
+* Suppressed llms.txt on non-public sites, with uncached noindex/nofollow 404 responses for rewrite and query-alias routes.
+* Clarified optional external requests and public curated-content boundaries.
+* Fixed schema author lookup before the theme Loop, preserving valid Reviews and avoiding unrelated or empty authors.
+* Centered Site Audit Previous/Next arrows and matched button widths on desktop and mobile.
+* Applied saved SEO titles on legacy wp_title() themes such as Twenty Eleven, preserving native fallbacks and password privacy.
 
 = 2.4.5 =
 *   Improved: Simplified donation styling with aligned coffee icons, readable labels, visible keyboard focus, and responsive placement.

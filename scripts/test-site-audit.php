@@ -75,6 +75,11 @@ function wp_count_posts(string $post_type = 'post'): object {
     return (object) array('publish' => $vonseowp_test_publish_counts[$post_type] ?? 0);
 }
 
+function get_post_types(array $args = array(), string $output = 'names'): array {
+    return array('post' => (object) array(), 'page' => (object) array());
+}
+function sanitize_key(string $key): string { return strtolower(preg_replace('/[^a-z0-9_\-]/i', '', $key)); }
+require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-site-audit.php';
 
 function vonseowp_audit_assert(bool $condition, string $message): void {
@@ -248,5 +253,17 @@ vonseowp_audit_assert(
         && !empty($vonseowp_test_last_query['no_found_rows']),
     'Expected the content query to remain bounded and use the clamped batch page.'
 );
+
+$pagination_css = (string) file_get_contents(dirname(__DIR__) . '/admin/css/vonseowp-admin.css');
+foreach (array(
+    '.von-audit-pagination .button.von-audit-page-button .dashicons {',
+    '.von-audit-pagination .button.von-audit-page-button .dashicons::before {',
+) as $selector) {
+    vonseowp_audit_assert(
+        preg_match('/' . preg_quote($selector, '/') . '([^}]+)}/s', $pagination_css, $rule) === 1
+            && strpos($rule[1], 'line-height: 16px;') !== false,
+        'Expected scoped arrow/glyph line-height to override native WordPress button styles.'
+    );
+}
 
 echo 'Site audit tests passed' . PHP_EOL;

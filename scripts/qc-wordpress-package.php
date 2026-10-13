@@ -7,8 +7,8 @@ if (!is_file($root . '/wp-load.php') || !in_array($mode, array('state', 'upgrade
     fwrite(STDERR, 'Usage: php qc-wordpress-package.php WP_ROOT MODE [arguments]' . PHP_EOL);
     exit(1);
 }
-define('FS_METHOD', 'direct');
 require $root . '/wp-load.php';
+if (!defined('FS_METHOD')) define('FS_METHOD', 'direct');
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 add_filter('pre_http_request', static function ($result, $args, $url) {
     if (strpos($url, 'https://www.bing.com/indexnow') === 0 || strpos($url, 'https://yandex.com/indexnow') === 0) {
@@ -19,7 +19,7 @@ add_filter('pre_http_request', static function ($result, $args, $url) {
 if ($mode === 'cleanup-fresh') {
     global $wpdb;
     $expected_prefix = $argv[3] ?? '';
-    if (!preg_match('/^vonseoqc245_[a-f0-9]{8}_$/D', $expected_prefix) || $wpdb->base_prefix !== $expected_prefix) {
+    if (!preg_match('/^vonseoqc(?:245|250)_[a-f0-9]{8}_$/D', $expected_prefix) || $wpdb->base_prefix !== $expected_prefix) {
         throw new RuntimeException('Refusing cleanup outside the dedicated fresh-QC table prefix.');
     }
     $tables = $wpdb->get_col($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($expected_prefix) . '%'));

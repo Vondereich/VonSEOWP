@@ -44,6 +44,13 @@ jobs:
           npm run test:toc
           npm run test:robots
           npm run test:toc-toggle
+          npm run test:content-types
+          npm run test:competitors
+          npm run test:redirects
+          npm run test:indexing
+          npm run test:settings
+          npm run test:schema
+          npm run test:titles
 
       - name: Lint Packaged PHP
         run: |

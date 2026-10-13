@@ -12,6 +12,7 @@ add_filter('option_active_plugins', static function ($plugins) {
 });
 require $root . '/wp-load.php';
 global $wp_version;
+require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';
 require_once ABSPATH . WPINC . '/class-phpass.php';
 wp_set_current_user(0);

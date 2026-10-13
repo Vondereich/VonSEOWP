@@ -177,7 +177,10 @@ if ($vonseowp_has_results && isset($vonseowp_audit_results['issue_counts']) && i
                             <?php foreach ($vonseowp_items as $vonseowp_item) : ?>
                                 <tr>
                                     <td><strong><?php echo esc_html($vonseowp_item['title'] !== '' ? $vonseowp_item['title'] : __('(no title)', 'vonseo')); ?></strong></td>
-                                    <td><?php echo esc_html('page' === $vonseowp_item['post_type'] ? __('Page', 'vonseo') : __('Post', 'vonseo')); ?></td>
+                                    <td><?php
+                                        $vonseowp_type_object = get_post_type_object($vonseowp_item['post_type']);
+                                        echo esc_html($vonseowp_type_object ? $vonseowp_type_object->labels->singular_name : $vonseowp_item['post_type']);
+                                    ?></td>
                                     <td>
                                         <div class="von-audit-issues">
                                             <?php foreach ($vonseowp_item['issues'] as $vonseowp_issue) : ?>

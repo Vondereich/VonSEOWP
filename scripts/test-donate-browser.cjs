@@ -9,19 +9,32 @@ if (!wpRoot || !outputDir || !process.env.VONSEO_PHP_PATH) {
   throw new Error('Pass WP_ROOT OUTPUT_DIR and set VONSEO_PHP_PATH; this only renders the source admin partial.');
 }
 const repo = path.resolve(__dirname, '..');
+const checkContentTypes = process.argv.includes('--content-types');
 const rendered = spawnSync(process.env.VONSEO_PHP_PATH, ['-r', `
   $_SERVER['REQUEST_METHOD'] = 'GET';
   $_SERVER['REQUEST_URI'] = '/wordpress/wp-admin/admin.php?page=vonseo';
   require getenv('VONSEO_QC_WP_ROOT') . '/wp-load.php';
   require_once ABSPATH . 'wp-admin/includes/template.php';
+  if (!class_exists('VonSEOWP_Content_Types')) require_once getenv('VONSEO_QC_TYPES');
   $before = serialize(get_option('vonseowp_settings'));
+  $fixture_filter = null;
+  if (getenv('VONSEO_QC_CONTENT_TYPES') === '1') {
+    register_post_type('vonseqc_book', array('public' => true, 'labels' => array('name' => 'Editorial Research Books With Long Translated Labels')));
+    register_post_type('vonseqc_secret', array('public' => false));
+    $fixture_options = get_option('vonseowp_settings', array());
+    $fixture_options = is_array($fixture_options) ? $fixture_options : array();
+    $fixture_options['seo_post_types'] = array('post', 'page', 'vonseqc_book', 'vonseqc_removed');
+    $fixture_filter = static function () use ($fixture_options) { return $fixture_options; };
+    add_filter('pre_option_vonseowp_settings', $fixture_filter);
+  }
   include getenv('VONSEO_QC_PARTIAL');
+  if ($fixture_filter) remove_filter('pre_option_vonseowp_settings', $fixture_filter);
   if ($before !== serialize(get_option('vonseowp_settings'))) exit(1);
 `], {
-  env: { ...process.env, VONSEO_QC_WP_ROOT: wpRoot, VONSEO_QC_PARTIAL: path.join(repo, 'admin/partials/vonseowp-admin-display.php') },
+  env: { ...process.env, VONSEO_QC_WP_ROOT: wpRoot, VONSEO_QC_PARTIAL: path.join(repo, 'admin/partials/vonseowp-admin-display.php'), VONSEO_QC_TYPES: path.join(repo, 'includes/class-vonseowp-content-types.php'), VONSEO_QC_CONTENT_TYPES: checkContentTypes ? '1' : '0' },
   encoding: 'utf8', maxBuffer: 2 * 1024 * 1024,
 });
-assert.equal(rendered.status, 0, rendered.stderr);
+assert.equal(rendered.status, 0, rendered.stderr || rendered.stdout);
 assert.equal(rendered.stderr, '', 'Native PHP render emitted diagnostics.');
 fs.mkdirSync(outputDir, { recursive: true });
 
@@ -47,6 +60,20 @@ fs.mkdirSync(outputDir, { recursive: true });
       });
       await page.goto('http://vonseo-qc.test/', { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
+      if (checkContentTypes) {
+        const types = page.locator('.von-checkbox-row input');
+        assert.deepEqual(await types.evaluateAll(inputs => inputs.map(input => input.value)), ['post', 'page', 'vonseqc_book', 'vonseqc_removed']);
+        assert.equal(await types.locator('..').last().innerText(), 'vonseqc_removed (Unavailable)');
+        for (const input of await types.all()) assert.equal(await input.isChecked(), true);
+        await types.first().uncheck();
+        assert.equal(await types.first().isChecked(), false);
+        await types.first().check();
+        assert.equal(await page.locator('fieldset.von-form-group').evaluate(element => {
+          const box = element.getBoundingClientRect();
+          return box.left >= 0 && box.right <= innerWidth && element.scrollWidth <= element.clientWidth + 1;
+        }), true, `Content types overflow at ${width}px`);
+        await page.locator('fieldset.von-form-group').screenshot({ path: path.join(outputDir, `content-types-${width}.png`) });
+      }
       const buttons = page.locator('.von-btn-donate');
       assert.equal(await buttons.count(), 2);
       for (const [index, button] of (await buttons.all()).entries()) {

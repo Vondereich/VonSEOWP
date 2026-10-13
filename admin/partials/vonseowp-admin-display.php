@@ -83,7 +83,7 @@ if (false) {
                 <?php settings_fields('vonseowp_options_group'); ?>
                 <?php
                 $vonseowp_options = get_option('vonseowp_settings');
-                $vonseowp_indexnow_enabled = !isset($vonseowp_options['enable_indexnow']) || (int) $vonseowp_options['enable_indexnow'] === 1;
+                $vonseowp_indexnow_enabled = isset($vonseowp_options['enable_indexnow']) && in_array($vonseowp_options['enable_indexnow'], array(1, '1', true), true);
                 $vonseowp_llms_enabled = !isset($vonseowp_options['enable_llms_txt']) || (int) $vonseowp_options['enable_llms_txt'] === 1;
                 ?>
 
@@ -144,6 +144,24 @@ if (false) {
                                 <label><?php esc_html_e('Bing Verification Code', 'vonseo'); ?></label>
                                 <input type="text" name="vonseowp_settings[bing_verify]" value="<?php echo esc_attr($vonseowp_options['bing_verify'] ?? ''); ?>" class="von-input">
                             </div>
+                            <fieldset class="von-form-group">
+                                <legend><?php esc_html_e('SEO Content Types', 'vonseo'); ?></legend>
+                                <input type="hidden" name="vonseowp_settings[seo_post_types][]" value="">
+                                <?php
+                                $vonseowp_saved_types = VonSEOWP_Content_Types::get_saved(is_array($vonseowp_options) ? $vonseowp_options : array());
+                                $vonseowp_available_types = VonSEOWP_Content_Types::get_available();
+                                $vonseowp_type_names = array_unique(array_merge(array_keys($vonseowp_available_types), $vonseowp_saved_types));
+                                foreach ($vonseowp_type_names as $vonseowp_type_name) :
+                                    $vonseowp_type_label = isset($vonseowp_available_types[$vonseowp_type_name])
+                                        ? $vonseowp_available_types[$vonseowp_type_name]->labels->name
+                                        : $vonseowp_type_name . ' (' . __('Unavailable', 'vonseo') . ')';
+                                    ?>
+                                    <label class="von-checkbox-row">
+                                        <input type="checkbox" name="vonseowp_settings[seo_post_types][]" value="<?php echo esc_attr($vonseowp_type_name); ?>" <?php checked(in_array($vonseowp_type_name, $vonseowp_saved_types, true)); ?>>
+                                        <span><?php echo esc_html($vonseowp_type_label); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
@@ -577,13 +595,13 @@ if (false) {
                     <!-- Section: Indexing -->
                     <div class="von-card">
                         <div class="von-card-header">
-                            <h3><?php esc_html_e('Instant Indexing', 'vonseo'); ?></h3>
-                            <p class="von-card-desc"><?php esc_html_e('Ping search engines immediately when you publish content.', 'vonseo'); ?></p>
+                            <h3><?php esc_html_e('IndexNow', 'vonseo'); ?></h3>
+                            <p class="von-card-desc"><?php esc_html_e('Deferred notifications require a working WordPress cron runner.', 'vonseo'); ?></p>
                         </div>
                         <div class="von-card-body">
                             <div class="von-form-group">
                                 <label class="von-switch">
-                                    <input type="checkbox" name="vonseowp_settings[enable_indexnow]" value="1" <?php checked(1, $vonseowp_options['enable_indexnow'] ?? 1); ?>>
+                                    <input type="checkbox" name="vonseowp_settings[enable_indexnow]" value="1" <?php checked($vonseowp_indexnow_enabled); ?>>
                                     <span class="von-slider"></span>
                                 </label>
                                 <span class="von-switch-label"><?php esc_html_e('Enable IndexNow (Bing & Yandex)', 'vonseo'); ?></span>

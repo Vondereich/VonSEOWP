@@ -14,8 +14,8 @@ Most SEO plugins become increasingly heavy over time, trading performance for ov
 
 - **Zero-Waste Architecture**: No custom database tables. We use native `post_meta` and `wp_options` for maximum speed and compatibility.
 - **Enterprise Heritage**: Built with the same performance DNA as VonCMS.
-- **Privacy as a Feature**: No tracking. No telemetry. No "phoning home." Your data stays on your server.
-- **Modern Standards Only**: We don't support legacy junk. Minimum **WordPress 6.0** and **PHP 7.4+** required.
+- **Privacy as a Feature**: No tracking or telemetry. Editor analysis and Site Audit stay local; optional IndexNow notifications and manual Competitor scans make disclosed outbound requests. See the external-services section in [readme.txt](readme.txt).
+- **Supported Platform**: Requires **WordPress 6.0+** and **PHP 7.4+**, with document-title support for modern and legacy themes.
 
 ---
 
@@ -26,11 +26,12 @@ A clean, focused editorial workflow that stays out of your way until you need it
 - **Compact Sidebar Interface**: Optimize content without leaving the editor.
 - **Real-Time Google Preview**: See exactly how your site looks in the wild.
 - **Smart Metadata Assistance**: Faster editorial workflows without the server load.
+- **Selected Content Types**: Apply SEO tools to posts, pages and opted-in public custom post types.
 - **Competitor SEO Math**: Live metric comparison against any URL (with 12-hour transient caching).
 
 ### 2. Advanced Technical Engine
 - **Dynamic Sitemap Indexing**: Automated scaling with `sitemap_index.xml` and 1,000-post pagination.
-- **IndexNow Integration**: Instant "Doorbell" notification for Bing and Yandex.
+- **IndexNow Integration**: Explicit opt-in notifications for eligible published URLs, deferred and rechecked using native WordPress cron.
 - **Surgical JSON-LD Schema**: Pure, optimized structured data (Article, FAQ, Video, Review, Breadcrumbs).
 - **SEO Table of Contents (TOC)**: Lightweight, anchor-based TOC with zero external dependencies.
 
@@ -60,17 +61,29 @@ VonSEOWP is engineered with a lightweight-first architecture using native WordPr
 
 **Requirements:**
 - **WordPress**: 6.0+ (Required)
-- **PHP**: 7.4+ (Recommended: 8.2+)
+- **PHP**: 7.4+ (Required)
 
 ---
 
 ## FAQ
 
 **Where is the analyzer?**
-Open any Post or Page editor and use the VonSEO Content Intelligence sidebar/metabox. It is not a public frontend script.
+Open an enabled post, page or custom post type editor and use the VonSEO Content Intelligence sidebar/metabox. It is not a public frontend script.
 
 **Does the analyzer send draft content outside WordPress?**
-No. The v2.3.4 analyzer runs locally in the editor screen and does not require an external API.
+No. Content analysis runs locally in your browser. Optional IndexNow notifications and manual Competitor scans make the disclosed requests in [readme.txt](readme.txt).
+
+**Does it support custom post types?**
+Yes. Select eligible public types in SEO Content Types to enable editor tools, metadata, schema, Quick Edit, Site Audit and sitemap coverage. Attachments and non-public types are excluded.
+
+**Can Site Audit check thousands of posts?**
+Yes. Previous/Next navigation processes published content in 25-item batches instead of loading everything in one request.
+
+**Does SEO Title work with older themes?**
+Yes, through the modern document-title API and legacy `wp_title()`, including Twenty Eleven. Legacy themes can still append their site name. Empty overrides preserve native titles, and password-protected SEO titles stay hidden until access is authorized.
+
+**Does IndexNow guarantee indexing?**
+No. It is an optional notification service, off by default unless previously enabled. Eligible canonical URLs are queued using native WordPress cron; search engines decide whether to index them.
 
 **Does VonSEO create custom database tables?**
 No. It uses native WordPress options and post meta.
@@ -80,6 +93,9 @@ No. The plugin is built as a lightweight toolkit without forced upgrades or payw
 
 **Does it support large sites?**
 Yes. The sitemap system supports sitemap indexing and paginated sitemap output.
+
+**What happens when I remove the plugin?**
+Deactivation keeps your data. Deletion removes VonSEO's stored settings and SEO metadata, so keep a backup. Both actions clear queued IndexNow events.
 
 ---
 

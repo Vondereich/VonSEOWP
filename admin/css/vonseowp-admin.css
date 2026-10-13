@@ -240,6 +240,36 @@ textarea.von-input {
   resize: vertical;
 }
 
+fieldset.von-form-group {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+fieldset.von-form-group legend {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.von-form-group label.von-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-weight: 400;
+}
+
+.von-checkbox-row input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 2px 0 0;
+}
+
+.von-checkbox-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Input Wrap - Integration */
 .input-wrap {
   position: relative;
@@ -1165,14 +1195,24 @@ input:checked + .von-slider:before {
   gap: 5px;
   justify-content: center;
   min-height: 32px;
-  min-width: 118px;
+  min-width: 126px;
 }
 
-.von-audit-page-button .dashicons {
+.von-audit-pagination .button.von-audit-page-button .dashicons {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 16px;
   font-size: 16px;
   height: 16px;
+  justify-content: center;
   line-height: 16px;
+  margin: 0;
   width: 16px;
+}
+
+.von-audit-pagination .button.von-audit-page-button .dashicons::before {
+  display: block;
+  line-height: 16px;
 }
 
 .von-audit-page-number {

@@ -144,6 +144,12 @@ class VonSEOWP_Admin {
             return $sanitized;
         }
 
+        $previous = get_option('vonseowp_settings', array());
+        $previous = is_array($previous) ? $previous : array();
+        $sanitized['seo_post_types'] = array_key_exists('seo_post_types', $input)
+            ? VonSEOWP_Content_Types::sanitize_selection(wp_unslash($input['seo_post_types']), $previous)
+            : VonSEOWP_Content_Types::get_saved($previous);
+
         // --- General ---
         if (isset($input['separator'])) {
             $sanitized['separator'] = sanitize_text_field(wp_unslash($input['separator']));
@@ -174,7 +180,7 @@ class VonSEOWP_Admin {
             $sanitized['twitter_username'] = sanitize_text_field(wp_unslash($input['twitter_username']));
         }
 
-        $sanitized['enable_og'] = isset($input['enable_og']) ? 1 : 0;
+        $sanitized['enable_og'] = $this->sanitize_checkbox($input, 'enable_og');
 
         if (isset($input['default_image'])) {
             $sanitized['default_image'] = esc_url_raw(wp_unslash($input['default_image']));
@@ -185,12 +191,12 @@ class VonSEOWP_Admin {
             $sanitized['breadcrumb_separator'] = '' !== $separator ? substr($separator, 0, 5) : '/';
         }
         // --- Sitemap ---
-        $sanitized['enable_sitemap'] = isset($input['enable_sitemap']) ? 1 : 0;
-        $sanitized['sitemap_posts'] = isset($input['sitemap_posts']) ? 1 : 0;
-        $sanitized['sitemap_pages'] = isset($input['sitemap_pages']) ? 1 : 0;
+        $sanitized['enable_sitemap'] = $this->sanitize_checkbox($input, 'enable_sitemap');
+        $sanitized['sitemap_posts'] = $this->sanitize_checkbox($input, 'sitemap_posts');
+        $sanitized['sitemap_pages'] = $this->sanitize_checkbox($input, 'sitemap_pages');
 
         // --- Redirects ---
-        $sanitized['enable_404_log'] = isset($input['enable_404_log']) ? 1 : 0;
+        $sanitized['enable_404_log'] = $this->sanitize_checkbox($input, 'enable_404_log');
         
         if (isset($input['redirects_list'])) {
             $sanitized['redirects_list'] = sanitize_textarea_field(wp_unslash($input['redirects_list']));
@@ -205,14 +211,14 @@ class VonSEOWP_Admin {
         }
 
         // --- Image SEO ---
-        $sanitized['auto_image_alt'] = isset($input['auto_image_alt']) ? 1 : 0;
-        $sanitized['auto_image_title'] = isset($input['auto_image_title']) ? 1 : 0;
+        $sanitized['auto_image_alt'] = $this->sanitize_checkbox($input, 'auto_image_alt');
+        $sanitized['auto_image_title'] = $this->sanitize_checkbox($input, 'auto_image_title');
 
         // --- Advanced ---
-        $sanitized['remove_category_base'] = isset($input['remove_category_base']) ? 1 : 0;
-        $sanitized['redirect_attachments'] = isset($input['redirect_attachments']) ? 1 : 0;
-        $sanitized['enable_indexnow'] = isset($input['enable_indexnow']) ? 1 : 0;
-        $sanitized['enable_rss_footer'] = isset($input['enable_rss_footer']) ? 1 : 0;
+        $sanitized['remove_category_base'] = $this->sanitize_checkbox($input, 'remove_category_base');
+        $sanitized['redirect_attachments'] = $this->sanitize_checkbox($input, 'redirect_attachments');
+        $sanitized['enable_indexnow'] = $this->sanitize_checkbox($input, 'enable_indexnow');
+        $sanitized['enable_rss_footer'] = $this->sanitize_checkbox($input, 'enable_rss_footer');
 
         // --- Robots.txt ---
         if (isset($input['robots_txt'])) {
@@ -220,7 +226,7 @@ class VonSEOWP_Admin {
         }
 
         // --- TOC ---
-        $sanitized['enable_toc'] = isset($input['enable_toc']) ? 1 : 0;
+        $sanitized['enable_toc'] = $this->sanitize_checkbox($input, 'enable_toc');
         if (isset($input['toc_title'])) {
             $sanitized['toc_title'] = sanitize_text_field(wp_unslash($input['toc_title']));
         }
@@ -232,12 +238,17 @@ class VonSEOWP_Admin {
         }
 
         // --- AI & LLM ---
-        $sanitized['enable_llms_txt'] = isset($input['enable_llms_txt']) ? 1 : 0;
+        $sanitized['enable_llms_txt'] = $this->sanitize_checkbox($input, 'enable_llms_txt');
         if (isset($input['llms_txt_content'])) {
             $sanitized['llms_txt_content'] = sanitize_textarea_field(wp_unslash($input['llms_txt_content']));
         }
 
         return $sanitized;
+    }
+
+    private function sanitize_checkbox(array $input, string $key): int {
+        // WordPress can sanitize twice on first save and re-sanitize stored settings during core sync.
+        return in_array($input[$key] ?? 0, array(1, '1', true), true) ? 1 : 0;
     }
 
     public function render_settings_page() {
