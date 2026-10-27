@@ -25,8 +25,4 @@ Example read-only title matrix on an already installed isolated root: `php scrip
 
 `test-cpt-browser.cjs`, `test-donate-browser.cjs`, `test-final-patch-browser.cjs`, `test-toc-browser.cjs` need their documented browser dependencies and prepared fixtures. The `*-http.cjs` scripts verify prepared local responses. Syntax checks do not establish that these optional scenarios ran. Do not send local fixture data to external services.
 
-## Main-Localhost Helpers
-
-Session-specific `smoke-local-functions.php`, `test-local-schema-author.php` and their two guards are retained privately under `.local-qc/`, excluded from Git. They are not portable repository tests. Never reuse or restore an old snapshot against newer user settings.
-
 `fixtures/` holds temporary MU registrations, outbound-request blockers and local routing helpers. They are deliberately retained for reproducible QC, never installed automatically and never shipped. Remove installed copies after testing; do not delete source fixtures that a lifecycle helper still requires.

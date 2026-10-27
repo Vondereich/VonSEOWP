@@ -13,6 +13,11 @@ __pycache__/
 backups/
 .local-qc/
 
+# Private planning and QC records are not public documentation.
+/AUDIT_LOG.md
+/ROADMAP.md
+/docs/
+
 # IDEs & Tools
 .vscode/
 .idea/

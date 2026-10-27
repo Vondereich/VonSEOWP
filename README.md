@@ -100,14 +100,5 @@ Deactivation keeps your data. Deletion removes VonSEO's stored settings and SEO 
 
 ---
 
-## 🗺️ Roadmap
-- [x] Lean local content analyzer (v2.3.4)
-- [x] Lean frontend meta output and social image fallback (v2.3.5)
-- [x] Score consistency across editor and All Posts (v2.3.6)
-- [x] Manual Local Site Audit Lite (v2.4.0)
-- [ ] Publisher schema variants after the lean audit path is proven
-
----
-
 ## ⚖️ License
 Licensed under **GPLv3 or later**. Built by publishers, for publishers.

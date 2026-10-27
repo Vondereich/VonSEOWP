@@ -158,7 +158,7 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **SEO Table of Contents (TOC)**: Automatic TOC generator with anchor injection, shortcode support, and per-post controls.
 - **System Health Monitor**: Real-time diagnostic panel for PHP, Permalinks, and required server extensions in the Advanced tab.
 - **Frontend Asset Layer**: New lightweight CSS/JS system for professional component styling.
-- **Developer Guide**: Comprehensive `docs/DEV_GUIDE.md` for architecture and security standards.
+- **Developer Guide**: Documented architecture and security standards.
 - **Admin Quick Edit**: SEO Title, Description, and Score columns added with inline editing support.
 - **RSS Footer Protection**: New setting to prevent content theft via RSS feeds.
 
