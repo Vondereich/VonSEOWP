@@ -135,6 +135,8 @@ This is a public, curated text endpoint, not an access-control feature or automa
 * Included eligible nonempty taxonomy archives in bounded sitemap batches, excluding noindex/custom-canonical terms and counting unique terms.
 * Required taxonomy-specific permissions and nonces for saves; added term SEO metadata cleanup on deletion.
 * Updated the Tutorial, indexing/ranking disclaimer and privacy disclosures, including optional external requests and local diagnostics.
+* Prevented a homepage title matching the site name from duplicating branding in legacy themes such as Twenty Eleven.
+* Fixed paginated homepage/blog canonicals, including plain-permalink query parameters with a canonical host, and aligned Open Graph URLs.
 
 = 2.5.0 =
 * Added opt-in SEO tools for public custom post types, with post/page defaults and retained unavailable selections.

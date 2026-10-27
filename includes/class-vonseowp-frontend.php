@@ -82,6 +82,11 @@ class VonSEOWP_Frontend {
             return (string) get_permalink($post->ID);
         }
 
+        $paged = max(1, (int) get_query_var('paged'));
+        if ($paged > 1) {
+            return (string) get_pagenum_link($paged, false);
+        }
+
         if (is_front_page()) {
             return home_url('/');
         }
@@ -95,8 +100,7 @@ class VonSEOWP_Frontend {
             return home_url('/');
         }
 
-        $paged = max(1, (int) get_query_var('paged'));
-        return (string) get_pagenum_link($paged);
+        return (string) get_pagenum_link($paged, false);
     }
 
     public function filter_document_title(string $title): string {
@@ -136,6 +140,9 @@ class VonSEOWP_Frontend {
 
         // Legacy themes may append the site name themselves; keep core separator placement.
         $custom_title = esc_html($custom_title);
+        if ((is_front_page() || is_home()) && $custom_title === esc_html(get_bloginfo('name'))) {
+            return $title;
+        }
         if ($separator === '') return $custom_title;
         $separator = ' ' . esc_html($separator) . ' ';
         return $separator_location === 'right' ? $custom_title . $separator : $separator . $custom_title;
@@ -237,7 +244,10 @@ class VonSEOWP_Frontend {
             $parsed_path = substr($parsed_path, strlen($home_path));
         }
         $canonical_path = $parsed_path ? ltrim($parsed_path, '/') : '';
-        $canonical = !empty($options['canonical_host']) ? trailingslashit($options['canonical_host']) . $canonical_path : $url;
+        $canonical_query = (string) wp_parse_url($url, PHP_URL_QUERY);
+        $canonical = !empty($options['canonical_host'])
+            ? trailingslashit($options['canonical_host']) . $canonical_path . ($canonical_query !== '' ? '?' . $canonical_query : '')
+            : $url;
         // A first-page explicit override must never collapse paginated archives onto page one.
         if ($taxonomy && (int) get_query_var('paged') < 2 && $taxonomy['canonical'] !== '') {
             $canonical = $taxonomy['canonical'];
