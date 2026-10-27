@@ -51,5 +51,9 @@ foreach ($vonseowp_meta_keys as $vonseowp_key) {
 }
 
 // 3. Clear any scheduled crons
+foreach (array('_vonseowp_title', '_vonseowp_description', '_vonseowp_canonical', '_vonseowp_social_desc', '_vonseowp_noindex') as $vonseowp_term_key) {
+    delete_metadata('term', 0, $vonseowp_term_key, '', true);
+}
+
 wp_clear_scheduled_hook('vonseowp_daily_cleanup');
 wp_unschedule_hook('vonseowp_indexnow_submit');

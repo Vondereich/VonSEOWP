@@ -1,6 +1,6 @@
 {
   "name": "vonseo",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Premium Lightweight SEO Toolkit for WordPress",
   "main": "vonseo.php",
   "scripts": {
@@ -20,7 +20,8 @@
     "test:indexing": "php scripts/test-indexing.php",
     "test:settings": "php scripts/test-settings.php",
     "test:schema": "php scripts/test-schema.php",
-    "test:titles": "php scripts/test-titles.php"
+    "test:titles": "php scripts/test-titles.php",
+    "test:taxonomies": "php scripts/test-taxonomies.php"
   },
   "keywords": [
     "seo",

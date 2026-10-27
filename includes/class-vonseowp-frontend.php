@@ -26,7 +26,9 @@ class VonSEOWP_Frontend {
 
     public function filter_robots(array $robots): array {
         $post = get_post();
+        $taxonomy = $this->get_taxonomy_metadata();
         $noindex = !get_option('blog_public') || is_search() || is_404()
+            || ($taxonomy['noindex'] ?? '') === '1'
             || (is_singular() && $post && VonSEOWP_Content_Types::is_enabled((string) $post->post_type)
                 && get_post_meta($post->ID, '_vonseowp_noindex', true) === '1');
         if ($noindex) {
@@ -100,6 +102,13 @@ class VonSEOWP_Frontend {
     public function filter_document_title(string $title): string {
         global $post;
         $options = get_option('vonseowp_settings', array());
+
+        $taxonomy = $this->get_taxonomy_metadata();
+        if ($taxonomy && $taxonomy['title'] !== '') {
+            $paged = max(1, (int) get_query_var('paged'));
+            /* translators: %d: archive page number. */
+            return $taxonomy['title'] . ($paged > 1 ? ' - ' . sprintf(__('Page %d', 'vonseo'), $paged) : '');
+        }
         
         // Homepage Override
         if (is_front_page() || is_home()) {
@@ -120,7 +129,9 @@ class VonSEOWP_Frontend {
     }
 
     public function filter_legacy_title(string $title, string $separator, string $separator_location): string {
-        $custom_title = $this->filter_document_title('');
+        $taxonomy = $this->get_taxonomy_metadata();
+        // Legacy themes such as Twenty Eleven append their own pagination suffix.
+        $custom_title = $taxonomy && $taxonomy['title'] !== '' ? $taxonomy['title'] : $this->filter_document_title('');
         if ($custom_title === '') return $title;
 
         // Legacy themes may append the site name themselves; keep core separator placement.
@@ -136,6 +147,18 @@ class VonSEOWP_Frontend {
         return is_singular() && $post
             && VonSEOWP_Content_Types::is_enabled((string) $post->post_type)
             && !post_password_required($post);
+    }
+
+    private function get_taxonomy_metadata(): array {
+        if (!class_exists('VonSEOWP_Taxonomies')) return array();
+        $term = VonSEOWP_Taxonomies::get_current();
+        if (!$term) return array();
+        $metadata = VonSEOWP_Taxonomies::get_metadata($term);
+        $metadata['description'] = $metadata['description'] !== '' ? $metadata['description']
+            : self::get_content_fallback_description((string) $term->description);
+        $metadata['url'] = get_term_link($term);
+        if (is_wp_error($metadata['url'])) $metadata['url'] = '';
+        return $metadata;
     }
 
     public function output_meta_tags() {
@@ -192,6 +215,14 @@ class VonSEOWP_Frontend {
             $social_desc = get_post_meta($post->ID, '_vonseowp_social_desc', true);
         }
 
+        $taxonomy = $this->get_taxonomy_metadata();
+        if ($taxonomy) {
+            $desc = $taxonomy['description'];
+            $keywords = '';
+            $social_desc = $taxonomy['social_desc'];
+            if ((int) get_query_var('paged') < 2 && $taxonomy['url'] !== '') $url = $taxonomy['url'];
+        }
+
         // Sanitize
         $title = wp_get_document_title(); // Get the filtered title for OG tags
         $desc = trim(wp_strip_all_tags($desc));
@@ -207,6 +238,10 @@ class VonSEOWP_Frontend {
         }
         $canonical_path = $parsed_path ? ltrim($parsed_path, '/') : '';
         $canonical = !empty($options['canonical_host']) ? trailingslashit($options['canonical_host']) . $canonical_path : $url;
+        // A first-page explicit override must never collapse paginated archives onto page one.
+        if ($taxonomy && (int) get_query_var('paged') < 2 && $taxonomy['canonical'] !== '') {
+            $canonical = $taxonomy['canonical'];
+        }
 
         echo '<!-- Optimized by VonSEO -->' . "\n";
 

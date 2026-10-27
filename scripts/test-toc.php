@@ -36,6 +36,10 @@ function sanitize_title(string $title): string {
 }
 
 require_once dirname(__DIR__) . '/includes/class-vonseowp-toc.php';
+function get_taxonomies(array $args = array(), string $output = 'names'): array {
+    return array_fill_keys(array('category', 'post_tag'), (object) array('public' => true, 'publicly_queryable' => true, '_builtin' => true));
+}
+require_once dirname(__DIR__) . '/includes/class-vonseowp-taxonomies.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-admin.php';
 
 function check(bool $condition, string $message): void {

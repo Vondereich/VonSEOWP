@@ -12,7 +12,7 @@ Stop turning your WordPress dashboard into a heavy SaaS marketing platform. It's
 
 Most SEO plugins become increasingly heavy over time, trading performance for oversized dashboards, telemetry, and marketing layers. VonSEOWP rejects the bloat.
 
-- **Zero-Waste Architecture**: No custom database tables. We use native `post_meta` and `wp_options` for maximum speed and compatibility.
+- **Zero-Waste Architecture**: No custom database tables. We use native WordPress options and post/term metadata.
 - **Enterprise Heritage**: Built with the same performance DNA as VonCMS.
 - **Privacy as a Feature**: No tracking or telemetry. Editor analysis and Site Audit stay local; optional IndexNow notifications and manual Competitor scans make disclosed outbound requests. See the external-services section in [readme.txt](readme.txt).
 - **Supported Platform**: Requires **WordPress 6.0+** and **PHP 7.4+**, with document-title support for modern and legacy themes.
@@ -27,10 +27,11 @@ A clean, focused editorial workflow that stays out of your way until you need it
 - **Real-Time Google Preview**: See exactly how your site looks in the wild.
 - **Smart Metadata Assistance**: Faster editorial workflows without the server load.
 - **Selected Content Types**: Apply SEO tools to posts, pages and opted-in public custom post types.
+- **Taxonomy Archive SEO**: Edit SEO titles, descriptions, canonicals, social descriptions and noindex on category, tag and selected public-taxonomy screens.
 - **Competitor SEO Math**: Live metric comparison against any URL (with 12-hour transient caching).
 
 ### 2. Advanced Technical Engine
-- **Dynamic Sitemap Indexing**: Automated scaling with `sitemap_index.xml` and 1,000-post pagination.
+- **Dynamic Sitemap Indexing**: `sitemap_index.xml` with batches of up to 1,000 URLs across selected content and eligible nonempty taxonomy archives.
 - **IndexNow Integration**: Explicit opt-in notifications for eligible published URLs, deferred and rechecked using native WordPress cron.
 - **Surgical JSON-LD Schema**: Pure, optimized structured data (Article, FAQ, Video, Review, Breadcrumbs).
 - **SEO Table of Contents (TOC)**: Lightweight, anchor-based TOC with zero external dependencies.

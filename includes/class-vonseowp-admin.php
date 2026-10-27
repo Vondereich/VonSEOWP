@@ -149,6 +149,9 @@ class VonSEOWP_Admin {
         $sanitized['seo_post_types'] = array_key_exists('seo_post_types', $input)
             ? VonSEOWP_Content_Types::sanitize_selection(wp_unslash($input['seo_post_types']), $previous)
             : VonSEOWP_Content_Types::get_saved($previous);
+        $sanitized['seo_taxonomies'] = array_key_exists('seo_taxonomies', $input)
+            ? VonSEOWP_Taxonomies::sanitize_selection(wp_unslash($input['seo_taxonomies']), $previous)
+            : VonSEOWP_Taxonomies::get_saved($previous);
 
         // --- General ---
         if (isset($input['separator'])) {

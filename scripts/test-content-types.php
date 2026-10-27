@@ -14,6 +14,10 @@ function vonseowp_types_check(bool $condition, string $message): void {
     if (!$condition) throw new RuntimeException($message);
 }
 require_once dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
+function get_taxonomies(array $args = array(), string $output = 'names'): array {
+    return array_fill_keys(array('category', 'post_tag'), (object) array('public' => true, 'publicly_queryable' => true, '_builtin' => true));
+}
+require_once dirname(__DIR__) . '/includes/class-vonseowp-taxonomies.php';
 require_once dirname(__DIR__) . '/includes/class-vonseowp-admin.php';
 foreach (array('post', 'page', 'attachment', 'revision', 'book', 'secret', 'hidden', 'wp_template') as $type) {
     $types[$type] = (object) array(

@@ -209,12 +209,16 @@ Final-audit correction and patch (2026-10-13): earlier tests missed stored OFF f
 
 Goal: give publishers controlled SEO output for category, tag, and selected public-taxonomy archives.
 
-- [ ] Add opt-in taxonomy selection with category and tag enabled by default.
-- [ ] Add term controls for SEO title, description, canonical URL, social description, and noindex.
-- [ ] Apply saved term metadata to document titles, canonical, robots, Open Graph, and Twitter output with safe WordPress fallbacks.
-- [ ] Include indexable selected taxonomy archives in sitemap coverage and exclude noindex terms.
-- [ ] Require taxonomy-specific capabilities, nonces, unslashing, sanitization, and late output escaping.
-- [ ] Add regression fixtures for empty fallbacks, pagination canonicals, noindex behavior, sitemap inclusion, and unauthorized saves.
+- [x] Add opt-in taxonomy selection with category and tag enabled by default; retain unavailable saved selections without applying them.
+- [x] Add native add/edit term controls for SEO title, description, canonical URL, social description, and noindex.
+- [x] Apply saved term metadata to modern/legacy document titles, canonical, robots, Open Graph, and Twitter output with native fallbacks. Keep paginated canonicals self-referencing; leave legacy theme suffix assembly intact.
+- [x] Include nonempty selected taxonomy archives in bounded sitemap batches; exclude noindex/custom-canonical terms before counting and pagination, counting unique term IDs across metadata joins.
+- [x] Require taxonomy-specific capabilities, a taxonomy-bound nonce, scalar input checks, unslashing, sanitization and late output escaping. Remove only VonSEO term metadata on uninstall.
+- [x] Add regression fixtures for empty fallbacks, pagination canonicals, noindex behavior, sitemap inclusion and unauthorized saves; native hook/capability/reactivation/feed/404/uninstall checks and real Twenty Eleven pagination/editor checks passed on isolated installations.
+
+Development checkpoint 2026-10-27: portable regressions, 49 native taxonomy assertions and 6 native term-uninstall assertions passed independently on WordPress 6.0/PHP 7.4.33 and WordPress 7.1.3/PHP 8.3.30. Existing privacy/TOC/CPT-sitemap regressions also passed on both. An independent senior-level reviewer found and accepted the legacy pagination correction and checked the 2.5.1 changelog against the source. Official static Plugin Check: 29 checks, zero errors/warnings. Real Twenty Eleven page-one/page-two HTTP and native editor save/reload/desktop-mobile layout checks passed. See [2.5.1 QC](docs/QC_2.5.1.md). Exact release ZIP, version bump, upgrade/package parity and full packaged runtime Plugin Check remain separate release gates; main localhost was not modified.
+
+Packaging checkpoint 2026-10-27: version metadata bumped to 2.5.1 and the local ZIP built on user request. The 51-file archive passed CRC, source/staged/archive byte parity, dual-runtime packaged PHP lint and portable regressions. Installed ZIP/upgrade preservation and packaged runtime Plugin Check remain untested; no commit, push or main-site replacement. Artifact details are in the same QC report.
 
 ### v2.5.2 - Settings Portability
 

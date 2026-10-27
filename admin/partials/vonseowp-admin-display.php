@@ -162,6 +162,23 @@ if (false) {
                                     </label>
                                 <?php endforeach; ?>
                             </fieldset>
+                            <fieldset class="von-form-group">
+                                <legend><?php esc_html_e('SEO Taxonomies', 'vonseo'); ?></legend>
+                                <input type="hidden" name="vonseowp_settings[seo_taxonomies][]" value="">
+                                <?php
+                                $vonseowp_saved_taxonomies = VonSEOWP_Taxonomies::get_saved(is_array($vonseowp_options) ? $vonseowp_options : array());
+                                $vonseowp_available_taxonomies = VonSEOWP_Taxonomies::get_available();
+                                foreach (array_unique(array_merge(array_keys($vonseowp_available_taxonomies), $vonseowp_saved_taxonomies)) as $vonseowp_taxonomy_name) :
+                                    $vonseowp_taxonomy_label = isset($vonseowp_available_taxonomies[$vonseowp_taxonomy_name])
+                                        ? $vonseowp_available_taxonomies[$vonseowp_taxonomy_name]->labels->name
+                                        : $vonseowp_taxonomy_name . ' (' . __('Unavailable', 'vonseo') . ')';
+                                    ?>
+                                    <label class="von-checkbox-row">
+                                        <input type="checkbox" name="vonseowp_settings[seo_taxonomies][]" value="<?php echo esc_attr($vonseowp_taxonomy_name); ?>" <?php checked(in_array($vonseowp_taxonomy_name, $vonseowp_saved_taxonomies, true)); ?>>
+                                        <span><?php echo esc_html($vonseowp_taxonomy_label); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
@@ -417,8 +434,8 @@ if (false) {
                 <div id="tab-tutorial" class="von-tab-content" style="display: none;">
                     <div class="von-card">
                         <div class="von-card-header">
-                            <h3><?php esc_html_e('Getting Started with VonSEOWP v2.0', 'vonseo'); ?></h3>
-                            <p class="von-card-desc"><?php esc_html_e('Quick guide to master your new premium SEO tools.', 'vonseo'); ?></p>
+                            <h3><?php esc_html_e('How to Use VonSEO', 'vonseo'); ?></h3>
+                            <p class="von-card-desc"><?php esc_html_e('Setup, publishing and archive SEO.', 'vonseo'); ?></p>
                         </div>
                         <div class="von-card-body">
                             <div class="von-tutorial-grid">
@@ -426,27 +443,47 @@ if (false) {
                                     <h4><?php esc_html_e('1. XML Sitemaps', 'vonseo'); ?></h4>
                                     <p><?php
                                         /* translators: 1: XML Sitemap tab name, 2: Sitemap URL */
-                                        printf(esc_html__('Enable it in the %1$s tab. When enabled, your sitemap is available at %2$s. Google will use this to find your content faster.', 'vonseo'), '<strong>' . esc_html__('XML Sitemap', 'vonseo') . '</strong>', '<code>/sitemap.xml</code>');
+                                        printf(esc_html__('Enable it in the %1$s tab, then open %2$s to check the output. Submit that URL in your search-engine webmaster tools. A sitemap supports discovery but does not guarantee indexing.', 'vonseo'), '<strong>' . esc_html__('XML Sitemap', 'vonseo') . '</strong>', '<code>/sitemap.xml</code>');
                                         ?></p>
                                 </div>
                                 <div class="von-tutorial-item">
                                     <h4><?php esc_html_e('2. Redirection Manager', 'vonseo'); ?></h4>
                                     <p><?php
                                         /* translators: 1: Redirects tab name, 2: Example format */
-                                        printf(esc_html__('Go to the %1$s tab to see 404 errors. Use the format %2$s to fix broken links and keep your SEO juice.', 'vonseo'), '<strong>' . esc_html__('Redirects', 'vonseo') . '</strong>', '<code>/old-url -> /new-url</code>');
+                                        printf(esc_html__('Enable 404 logging in the %1$s tab when needed. Add a redirect using %2$s, save, then test the old URL. Choose a relevant replacement and avoid redirect chains.', 'vonseo'), '<strong>' . esc_html__('Redirects', 'vonseo') . '</strong>', '<code>/old-url -> /new-url</code>');
                                         ?></p>
                                 </div>
                                 <div class="von-tutorial-item">
                                     <h4><?php esc_html_e('3. Content Analysis', 'vonseo'); ?></h4>
-                                    <p><?php esc_html_e('Open any Post or Page. You\'ll see a new sidebar/metabox. Enter a focus keyword to see live SEO scores and improvements.', 'vonseo'); ?></p>
+                                    <p><?php esc_html_e('Choose SEO Content Types in General and save. Open an enabled post, page or custom post type, then enter a focus keyword and review the VonSEO fields. Save the content to persist your SEO title, description and social overrides.', 'vonseo'); ?></p>
                                 </div>
                                 <div class="von-tutorial-item">
                                     <h4><?php esc_html_e('4. Local SEO', 'vonseo'); ?></h4>
-                                    <p><?php esc_html_e('Fill in your business details in the Local SEO tab. This tells Google exactly where your business is located for local search results.', 'vonseo'); ?></p>
+                                    <p><?php esc_html_e('Enter accurate business details in Local SEO only if they apply to your site. These details can appear in public structured data; do not enter private contact information.', 'vonseo'); ?></p>
                                 </div>
                                 <div class="von-tutorial-item">
                                     <h4><?php esc_html_e('5. Image SEO', 'vonseo'); ?></h4>
-                                    <p><?php esc_html_e('Enable "Auto-Generate ALT Tags" to automatically fix images that are missing descriptions using their filenames.', 'vonseo'); ?></p>
+                                    <p><?php esc_html_e('Auto-Generate ALT Tags uses the filename when ALT text is missing. Review image descriptions yourself: a filename fallback cannot determine what an image actually shows.', 'vonseo'); ?></p>
+                                </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('6. Category and Tag SEO', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Choose SEO Taxonomies in General and save. Categories and tags are selected by default. Open Posts > Categories or Posts > Tags, then add or edit a term. Set its SEO Title, Meta Description and optional Social Description, then save the term. Selected custom taxonomies use their own WordPress term screen.', 'vonseo'); ?></p>
+                                </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('7. Canonical and Noindex', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Leave an archive Canonical URL empty for its native URL. Use an override only when another absolute HTTP(S) URL is the preferred page. Overrides apply to page one; paginated archives keep their own canonicals. Noindex and explicit-canonical terms are excluded from the sitemap, as are empty terms. Noindex is a crawler instruction, not access control.', 'vonseo'); ?></p>
+                                </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('8. Site Audit', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Open VonSEO > SEO Audit and run the audit. Use Previous/Next to review 25 published content items per batch. This is a local settings/content check, not a search-engine ranking or indexing report; taxonomy term editors are not part of this audit list.', 'vonseo'); ?></p>
+                                </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('9. Optional IndexNow', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Enable IndexNow in Advanced only if you want external URL notifications. Eligible published content is queued for at least 60 seconds and rechecked before delivery; WordPress cron or site traffic can delay it. Password-protected, noindex and unpublished content is excluded. Term-archive saves do not send IndexNow notifications.', 'vonseo'); ?></p>
+                                </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('10. Table of Contents', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Configure the heading threshold and position in Table of Contents, or insert the [vonseo_toc] shortcode. The post editor can disable automatic insertion for individual content. Preview the page and check the heading links before publishing.', 'vonseo'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -460,9 +497,9 @@ if (false) {
                             <div class="von-card-body">
                                 <ul class="von-tutorial-checklist">
                                     <li><span>1</span> <?php esc_html_e('Set your homepage title and description.', 'vonseo'); ?></li>
-                                    <li><span>2</span> <?php esc_html_e('Verify your site with Google Webmaster Tools.', 'vonseo'); ?></li>
+                                    <li><span>2</span> <?php esc_html_e('Select your SEO Content Types and SEO Taxonomies, then save.', 'vonseo'); ?></li>
                                     <li><span>3</span> <?php esc_html_e('Add your social media profiles.', 'vonseo'); ?></li>
-                                    <li><span>4</span> <?php esc_html_e('Enable the XML sitemap for better indexing.', 'vonseo'); ?></li>
+                                    <li><span>4</span> <?php esc_html_e('Enable and inspect the XML sitemap; review archive canonical/noindex choices.', 'vonseo'); ?></li>
                                     <li><span>5</span> <?php esc_html_e('Configure local business info if you have a physical location.', 'vonseo'); ?></li>
                                 </ul>
                             </div>
@@ -474,10 +511,10 @@ if (false) {
                             </div>
                             <div class="von-card-body">
                                 <div class="von-pro-tip">
-                                    <strong><?php esc_html_e('Use Canonical Tags:', 'vonseo'); ?></strong> <?php esc_html_e('VonSEOWP automatically adds self-referencing canonical tags to prevent duplicate content issues.', 'vonseo'); ?>
+                                    <strong><?php esc_html_e('Check Canonicals:', 'vonseo'); ?></strong> <?php esc_html_e('Prefer native self-referencing URLs unless you intentionally choose another canonical. Search engines decide whether to accept canonical hints.', 'vonseo'); ?>
                                 </div>
                                 <div class="von-pro-tip">
-                                    <strong><?php esc_html_e('Monitor 404s Weekly:', 'vonseo'); ?></strong> <?php esc_html_e('Check the Redirects tab regularly to ensure your visitors never hit a dead end.', 'vonseo'); ?>
+                                    <strong><?php esc_html_e('Review 404s:', 'vonseo'); ?></strong> <?php esc_html_e('Inspect logged errors and redirect only when a relevant replacement exists. Some missing URLs should remain 404 responses.', 'vonseo'); ?>
                                 </div>
                                 <div class="von-pro-tip">
                                     <strong><?php esc_html_e('Alt Text Matters:', 'vonseo'); ?></strong> <?php
@@ -499,13 +536,47 @@ if (false) {
                                 <div class="faq-a"><?php esc_html_e('Your sitemap is generated dynamically at /sitemap.xml. No physical file is created, keeping your server clean.', 'vonseo'); ?></div>
                             </div>
                             <div class="von-faq-item">
-                                <div class="faq-q"><?php esc_html_e('How do I get a 100/100 SEO Score?', 'vonseo'); ?></div>
-                                <div class="faq-a"><?php esc_html_e('Use your focus keyword in the title, first paragraph, and alt tags. Maintain at least 300 words for the best result.', 'vonseo'); ?></div>
+                                <div class="faq-q"><?php esc_html_e('Does a high SEO score guarantee rankings?', 'vonseo'); ?></div>
+                                <div class="faq-a"><?php esc_html_e('No. The score summarizes local editorial checks. Use it to review useful titles, descriptions, structure and links, not as a ranking prediction or a reason to repeat keywords unnaturally.', 'vonseo'); ?></div>
                             </div>
                             <div class="von-faq-item">
                                 <div class="faq-q"><?php esc_html_e('Will this slow down my site?', 'vonseo'); ?></div>
-                                <div class="faq-a"><?php esc_html_e('No. VonSEOWP is built with performance in mind. We use native WordPress meta and options, meaning zero database bloat.', 'vonseo'); ?></div>
+                                <div class="faq-a"><?php esc_html_e('VonSEO uses native WordPress storage and bounded audit/sitemap batches. Actual performance depends on your hosting, content, theme and other plugins.', 'vonseo'); ?></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="von-card" id="vonseowp-seo-disclaimer">
+                        <div class="von-card-header">
+                            <h3><?php esc_html_e('SEO & Indexing Disclaimer', 'vonseo'); ?></h3>
+                        </div>
+                        <div class="von-card-body">
+                            <p><?php esc_html_e('VonSEO provides technical and editorial SEO tools. Installing or using this plugin does not guarantee that your website or any page will be crawled, indexed, ranked or displayed by Google or any other search engine. No indexing deadline, ranking position, traffic increase or rich result is promised.', 'vonseo'); ?></p>
+                            <p><?php esc_html_e('Sitemaps, metadata, structured data, canonical hints and optional IndexNow notifications support SEO workflows; they do not force search engines to accept or index a URL. Search engines independently decide what to crawl, index and show. VonSEO scores are internal editorial checks, not Google scores or proof of indexing.', 'vonseo'); ?></p>
+                            <p><a href="https://developers.google.com/search/docs/essentials" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Google Search Essentials', 'vonseo'); ?></a></p>
+                        </div>
+                    </div>
+
+                    <div class="von-card" id="vonseowp-privacy-policy">
+                        <div class="von-card-header">
+                            <h3><?php esc_html_e('Privacy & Data Policy', 'vonseo'); ?></h3>
+                        </div>
+                        <div class="von-card-body">
+                            <h4><?php esc_html_e('Local data and public output', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('VonSEO has no built-in telemetry or analytics tracking. It stores settings in WordPress options and SEO fields in post/term metadata, without custom database tables. Content analysis runs in your browser and Site Audit runs on your WordPress server. Public metadata, schema and business details are readable by visitors and crawlers; publish only information intended for the public.', 'vonseo'); ?></p>
+                            <h4><?php esc_html_e('Optional local diagnostics and browser preferences', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('If you enable 404 logging, VonSEO stores up to 50 requested URLs locally, with a hit count and last-hit time. URLs can include query strings and personal information; avoid sensitive URL parameters. This log does not store visitor IP addresses or user-agent strings. Turning logging off stops new entries but does not erase existing ones; deleting the plugin removes the local 404 log. The settings screen uses browser sessionStorage only to remember the active settings tab, not to identify visitors or send tracking data.', 'vonseo'); ?></p>
+                            <h4><?php esc_html_e('Optional IndexNow requests', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('IndexNow defaults to off unless you previously enabled it. When enabled, your server sends eligible canonical content URLs, site hostname, verification key and key-file location to Bing and Yandex. Those services also receive ordinary HTTP request information such as the server IP address. Draft text, post bodies and SEO descriptions are not sent. Turn IndexNow off in Advanced to stop future notifications; deactivation also clears queued events. A delivered request cannot be recalled.', 'vonseo'); ?></p>
+                            <p><a href="https://www.indexnow.org/documentation" target="_blank" rel="noopener noreferrer"><?php esc_html_e('IndexNow documentation', 'vonseo'); ?></a> &middot; <a href="https://www.microsoft.com/en-us/privacy/privacystatement" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Microsoft privacy', 'vonseo'); ?></a> &middot; <a href="https://yandex.com/legal/confidential/en/" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Yandex privacy', 'vonseo'); ?></a></p>
+                            <h4><?php esc_html_e('Manual Competitor scans', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('Only an authorized editor can request a Competitor scan for enabled content. Your server fetches the URL that editor enters; the destination can see the requested URL, server IP address and normal request headers. Editor drafts are not uploaded to that destination or an AI service. Results use a WordPress transient with a 12-hour expiry. The destination website has its own privacy policy.', 'vonseo'); ?></p>
+                            <h4><?php esc_html_e('Manual validation and external links', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('Schema testing buttons open Google or Schema.org and pass a page URL, falling back to the current editor URL if a permalink is unavailable. The external service receives normal browser request information; inspect the URL before submitting confidential addresses. Documentation and donation links also lead to third-party sites with their own privacy policies. These are user-initiated links, not background telemetry.', 'vonseo'); ?></p>
+                            <h4><?php esc_html_e('Public llms.txt', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('When enabled on a public site, llms.txt is a public text endpoint, not a private document or an access-control mechanism. Manually curated text and links are not checked individually for password/noindex eligibility. Do not put secrets or private links there. Disabling the endpoint or making the site non-public returns a 404, but cannot erase copies already fetched by third parties.', 'vonseo'); ?></p>
+                            <h4><?php esc_html_e('Retention and removal', 'vonseo'); ?></h4>
+                            <p><?php esc_html_e('Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields. Competitor cache expiry is handled by WordPress transients. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it.', 'vonseo'); ?></p>
                         </div>
                     </div>
 

@@ -4,7 +4,7 @@ Tags: seo, toc, schema, sitemap, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -66,6 +66,12 @@ No. Content analysis runs locally in your browser and does not send draft text t
 = Does VonSEO support custom post types? =
 Yes. Enable eligible public custom post types in SEO Content Types. Selected types receive the existing editor tools, metadata, schema, Quick Edit, Site Audit and sitemap coverage. Attachments and non-public types are excluded; posts and pages remain enabled by default.
 
+= Can I control category and tag SEO? =
+Yes. Categories and tags are enabled by default in SEO Taxonomies; eligible public custom taxonomies can be selected too. Add or edit a term in its native WordPress screen to set its SEO title, description, canonical URL, social description and noindex. Empty fields preserve native title/description fallbacks. Canonical overrides apply on page one only; later archive pages keep their own URLs. Empty, noindex and explicit-canonical terms are excluded from the sitemap.
+
+= Does using VonSEO guarantee Google indexing or rankings? =
+No. Metadata, sitemaps, schema, canonical hints and optional IndexNow notifications do not guarantee crawling, indexing, rankings, traffic or rich results. Search engines decide what to accept and display. VonSEO scores are local editorial checks, not Google scores or proof of indexing. The in-plugin Tutorial includes the usage guide, indexing disclaimer and Privacy & Data Policy.
+
 = Can Site Audit check thousands of posts? =
 Yes. Each run checks 25 items, with Previous/Next navigation through all published content in the selected types. It does not load or crawl thousands of posts in one request.
 
@@ -73,7 +79,7 @@ Yes. Each run checks 25 items, with Previous/Next navigation through all publish
 VonSEO supports the modern WordPress document-title API and the legacy wp_title() API used by themes such as Twenty Eleven. Legacy themes may still append the site name themselves. Empty overrides keep the native title, and protected content does not expose its saved SEO title until the password is accepted.
 
 = Does VonSEO create custom database tables? =
-No. VonSEO uses native WordPress options and post meta so it stays portable, backup-friendly, and easy to remove.
+No. VonSEO uses native WordPress options and post/term metadata so it stays portable, backup-friendly, and easy to remove.
 
 = Does VonSEO include paywalled Pro features? =
 No. VonSEO is built as a complete lightweight toolkit without hidden Pro tabs or forced upgrades.
@@ -85,7 +91,7 @@ Yes. The editor tools are designed to read content from the WordPress editor and
 Yes. Supported output includes article variants, WebPage, Product, Product Review, Service, FAQ, Video and Breadcrumbs, according to the saved settings and available data. Incomplete rated Product/Review objects fall back to WebPage rather than inventing ratings. Schema output does not guarantee search-engine rich results.
 
 = Does VonSEO support large sites? =
-Yes. The sitemap system supports sitemap indexing and paginates large post sets to avoid one oversized sitemap file.
+Yes. The sitemap system supports sitemap indexing and limits each batch to 1,000 URLs across selected content and eligible taxonomy archives, avoiding one oversized sitemap file.
 
 = Does IndexNow require an external account? =
 No external account is required. IndexNow is optional and defaults to off unless enablement was previously saved. Eligible canonical URLs are queued with native WordPress cron and checked again before delivery; drafts, password-protected and noindex content are excluded. Delivery timing depends on cron/site traffic, and notification does not guarantee indexing.
@@ -97,6 +103,12 @@ Deactivation keeps your saved data. Deleting the plugin runs cleanup for its sto
 WordPress 6.0 or later and PHP 7.4 or later. The current regression checks cover PHP 7.4 and 8.3; third-party theme/plugin compatibility should also be tested on your own site.
 
 == External services and public discovery ==
+
+= Local diagnostics and browser preferences =
+VonSEO has no built-in telemetry or analytics tracking. Optional 404 logging stores up to 50 requested URLs locally, with hit counts and last-hit times, not visitor IP addresses or user-agent strings. URLs may contain sensitive query parameters. Disabling logging stops new entries but retains saved logs; deleting the plugin removes its local log. The admin settings screen uses sessionStorage only to remember the active settings tab.
+
+= Manual validation links =
+Schema testing buttons open Google or Schema.org with a page URL, falling back to the current editor URL if a permalink is unavailable. These services receive normal browser request information. Inspect the URL before submitting confidential addresses; these are user-initiated links, not background telemetry. Documentation and donation links also open third-party sites with their own privacy policies.
 
 = IndexNow (Bing and Yandex) =
 IndexNow is optional and defaults to off when no enablement has been saved. When enabled, eligible published posts/pages and selected public custom post types are queued for notification after 60 seconds using native WordPress cron; delivery can occur later depending on site traffic or cron configuration. Saved site visibility, password, noindex and content-type eligibility are checked again immediately before notification. Repeated pending updates to the same post share one event. Deactivation and uninstall remove queued events.
@@ -115,6 +127,14 @@ When an authorized editor requests a Competitor scan, the WordPress server fetch
 This is a public, curated text endpoint, not an access-control feature or automatic protected-post export. Publish only material intended for public reading. When search-engine visibility is off, or the feature is disabled, both the rewritten endpoint and its query alias return an uncached 404 with noindex/nofollow instead of curated/default text.
 
 == Changelog ==
+
+= 2.5.1 =
+* Added SEO title, description, canonical, social description and noindex fields to native taxonomy term screens.
+* Enabled category/tag SEO by default, with opt-in public custom taxonomies and retained unavailable selections.
+* Applied archive metadata to modern/legacy titles, canonical, robots and social output, preserving native fallbacks and paginated canonicals.
+* Included eligible nonempty taxonomy archives in bounded sitemap batches, excluding noindex/custom-canonical terms and counting unique terms.
+* Required taxonomy-specific permissions and nonces for saves; added term SEO metadata cleanup on deletion.
+* Updated the Tutorial, indexing/ranking disclaimer and privacy disclosures, including optional external requests and local diagnostics.
 
 = 2.5.0 =
 * Added opt-in SEO tools for public custom post types, with post/page defaults and retained unavailable selections.

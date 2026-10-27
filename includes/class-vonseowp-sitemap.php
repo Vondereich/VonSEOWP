@@ -77,15 +77,60 @@ class VonSEOWP_Sitemap {
         $options = get_option('vonseowp_settings', array());
         $options = is_array($options) ? $options : array();
         $count = $this->include_homepage() ? 1 : 0;
+        return $count + $this->get_post_count($options) + $this->get_term_count();
+    }
+
+    private function get_post_count(array $options): int {
         $args = $this->get_content_query($options);
         if (!empty($args['post_type'])) {
             $args['fields'] = 'ids';
             $args['posts_per_page'] = 1;
             $args['no_found_rows'] = false;
             $query = new WP_Query($args);
-            $count += (int) $query->found_posts;
+            return (int) $query->found_posts;
         }
-        return $count;
+        return 0;
+    }
+
+    private function get_term_query(): array {
+        return array(
+            'taxonomy' => class_exists('VonSEOWP_Taxonomies') ? VonSEOWP_Taxonomies::get_enabled() : array(),
+            'hide_empty' => true,
+            'hierarchical' => false,
+            'orderby' => 'term_id',
+            'order' => 'ASC',
+            // Keep count and bounded output identical; overridden canonicals are not native sitemap URLs.
+            'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required indexability filters on this plugin's term keys.
+                'relation' => 'AND',
+                array('relation' => 'OR',
+                    array('key' => '_vonseowp_noindex', 'compare' => 'NOT EXISTS'),
+                    array('key' => '_vonseowp_noindex', 'value' => '1', 'compare' => '!=')),
+                array('relation' => 'OR',
+                    array('key' => '_vonseowp_canonical', 'compare' => 'NOT EXISTS'),
+                    array('key' => '_vonseowp_canonical', 'value' => '', 'compare' => '=')),
+            ),
+        );
+    }
+
+    private function get_term_count(): int {
+        $args = $this->get_term_query();
+        if (!$args['taxonomy']) return 0;
+        $args['fields'] = 'count';
+        $args['vonseowp_sitemap_count'] = true;
+        // Core's COUNT(*) can count joined metadata rows instead of unique terms.
+        $distinct_count = static function (array $clauses, array $taxonomies, array $query): array {
+            if (!empty($query['vonseowp_sitemap_count']) && $query['fields'] === 'count') {
+                $clauses['fields'] = 'COUNT(DISTINCT t.term_id)';
+            }
+            return $clauses;
+        };
+        add_filter('terms_clauses', $distinct_count, 10, 3);
+        try {
+            $count = get_terms($args);
+        } finally {
+            remove_filter('terms_clauses', $distinct_count, 10);
+        }
+        return is_wp_error($count) ? 0 : (int) $count;
     }
 
     private function include_homepage(): bool {
@@ -156,18 +201,19 @@ class VonSEOWP_Sitemap {
         }
 
         $args = $this->get_content_query($options);
-        if (empty($args['post_type'])) {
-            echo '</urlset>';
-            return;
-        }
         // The homepage occupies one slot on the first page, not every page.
-        $args['posts_per_page'] = ($home && $paged === 1) ? 999 : 1000;
-        $args['offset'] = max(0, ($paged - 1) * 1000 - ($home ? 1 : 0));
-        $query = new WP_Query($args);
+        $limit = ($home && $paged === 1) ? 999 : 1000;
+        $offset = max(0, ($paged - 1) * 1000 - ($home ? 1 : 0));
+        $post_count = $this->get_post_count($options);
+        $emitted = 0;
+        if (!empty($args['post_type']) && $offset < $post_count) {
+            $args['posts_per_page'] = $limit;
+            $args['offset'] = $offset;
+            $query = new WP_Query($args);
 
-        if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
+                $emitted++;
                 
                 echo '<url>';
                 echo '<loc>' . esc_url(get_permalink()) . '</loc>';
@@ -176,6 +222,20 @@ class VonSEOWP_Sitemap {
                 echo '</url>';
             }
             wp_reset_postdata();
+        }
+
+        $terms = $this->get_term_query();
+        if ($terms['taxonomy'] && $emitted < $limit) {
+            $terms['number'] = $limit - $emitted;
+            $terms['offset'] = max(0, $offset - $post_count);
+            $results = get_terms($terms);
+            if (!is_wp_error($results)) {
+                foreach ($results as $term) {
+                    $url = get_term_link($term);
+                    if (is_wp_error($url)) continue;
+                    echo '<url><loc>' . esc_url($url) . '</loc><priority>0.6</priority></url>';
+                }
+            }
         }
 
         echo '</urlset>';

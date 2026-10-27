@@ -37,6 +37,9 @@ function get_post_types(array $args = array(), string $output = 'names'): array 
     return array('post' => (object) array('_builtin' => true), 'page' => (object) array('_builtin' => true));
 }
 function sanitize_key(string $text): string { return strtolower($text); }
+function get_taxonomies(array $args = array(), string $output = 'names'): array {
+    return array_fill_keys(array('category', 'post_tag'), (object) array('public' => true, 'publicly_queryable' => true, '_builtin' => true));
+}
 /** @param mixed $value @return mixed */
 function wp_unslash($value) { return is_array($value) ? array_map('wp_unslash', $value) : (is_string($value) ? stripslashes($value) : $value); }
 function sanitize_text_field(string $text): string { return trim(strip_tags($text)); }
@@ -47,6 +50,7 @@ function vonseowp_settings_check(bool $condition, string $message): void {
     if (!$condition) throw new RuntimeException($message);
 }
 require dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
+require dirname(__DIR__) . '/includes/class-vonseowp-taxonomies.php';
 require dirname(__DIR__) . '/includes/class-vonseowp-admin.php';
 $admin = new VonSEOWP_Admin();
 do_action('admin_init');
@@ -77,4 +81,12 @@ update_option('vonseowp_settings', $saved);
 vonseowp_settings_check(get_option('blogname') === 'Plugin title' && get_option('blogdescription') === 'Plugin tagline', 'Plugin-to-core synchronization must remain functional.');
 update_option('blogname', 'Final title');
 foreach ($flags as $flag) vonseowp_settings_check(get_option('vonseowp_settings')[$flag] === 1, 'Core sync must preserve explicit ON: ' . $flag);
-echo 'Settings tests passed (' . $assertions . ' assertions; modeled options lifecycle)' . PHP_EOL;
+$help = (string) file_get_contents(dirname(__DIR__) . '/admin/partials/vonseowp-admin-display.php');
+foreach (array('How to Use VonSEO', 'Category and Tag SEO', 'SEO & Indexing Disclaimer', 'Privacy & Data Policy',
+    'does not guarantee', 'not background telemetry', '12-hour expiry', 'public text endpoint',
+    'up to 50 requested URLs', 'does not store visitor IP addresses', 'sessionStorage only') as $copy) {
+    vonseowp_settings_check(strpos($help, $copy) !== false, 'Tutorial/policy disclosure missing: ' . $copy);
+}
+vonseowp_settings_check(strpos($help, 'Getting Started with VonSEOWP v2.0') === false
+    && strpos($help, 'zero database bloat') === false, 'Stale tutorial version or absolute performance claim remains.');
+echo 'Settings tests passed (' . $assertions . ' assertions; modeled options lifecycle and help contracts)' . PHP_EOL;

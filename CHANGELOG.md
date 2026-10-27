@@ -2,6 +2,14 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.5.1] - 2026-10-27
+### Added
+- **Taxonomy Archive SEO**: Add SEO title, meta description, canonical URL, social description and noindex controls to native category, tag and selected public-taxonomy forms.
+- **Taxonomy Selection**: Enable categories and tags by default, allow opt-in public custom taxonomies, and retain unavailable saved selections without applying their overrides.
+- **Archive Metadata**: Apply term overrides to modern and legacy document titles, canonical links, robots, Open Graph and Twitter output. Preserve native titles and term-description fallbacks when fields are empty; use self-referencing paginated canonicals and modern title page numbers while leaving legacy-theme suffix assembly intact.
+- **Taxonomy Sitemaps**: Include nonempty selected archive URLs in the existing 1,000-URL sitemap batches alongside content. Exclude noindex terms and terms with explicit canonical overrides before counting and pagination; count unique terms even when multiple metadata rows are joined.
+- **Tutorial And Policies**: Update the in-plugin guide for content types, category/tag SEO, archive canonical/noindex behavior, audit batches, optional IndexNow and TOC. Add a clear no-guarantee indexing/ranking disclaimer and disclose local storage, optional 404 logs, settings-tab session storage, optional external requests, manual validation links, public llms.txt and data removal.
+
 ## [2.5.0] - 2026-10-14
 ### Added
 - **Content Type Opt-In**: Discover public/queryable custom post types and apply existing per-content SEO tools only to selected types; keep post/page upgrade defaults and retain unavailable saved types.

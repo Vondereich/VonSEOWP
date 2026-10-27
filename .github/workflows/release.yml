@@ -51,6 +51,7 @@ jobs:
           npm run test:settings
           npm run test:schema
           npm run test:titles
+          npm run test:taxonomies
 
       - name: Lint Packaged PHP
         run: |
