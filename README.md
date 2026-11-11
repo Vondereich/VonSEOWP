@@ -28,6 +28,7 @@ A clean, focused editorial workflow that stays out of your way until you need it
 - **Smart Metadata Assistance**: Faster editorial workflows without the server load.
 - **Selected Content Types**: Apply SEO tools to posts, pages and opted-in public custom post types.
 - **Taxonomy Archive SEO**: Edit SEO titles, descriptions, canonicals, social descriptions and noindex on category, tag and selected public-taxonomy screens.
+- **Settings Portability**: Export supported site settings as JSON and review validated imports before confirming. Site-specific tokens, IndexNow consent/key and content metadata are excluded.
 - **Competitor SEO Math**: Live metric comparison against any URL (with 12-hour transient caching).
 
 ### 2. Advanced Technical Engine

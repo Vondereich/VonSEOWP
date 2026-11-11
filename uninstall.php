@@ -29,6 +29,11 @@ delete_transient('vonseowp_site_audit_results');
 
 // 2. Delete Post Metadata
 global $wpdb;
+// Pending administrator previews expire naturally; remove them immediately on deletion too.
+foreach (array('_transient_vonseowp_settings_import_', '_transient_timeout_vonseowp_settings_import_') as $vonseowp_preview_prefix) {
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin-owned transient cleanup on uninstall.
+    $wpdb->query($wpdb->prepare("DELETE FROM $wpdb->options WHERE option_name LIKE %s", $wpdb->esc_like($vonseowp_preview_prefix) . '%'));
+}
 $vonseowp_meta_keys = array(
     '_vonseowp_title',
     '_vonseowp_description',

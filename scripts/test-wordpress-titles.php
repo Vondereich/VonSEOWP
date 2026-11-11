@@ -82,6 +82,7 @@ wp_cache_set($blog_page->ID, $blog_page, 'posts');
 global $wp_rewrite;
 foreach (array('/%postname%/', '') as $structure) {
     $wp_rewrite->permalink_structure = $structure;
+    $wp_rewrite->use_trailing_slashes = substr($structure, -1) === '/';
     foreach (array('home', 'blog') as $context) {
         $canonical_options['show_on_front'] = $context === 'home' ? 'posts' : 'page';
         $canonical_options['page_for_posts'] = $context === 'home' ? 0 : $blog_page->ID;

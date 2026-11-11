@@ -54,6 +54,9 @@ if (false) {
                 <a href="#tab-advanced" class="von-tab-link" onclick="openTab(event, 'tab-advanced')">
                     <span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e('Advanced', 'vonseo'); ?>
                 </a>
+                <a href="#tab-transfer" class="von-tab-link" onclick="openTab(event, 'tab-transfer')">
+                    <span class="dashicons dashicons-migrate" aria-hidden="true"></span> <?php esc_html_e('Import / Export', 'vonseo'); ?>
+                </a>
                 <a href="#tab-robots" class="von-tab-link" onclick="openTab(event, 'tab-robots')">
                     <span class="dashicons dashicons-index-card"></span> <?php esc_html_e('Robots.txt', 'vonseo'); ?>
                 </a>
@@ -485,6 +488,11 @@ if (false) {
                                     <h4><?php esc_html_e('10. Table of Contents', 'vonseo'); ?></h4>
                                     <p><?php esc_html_e('Configure the heading threshold and position in Table of Contents, or insert the [vonseo_toc] shortcode. The post editor can disable automatic insertion for individual content. Preview the page and check the heading links before publishing.', 'vonseo'); ?></p>
                                 </div>
+                                <div class="von-tutorial-item">
+                                    <h4><?php esc_html_e('11. Import / Export Settings', 'vonseo'); ?></h4>
+                                    <p><?php esc_html_e('Export supported site settings as JSON in Import / Export. Upload a VonSEO JSON file, review the changes, then confirm. Site Title and Tagline also update WordPress General Settings. Tokens, IndexNow consent/key, posts, term metadata and media files are excluded; URLs are not rewritten. Keep exports private and review destination URLs before confirming.', 'vonseo'); ?></p>
+                                    <p><?php esc_html_e('Import previews use local WordPress transient storage and are restricted to the administrator who uploaded the file. Access expires after 10 minutes; WordPress transient cleanup removes expired entries. Confirmation or cancellation removes the preview. No import file is saved to the Media Library or sent to an external service.', 'vonseo'); ?></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -855,6 +863,9 @@ if (false) {
                     <button type="submit" class="von-btn-primary"><?php esc_html_e('Save Changes', 'vonseo'); ?></button>
                 </div>
             </form>
+            <div id="tab-transfer" class="von-tab-content" style="display: none;">
+                <?php do_action('vonseowp_settings_transfer'); ?>
+            </div>
         </main>
     </div> <!-- .von-admin-layout -->
 </div> <!-- .von-dashboard-wrapper -->

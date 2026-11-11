@@ -4,7 +4,7 @@ Tags: seo, toc, schema, sitemap, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,6 +53,11 @@ A clean, focused editorial workflow designed for speed and usability.
 3. Access the VonSEO dashboard and save your settings.
 
 == Frequently Asked Questions ==
+
+= Can I export or import site settings? =
+Use VonSEO > Import / Export to download supported site settings as versioned JSON. Upload a compatible JSON file, review the preview and confirm before saving. The preview is administrator-bound and expires after 10 minutes; confirmation or cancellation removes it.
+
+Site Title and Tagline also synchronize with WordPress General Settings. Verification tokens, IndexNow consent/key, logs, caches, posts, term metadata and media files are not transferred. Unlisted and excluded settings are preserved. URLs are not rewritten for another site. Exports can contain business contact details and site rules, so keep them private. This is not a full-site backup or content migration tool; move content and its post/term SEO metadata separately using your WordPress migration workflow.
 
 = Does this plugin slow down my site? =
 VonSEO uses native WordPress storage, runs editor analysis in your browser and processes manual Site Audit results in 25-item batches. Actual performance depends on your content, theme, hosting and other plugins.
@@ -127,6 +132,13 @@ When an authorized editor requests a Competitor scan, the WordPress server fetch
 This is a public, curated text endpoint, not an access-control feature or automatic protected-post export. Publish only material intended for public reading. When search-engine visibility is off, or the feature is disabled, both the rewritten endpoint and its query alias return an uncached 404 with noindex/nofollow instead of curated/default text.
 
 == Changelog ==
+
+= 2.5.2 =
+* Added versioned JSON export/import for supported site settings, with validated uploads, change previews and explicit confirmation.
+* Preserved excluded settings and rejected expired previews, reused previews and changes made after preview.
+* Kept verification tokens, IndexNow consent/key, logs, media and per-content metadata outside the transfer format.
+* Added import failure recovery, first-save Site Title/Tagline synchronization and private, administrator-bound temporary previews.
+* Updated the Tutorial and documented transfer scope, URL review and export privacy.
 
 = 2.5.1 =
 * Added SEO title, description, canonical, social description and noindex fields to native taxonomy term screens.

@@ -8,7 +8,8 @@ global $wpdb, $wp_version, $wp_rewrite;
 $owner = json_decode((string) file_get_contents($root . '/qc-owner.json'), true);
 if (!is_array($owner) || $owner['database'] !== $wpdb->dbname || $owner['root'] !== realpath($root)
     || !preg_match('/^vonseoqc250_[a-f0-9]{8}_$/D', $wpdb->base_prefix)) throw new RuntimeException('Refusing non-QC database.');
-if (!defined('VONSEOWP_VERSION') || VONSEOWP_VERSION !== '2.5.0') throw new RuntimeException('Install the patched exact ZIP first.');
+$expected_version = json_decode((string) file_get_contents(dirname(__DIR__) . '/package.json'), true)['version'];
+if (!defined('VONSEOWP_VERSION') || VONSEOWP_VERSION !== $expected_version) throw new RuntimeException('Install the current exact ZIP first.');
 wp_set_current_user(1);
 $assertions = 0;
 $network_calls = 0;

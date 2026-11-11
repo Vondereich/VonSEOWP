@@ -17,7 +17,8 @@ require $root . '/wp-load.php';
 global $wpdb, $wp_version;
 if (!preg_match('/^vonseoqc250_[a-f0-9]{8}_$/D', $wpdb->base_prefix)
     || !preg_match('/^vonseoqc250_[a-f0-9]{8}$/D', $wpdb->dbname)) throw new RuntimeException('Refusing non-QC database.');
-if (!defined('VONSEOWP_VERSION') || VONSEOWP_VERSION !== '2.5.0') throw new RuntimeException('Install the patched exact ZIP first.');
+$expected_version = json_decode((string) file_get_contents(dirname(__DIR__) . '/package.json'), true)['version'];
+if (!defined('VONSEOWP_VERSION') || VONSEOWP_VERSION !== $expected_version) throw new RuntimeException('Install the current exact ZIP first.');
 wp_set_current_user(1);
 $settings = get_option('vonseowp_settings', array());
 $settings = is_array($settings) ? $settings : array();

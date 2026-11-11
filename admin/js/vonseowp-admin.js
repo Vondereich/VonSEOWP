@@ -3,7 +3,9 @@ jQuery(document).ready(function ($) {
 
   const tabStorageKey = "vonseowp_active_settings_tab";
   const getValidTab = function (tabName) {
-    return tabName && $("#" + tabName + ".von-tab-content").length ? tabName : "tab-general";
+    return tabName && $("#" + tabName + ".von-tab-content").length
+      ? tabName
+      : "tab-general";
   };
 
   const activateAdminTab = function (tabName, opts) {
@@ -13,6 +15,7 @@ jQuery(document).ready(function ($) {
     $(".von-tab-content").hide();
     $(".von-tab-link").removeClass("active");
     $("#" + activeTab).show();
+    $(".von-form-actions").toggle(activeTab !== "tab-transfer");
     $('.von-tab-link[href="#' + activeTab + '"]').addClass("active");
 
     try {
@@ -21,7 +24,11 @@ jQuery(document).ready(function ($) {
       // Some hardened browsers disable sessionStorage; tab switching still works.
     }
 
-    if (options.updateHash !== false && window.history && window.history.replaceState) {
+    if (
+      options.updateHash !== false &&
+      window.history &&
+      window.history.replaceState
+    ) {
       window.history.replaceState(null, "", "#" + activeTab);
     }
 
@@ -40,33 +47,43 @@ jQuery(document).ready(function ($) {
     const activeTab = $(".von-tab-link.active").attr("href");
     if (activeTab) {
       try {
-        window.sessionStorage.setItem(tabStorageKey, activeTab.replace("#", ""));
+        window.sessionStorage.setItem(
+          tabStorageKey,
+          activeTab.replace("#", ""),
+        );
       } catch (error) {
         // Saving should never be blocked by tab-state storage.
       }
     }
   });
 
-  const hashTab = window.location.hash ? window.location.hash.replace("#", "") : "";
+  const hashTab = window.location.hash
+    ? window.location.hash.replace("#", "")
+    : "";
   let storedTab = "";
   try {
     storedTab = window.sessionStorage.getItem(tabStorageKey) || "";
   } catch (error) {
     storedTab = "";
   }
-  activateAdminTab(hashTab || storedTab || "tab-general", { scroll: false, updateHash: !!hashTab });
+  activateAdminTab(hashTab || storedTab || "tab-general", {
+    scroll: false,
+    updateHash: !!hashTab,
+  });
 
   // --- ROBOTS.TXT RESET ---
   $("#von-reset-robots").on("click", function () {
     if (
       !confirm(
-        vonseowp_admin_data.confirm_reset_robots || "Are you sure you want to reset robots.txt to recommended Pro rules?",
+        vonseowp_admin_data.confirm_reset_robots ||
+          "Are you sure you want to reset robots.txt to recommended Pro rules?",
       )
     )
       return;
 
     const proRules =
-      typeof vonseowp_admin_data !== "undefined" && vonseowp_admin_data.default_robots_txt
+      typeof vonseowp_admin_data !== "undefined" &&
+      vonseowp_admin_data.default_robots_txt
         ? vonseowp_admin_data.default_robots_txt
         : "User-agent: *";
 
@@ -77,13 +94,15 @@ jQuery(document).ready(function ($) {
   $("#von-reset-llm").on("click", function () {
     if (
       !confirm(
-        vonseowp_admin_data.confirm_reset_llm || "Are you sure you want to reset llms.txt to the recommended AEO template?",
+        vonseowp_admin_data.confirm_reset_llm ||
+          "Are you sure you want to reset llms.txt to the recommended AEO template?",
       )
     )
       return;
 
     const siteName = vonseowp_admin_data.site_name || "My Site";
-    const siteDesc = vonseowp_admin_data.site_desc || "A website about something awesome.";
+    const siteDesc =
+      vonseowp_admin_data.site_desc || "A website about something awesome.";
     const homeUrl = vonseowp_admin_data.home_url || window.location.origin;
 
     const llmTemplate = [
@@ -93,8 +112,18 @@ jQuery(document).ready(function ($) {
       "",
       "## " + vonseowp_admin_data.llm_template.key_resources,
       "",
-      "- [" + vonseowp_admin_data.llm_template.home_page + "](" + homeUrl + "/): " + vonseowp_admin_data.llm_template.entry_point,
-      "- [" + vonseowp_admin_data.llm_template.xml_sitemap + "](" + homeUrl + "/sitemap.xml): " + vonseowp_admin_data.llm_template.full_index,
+      "- [" +
+        vonseowp_admin_data.llm_template.home_page +
+        "](" +
+        homeUrl +
+        "/): " +
+        vonseowp_admin_data.llm_template.entry_point,
+      "- [" +
+        vonseowp_admin_data.llm_template.xml_sitemap +
+        "](" +
+        homeUrl +
+        "/sitemap.xml): " +
+        vonseowp_admin_data.llm_template.full_index,
       "",
       "## " + vonseowp_admin_data.llm_template.about,
       vonseowp_admin_data.llm_template.aeo_footer,

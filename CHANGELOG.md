@@ -2,6 +2,10 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.5.2] - 2026-11-11
+### Added
+- **Settings Portability**: Export supported site settings as versioned JSON, preview validated imports and require confirmation before saving. Preserve excluded settings and reject expired or outdated previews. Verification tokens, IndexNow consent/key, logs, media and per-content metadata are not transferred.
+
 ## [2.5.1] - 2026-10-27
 ### Added
 - **Taxonomy Archive SEO**: Add SEO title, meta description, canonical URL, social description and noindex controls to native category, tag and selected public-taxonomy forms.
