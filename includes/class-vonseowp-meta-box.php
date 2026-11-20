@@ -81,11 +81,11 @@ class VonSEOWP_Meta_Box {
                 'remove'          => __('Remove', 'vonseo'),
             ),
             'ai' => array(
-                'thinking' => __('Thinking...', 'vonseo'),
+                'thinking' => __('Generating...', 'vonseo'),
                 'scanning' => __('Scanning...', 'vonseo'),
                 'no_url'   => __('Please enter a competitor URL.', 'vonseo'),
                 'conn_err' => __('Could not connect to the server.', 'vonseo'),
-                'advice_prefix' => __('AI Recommendation:', 'vonseo'),
+                'advice_prefix' => __('Suggestion:', 'vonseo'),
                 /* translators: %d: word count difference */
                 'advice_short'  => __('Your content is shorter than your competitor\'s. Add about %d more words to stay competitive.', 'vonseo'),
                 'advice_depth'  => __('Great! You have more content depth than your competitor.', 'vonseo'),
@@ -120,7 +120,13 @@ class VonSEOWP_Meta_Box {
         if (!current_user_can('edit_post', $post_id)) return;
         if (wp_is_post_revision($post_id) || !VonSEOWP_Content_Types::is_enabled((string) get_post_type($post_id))) return;
 
-        $fields = array('title', 'description', 'keywords', 'image', 'schema_type', 'rating', 'rating_count', 'reviewed_product', 'social_title', 'social_desc');
+        // Social image is published in og:image and JSON-LD; store only an http(s) URL.
+        if (isset($_POST['vonseowp_image']) && is_string($_POST['vonseowp_image'])) {
+            // Relative and protocol-relative values are made absolute so they can be published.
+            update_post_meta($post_id, '_vonseowp_image', VonSEOWP_Frontend::absolute_url(esc_url_raw(wp_unslash($_POST['vonseowp_image']), array('http', 'https'))));
+        }
+
+        $fields = array('title', 'description', 'keywords', 'schema_type', 'rating', 'rating_count', 'reviewed_product', 'social_title', 'social_desc');
         foreach ($fields as $field) {
             if (isset($_POST['vonseowp_' . $field])) {
                 if ($field === 'description') {

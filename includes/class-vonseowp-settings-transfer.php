@@ -109,7 +109,7 @@ class VonSEOWP_Settings_Transfer {
                         && in_array(strtolower($parts['scheme']), array('http', 'https'), true)
                         && !isset($parts['user']) && !isset($parts['pass']) && esc_url_raw($value, array('http', 'https')) !== '';
                 }
-                if ($type === 'separator') $valid = $valid && in_array($value, array('-', '|', "\xE2\x80\xA2", "\xE2\x80\x94"), true);
+                if ($type === 'separator') $valid = $valid && in_array($value, VonSEOWP_Admin::title_separators(), true);
                 if ($type === 'short_text') $valid = $valid && strlen($value) >= 1 && strlen($value) <= 5;
                 if ($type === 'position') $valid = $valid && in_array($value, array('before_first_heading', 'top'), true);
             }
@@ -123,8 +123,8 @@ class VonSEOWP_Settings_Transfer {
         if (!current_user_can('manage_options')) return new WP_Error('permission', __('Administrator access is required.', 'vonseo'));
         $incoming = $this->decode($json);
         if (is_wp_error($incoming)) return $incoming;
-        // The existing form sanitizer expects slashed input. Only imported keys may change.
-        $clean = $this->admin->sanitize_settings(wp_slash(array_replace($this->settings(), $incoming)));
+        // The form sanitizer receives unslashed values, exactly as wp-admin/options.php passes them. Only imported keys may change.
+        $clean = $this->admin->sanitize_settings(array_replace($this->settings(), $incoming));
         $incoming = array_intersect_key($clean, $incoming);
         $pending = array('token' => wp_generate_password(32, false, false), 'settings' => $incoming,
             'base' => $this->state_hash(), 'expires' => time() + self::EXPIRY);
@@ -143,7 +143,7 @@ class VonSEOWP_Settings_Transfer {
     private function persist($value): void {
         $callback = array($this->admin, 'sanitize_settings');
         $priority = has_filter('sanitize_option_vonseowp_settings', $callback);
-        // Values were sanitized for the preview. Re-running this callback would unslash them again and drop excluded keys.
+        // Values were sanitized for the preview; the full stored array (including non-form keys) is written verbatim.
         if ($priority !== false) remove_filter('sanitize_option_vonseowp_settings', $callback, $priority);
         try { update_option('vonseowp_settings', $value); }
         finally { if ($priority !== false) add_filter('sanitize_option_vonseowp_settings', $callback, $priority); }

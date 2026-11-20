@@ -172,8 +172,8 @@ class VonSEOWP_Sitemap {
 
         for ($i = 1; $i <= $pages; $i++) {
             echo '<sitemap>';
+            // lastmod is optional; the request time would misreport every batch as freshly modified.
             echo '<loc>' . esc_url(add_query_arg('vonseowp_sitemap_page', $i, $base_url)) . '</loc>';
-            echo '<lastmod>' . esc_html(gmdate('c')) . '</lastmod>';
             echo '</sitemap>';
         }
 

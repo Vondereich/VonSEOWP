@@ -6,6 +6,12 @@ if (!defined('ABSPATH')) exit;
 
 class VonSEOWP_Redirects {
 
+    /** Seconds before a repeat 404 on the same URL is written again. */
+    private const LOG_THROTTLE = 60;
+
+    /** Minimum seconds between any two 404 log writes. */
+    private const LOG_MIN_INTERVAL = 2;
+
     private $redirects = array();
     private $log_404 = false;
     private $redirect_attachments = true;
@@ -191,15 +197,34 @@ class VonSEOWP_Redirects {
             $current_uri = substr($current_uri, 0, 200) . '...';
         }
 
+        // Bound database writes during 404 floods: repeat hits on a logged URL are written at most once a
+        // minute, and the whole log at most once every LOG_MIN_INTERVAL seconds. Hit counts are therefore
+        // approximate under heavy traffic.
+        $now = time();
+        if (isset($log[$current_uri]['ts']) && is_int($log[$current_uri]['ts']) && $log[$current_uri]['ts'] <= $now
+            && $now - $log[$current_uri]['ts'] < self::LOG_THROTTLE) {
+            return;
+        }
+        $latest = 0;
+        foreach ($log as $entry) {
+            // Future timestamps (server clock set back) must not block logging.
+            if (is_array($entry) && isset($entry['ts']) && is_int($entry['ts']) && $entry['ts'] <= $now) $latest = max($latest, $entry['ts']);
+        }
+        if ($now - $latest < self::LOG_MIN_INTERVAL) {
+            return;
+        }
+
         // Add new entry
         if (!isset($log[$current_uri])) {
             $log[$current_uri] = array(
                 'count' => 1,
-                'last_hit' => current_time('mysql')
+                'last_hit' => current_time('mysql'),
+                'ts' => $now,
             );
         } else {
-            $log[$current_uri]['count']++;
+            $log[$current_uri]['count'] = (int) ($log[$current_uri]['count'] ?? 0) + 1;
             $log[$current_uri]['last_hit'] = current_time('mysql');
+            $log[$current_uri]['ts'] = $now;
         }
 
         // Limit log size
@@ -211,6 +236,7 @@ class VonSEOWP_Redirects {
             array_shift($log);
         }
 
-        update_option('vonseowp_404_log', $log);
+        // Only the settings screen reads this log; keep it out of the autoloaded options on every request.
+        update_option('vonseowp_404_log', $log, false);
     }
 }

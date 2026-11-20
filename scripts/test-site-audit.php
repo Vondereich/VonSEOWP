@@ -190,7 +190,7 @@ vonseowp_audit_assert(
 
 $audit = (new ReflectionClass('VonSEOWP_Site_Audit'))->newInstanceWithoutConstructor();
 $robots_method = new ReflectionMethod('VonSEOWP_Site_Audit', 'has_wildcard_root_disallow');
-$robots_method->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $robots_method->setAccessible(true);
 
 vonseowp_audit_assert(
     $robots_method->invoke($audit, "User-agent: BadBot\nDisallow: /") === false,
@@ -211,7 +211,7 @@ $vonseowp_test_options = array(
     'permalink_structure' => '/%postname%/',
 );
 $technical_method = new ReflectionMethod('VonSEOWP_Site_Audit', 'get_technical_checks');
-$technical_method->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $technical_method->setAccessible(true);
 $technical_checks = $technical_method->invoke($audit);
 
 vonseowp_audit_assert(

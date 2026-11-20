@@ -14,6 +14,9 @@ class VonSEOWP_Frontend {
     public function __construct() {
         add_filter('pre_get_document_title', array($this, 'filter_document_title'), 15);
         add_filter('wp_title', array($this, 'filter_legacy_title'), 15, 3);
+        add_filter('document_title_separator', array($this, 'filter_title_separator'), 15);
+        // The WordPress "AI" plugin prints its own description tag unless it recognises an SEO plugin.
+        add_filter('wpai_meta_description', array($this, 'suppress_external_description'), 99);
         add_action('wp_head', array($this, 'output_meta_tags'), 1);
         add_action('wp_head', array($this, 'output_json_ld'), 99);
         add_filter('robots_txt', array($this, 'handle_robots_txt'), 99, 2);
@@ -114,6 +117,15 @@ class VonSEOWP_Frontend {
             return $taxonomy['title'] . ($paged > 1 ? ' - ' . sprintf(__('Page %d', 'vonseo'), $paged) : '');
         }
         
+        // A separate posts page (static front page setup) is its own page: use its SEO title, else the native title.
+        if ($this->is_separate_posts_page()) {
+            $posts_title = $this->get_posts_page_meta('_vonseowp_title');
+            if ($posts_title === '') return $title;
+            $paged = max(1, (int) get_query_var('paged'));
+            /* translators: %d: archive page number. */
+            return $posts_title . ($paged > 1 ? ' - ' . sprintf(__('Page %d', 'vonseo'), $paged) : '');
+        }
+
         // Homepage Override
         if (is_front_page() || is_home()) {
             if (!empty($options['home_title'])) {
@@ -132,10 +144,30 @@ class VonSEOWP_Frontend {
         return $title;
     }
 
+    /**
+     * Apply the saved title separator to modern document-title assembly. The dash is WordPress's own
+     * default (and the setting's default), so it leaves any theme-provided separator untouched.
+     */
+    public function filter_title_separator(string $separator): string {
+        $options = get_option('vonseowp_settings', array());
+        $chosen = is_array($options) && isset($options['separator']) ? $options['separator'] : '';
+        if (!is_string($chosen) || $chosen === '-' || !class_exists('VonSEOWP_Admin')
+            || !in_array($chosen, VonSEOWP_Admin::title_separators(), true)) {
+            return $separator;
+        }
+        return $chosen;
+    }
+
     public function filter_legacy_title(string $title, string $separator, string $separator_location): string {
         $taxonomy = $this->get_taxonomy_metadata();
         // Legacy themes such as Twenty Eleven append their own pagination suffix.
-        $custom_title = $taxonomy && $taxonomy['title'] !== '' ? $taxonomy['title'] : $this->filter_document_title('');
+        if ($taxonomy && $taxonomy['title'] !== '') {
+            $custom_title = $taxonomy['title'];
+        } elseif ($this->is_separate_posts_page()) {
+            $custom_title = $this->get_posts_page_meta('_vonseowp_title');
+        } else {
+            $custom_title = $this->filter_document_title('');
+        }
         if ($custom_title === '') return $title;
 
         // Legacy themes may append the site name themselves; keep core separator placement.
@@ -146,6 +178,59 @@ class VonSEOWP_Frontend {
         if ($separator === '') return $custom_title;
         $separator = ' ' . esc_html($separator) . ' ';
         return $separator_location === 'right' ? $custom_title . $separator : $separator . $custom_title;
+    }
+
+    private function is_separate_posts_page(): bool {
+        // Matches core's is_posts_page: the queried object is the page_for_posts page. With "A static page"
+        // selected but no homepage chosen, the site root is also is_home() but queries no page, so it stays
+        // the homepage.
+        $posts_page = (int) get_option('page_for_posts');
+        return is_home() && !is_front_page() && get_option('show_on_front') === 'page'
+            && $posts_page > 0 && (int) get_queried_object_id() === $posts_page;
+    }
+
+    /** Saved SEO field of the separate posts page, respecting content-type selection and password state. */
+    private function get_posts_page_meta(string $key): string {
+        $page = get_post((int) get_option('page_for_posts'));
+        if (!$page || $page->post_status !== 'publish'
+            || !VonSEOWP_Content_Types::is_enabled((string) $page->post_type) || post_password_required($page)) {
+            return '';
+        }
+        $value = get_post_meta($page->ID, $key, true);
+        return is_string($value) ? trim($value) : '';
+    }
+
+    /**
+     * VonSEO prints the single description tag on every front-end page, so the "AI" plugin's own tag is
+     * always a duplicate. Its generated text is used by resolve_description() instead, including on post
+     * types VonSEO does not manage; password-protected posts never expose it.
+     *
+     * @param mixed $description
+     */
+    public function suppress_external_description($description): string {
+        return '';
+    }
+
+    /** Description generated by the WordPress "AI" plugin for a post, or ''. */
+    public static function get_external_description(int $post_id): string {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- The "AI" plugin's own documented filter.
+        $key = apply_filters('wpai_meta_description_meta_key', 'wpai_meta_description', null);
+        if (!is_string($key) || $key === '' || $key === '_vonseowp_description') return '';
+        $value = get_post_meta($post_id, $key, true);
+        return is_string($value) ? trim(wp_strip_all_tags($value)) : '';
+    }
+
+    /**
+     * Description chain for content VonSEO manages: saved SEO description, then the excerpt, then an
+     * "AI" plugin description, then the content summary.
+     */
+    public static function resolve_description(object $post): string {
+        $custom = get_post_meta($post->ID, '_vonseowp_description', true);
+        if (is_string($custom) && trim($custom) !== '') return $custom;
+        if (has_excerpt($post->ID)) return (string) get_the_excerpt($post->ID);
+        $generated = self::get_external_description((int) $post->ID);
+        if ($generated !== '') return $generated;
+        return self::get_content_fallback_description((string) $post->post_content);
     }
 
     /** @param WP_Post|null $post */
@@ -192,17 +277,10 @@ class VonSEOWP_Frontend {
         // Per-post overrides
         if ($this->can_output_post_metadata($post)) {
             // $custom_title handled by filter
-            $custom_desc = get_post_meta($post->ID, '_vonseowp_description', true);
+            $desc = self::resolve_description($post);
             $custom_keywords = get_post_meta($post->ID, '_vonseowp_keywords', true);
-            $custom_image = get_post_meta($post->ID, '_vonseowp_image', true);
+            $custom_image = self::http_url(get_post_meta($post->ID, '_vonseowp_image', true));
 
-            if ($custom_desc) {
-                $desc = $custom_desc;
-            } elseif (has_excerpt($post->ID)) {
-                $desc = get_the_excerpt($post->ID);
-            } else {
-                $desc = self::get_content_fallback_description((string) $post->post_content);
-            }
             if ($custom_keywords) $keywords = $custom_keywords;
             if ($custom_image) {
                 $image = $custom_image;
@@ -212,6 +290,10 @@ class VonSEOWP_Frontend {
 
             $type = 'article';
             $url = get_permalink($post->ID);
+        } elseif (is_singular() && $post && !is_front_page() && !post_password_required($post)) {
+            // The "AI" plugin's own tag is suppressed everywhere, so keep its description on unmanaged types.
+            $generated = self::get_external_description((int) $post->ID);
+            if ($generated !== '') $desc = $generated;
         }
 
         // Social Overrides
@@ -220,6 +302,15 @@ class VonSEOWP_Frontend {
         if ($this->can_output_post_metadata($post)) {
             $social_title = get_post_meta($post->ID, '_vonseowp_social_title', true);
             $social_desc = get_post_meta($post->ID, '_vonseowp_social_desc', true);
+        }
+
+        if ($this->is_separate_posts_page()) {
+            $posts_desc = $this->get_posts_page_meta('_vonseowp_description');
+            if ($posts_desc !== '') $desc = $posts_desc;
+            $social_title = $this->get_posts_page_meta('_vonseowp_social_title');
+            $social_desc = $this->get_posts_page_meta('_vonseowp_social_desc');
+            $posts_image = self::http_url($this->get_posts_page_meta('_vonseowp_image'));
+            if ($posts_image !== '') $image = $posts_image;
         }
 
         $taxonomy = $this->get_taxonomy_metadata();
@@ -231,7 +322,17 @@ class VonSEOWP_Frontend {
         }
 
         // Sanitize
-        $title = wp_get_document_title(); // Get the filtered title for OG tags
+        // Social cards carry the brand in og:site_name. For content, use its SEO title or post title instead of
+        // core's assembled document title, which can differ from a legacy theme's <title> (separator, and
+        // capital_P_dangit rewriting the site name).
+        $title = trim((string) $this->filter_document_title(''));
+        if ($title === '' && is_front_page()) {
+            $title = wp_get_document_title();
+        }
+        if ($title === '' && $this->can_output_post_metadata($post)) {
+            $title = trim(wp_strip_all_tags((string) get_the_title($post->ID)));
+        }
+        if ($title === '') $title = wp_get_document_title();
         $desc = trim(wp_strip_all_tags($desc));
         if (!$image && has_site_icon()) {
             $image = get_site_icon_url(512);
@@ -312,12 +413,28 @@ class VonSEOWP_Frontend {
         );
 
         // 1. Organization / Person
+        $site_name = self::decode_site_text((string) get_bloginfo('name'));
+        $entity_name = isset($options['home_title']) && is_string($options['home_title']) ? trim($options['home_title']) : '';
         $entity = array(
             '@type' => $schema_type,
             '@id' => home_url('/#' . strtolower($schema_type)),
-            'name' => $options['home_title'] ?? get_bloginfo('name'),
+            // A cleared Site Title field is stored as '', which must still fall back to the site name.
+            'name' => $entity_name !== '' ? self::decode_site_text($entity_name) : $site_name,
             'url' => home_url(),
         );
+        $same_as = array();
+        if (!empty($options['facebook_url']) && is_string($options['facebook_url'])
+            && preg_match('#^https?://#i', $options['facebook_url'])) {
+            $same_as[] = $options['facebook_url'];
+        }
+        $twitter = isset($options['twitter_username']) && is_string($options['twitter_username'])
+            ? ltrim(trim($options['twitter_username']), '@') : '';
+        if (preg_match('/^[A-Za-z0-9_]{1,15}$/', $twitter)) {
+            $same_as[] = 'https://x.com/' . $twitter;
+        }
+        if ($same_as) {
+            $entity['sameAs'] = $same_as;
+        }
 
         // Local SEO Data
         if (!empty($options['business_name'])) {
@@ -357,7 +474,7 @@ class VonSEOWP_Frontend {
             '@type' => 'WebSite',
             '@id' => home_url('/#website'),
             'url' => home_url(),
-            'name' => get_bloginfo('name'),
+            'name' => $site_name,
             'publisher' => array('@id' => home_url('/#' . strtolower($schema_type))),
             'potentialAction' => array(
                 '@type' => 'SearchAction',
@@ -371,11 +488,10 @@ class VonSEOWP_Frontend {
 
         // 3. BlogPosting (for singular posts/pages)
         if ($this->can_output_post_metadata($post)) {
-            $custom_desc = get_post_meta($post->ID, '_vonseowp_description', true);
-            $desc = $custom_desc ?: self::get_content_fallback_description((string) $post->post_content);
+            $desc = self::resolve_description($post);
             $image_url = '';
             
-            $custom_image = get_post_meta($post->ID, '_vonseowp_image', true);
+            $custom_image = self::http_url(get_post_meta($post->ID, '_vonseowp_image', true));
             if ($custom_image) {
                 $image_url = $custom_image;
             } elseif (has_post_thumbnail($post->ID)) {
@@ -408,66 +524,136 @@ class VonSEOWP_Frontend {
 
             // 3.2 Video Schema
             $video = get_post_meta($post->ID, '_vonseowp_video', true);
-            if (!empty($video) && is_array($video) && !empty($video['url'])) {
-                $video_schema = array(
-                    '@type' => 'VideoObject',
-                    'name' => $video['name'] ?: get_the_title(),
-                    'description' => $video['desc'] ?: wp_trim_words($post->post_content, 30),
-                    'thumbnailUrl' => $image_url ?: home_url('/favicon.ico'),
-                    'uploadDate' => get_the_date('c'),
-                    'contentUrl' => $video['url'],
-                    'embedUrl' => $video['url']
-                );
-                $schema['@graph'][] = $video_schema;
+            if (!empty($video) && is_array($video) && !empty($video['url']) && is_string($video['url'])) {
+                $video_schema = self::build_video_schema($video, $post, (string) $image_url);
+                if ($video_schema) $schema['@graph'][] = $video_schema;
             }
         }
 
-        // 4. Breadcrumbs
-        $breadcrumbs = array(
-            '@type' => 'BreadcrumbList',
-            'itemListElement' => array(
-                array(
-                    '@type' => 'ListItem',
-                    'position' => 1,
-                    'name' => __('Home', 'vonseo'),
-                    'item' => home_url()
-                )
-            )
+        // 4. Breadcrumbs: same trail (and vonseowp_breadcrumb_items filter) as the visible breadcrumbs.
+        // Noindex search and 404 responses get the visible trail only, not structured data.
+        $breadcrumbs = self::build_breadcrumb_schema(
+            class_exists('VonSEOWP_Breadcrumbs') && !is_404() && !is_search() ? VonSEOWP_Breadcrumbs::get_items() : array()
         );
-
-        if (is_singular() && $post) {
-            // Add category for posts
-            if (is_single()) {
-                $categories = get_the_category($post->ID);
-                if (!empty($categories)) {
-                    $breadcrumbs['itemListElement'][] = array(
-                        '@type' => 'ListItem',
-                        'position' => 2,
-                        'name' => $categories[0]->name,
-                        'item' => get_category_link($categories[0]->term_id)
-                    );
-                    $breadcrumbs['itemListElement'][] = array(
-                        '@type' => 'ListItem',
-                        'position' => 3,
-                        'name' => get_the_title(),
-                        'item' => get_permalink()
-                    );
-                }
-            } else {
-                $breadcrumbs['itemListElement'][] = array(
-                    '@type' => 'ListItem',
-                    'position' => 2,
-                    'name' => get_the_title(),
-                    'item' => get_permalink()
-                );
-            }
+        if ($breadcrumbs) {
+            $schema['@graph'][] = $breadcrumbs;
         }
-
-        $schema['@graph'][] = $breadcrumbs;
 
         echo '<script type="application/ld+json" class="vonseowp-schema">' . "\n";
-        echo wp_json_encode($schema);
+        // Hex-escape < > & ' so no stored value can ever close the script element.
+        echo wp_json_encode($schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         echo "\n</script>\n";
+    }
+
+    /**
+     * A one-item trail (e.g. the front page) is not a useful BreadcrumbList, so it is omitted.
+     *
+     * @param array<int, array{label?: mixed, url?: mixed}> $items
+     */
+    public static function build_breadcrumb_schema(array $items): array {
+        $elements = array();
+        foreach ($items as $item) {
+            $label = isset($item['label']) && is_string($item['label'])
+                ? trim(wp_strip_all_tags(self::decode_site_text($item['label']))) : '';
+            if ($label === '') continue;
+            $element = array('@type' => 'ListItem', 'position' => count($elements) + 1, 'name' => $label);
+            if (isset($item['url']) && is_string($item['url']) && $item['url'] !== '') {
+                $element['item'] = $item['url'];
+            }
+            $elements[] = $element;
+        }
+        // Every ListItem except the current page needs a URL; drop unlinked intermediate items only.
+        $last = count($elements) - 1;
+        $elements = array_values(array_filter($elements, static function (array $element, int $index) use ($last): bool {
+            return $index === $last || isset($element['item']);
+        }, ARRAY_FILTER_USE_BOTH));
+        foreach ($elements as $index => $element) $elements[$index]['position'] = $index + 1;
+        return count($elements) < 2 ? array() : array('@type' => 'BreadcrumbList', 'itemListElement' => $elements);
+    }
+
+    /**
+     * VideoObject: contentUrl is the media file itself, embedUrl a player page. A direct media file uses
+     * contentUrl; YouTube and Vimeo links become their player URLs; other pages are used as embedUrl.
+     *
+     * @param array<string, mixed> $video
+     */
+    public static function build_video_schema(array $video, object $post, string $image_url): array {
+        $url = trim((string) ($video['url'] ?? ''));
+        $parts = wp_parse_url($url);
+        if (!is_array($parts) || empty($parts['host']) || !in_array(strtolower($parts['scheme'] ?? ''), array('http', 'https'), true)) {
+            return array();
+        }
+        $host = strtolower((string) preg_replace('/^(www\.|m\.)/', '', $parts['host']));
+        $path = (string) ($parts['path'] ?? '');
+        $youtube_id = '';
+        if ($host === 'youtu.be') {
+            $youtube_id = trim($path, '/');
+        } elseif (in_array($host, array('youtube.com', 'youtube-nocookie.com'), true)) {
+            $query = array();
+            wp_parse_str((string) ($parts['query'] ?? ''), $query);
+            $youtube_id = isset($query['v']) && is_string($query['v']) ? $query['v']
+                : (preg_match('#^/(?:embed|shorts|live)/([^/?]+)#', $path, $match) ? $match[1] : '');
+        }
+        $youtube_id = preg_match('/^[A-Za-z0-9_-]{6,20}$/', $youtube_id) ? $youtube_id : '';
+        $is_file = (bool) preg_match('/\.(mp4|m4v|webm|ogv|ogg|mov|mpe?g)$/i', $path);
+
+        $thumbnail = $image_url;
+        if ($thumbnail === '' && $youtube_id !== '') $thumbnail = 'https://i.ytimg.com/vi/' . $youtube_id . '/hqdefault.jpg';
+        if ($thumbnail === '' && has_site_icon()) $thumbnail = (string) get_site_icon_url(512);
+
+        $name = isset($video['name']) && is_string($video['name']) && trim($video['name']) !== ''
+            ? $video['name'] : wp_strip_all_tags(self::decode_site_text((string) get_the_title($post->ID)));
+        $description = isset($video['desc']) && is_string($video['desc']) && trim($video['desc']) !== ''
+            ? $video['desc'] : self::get_content_fallback_description((string) $post->post_content);
+
+        $node = array(
+            '@type' => 'VideoObject',
+            'name' => wp_strip_all_tags($name),
+            'description' => wp_strip_all_tags($description !== '' ? $description : $name),
+            'uploadDate' => get_the_date('c', $post),
+        );
+        if ($thumbnail !== '') $node['thumbnailUrl'] = $thumbnail;
+        if ($is_file) {
+            $node['contentUrl'] = $url;
+        } else {
+            $vimeo_id = $host === 'vimeo.com' && preg_match('#^/(?:video/)?(\d+)(?:/|$)#', $path, $vimeo) ? $vimeo[1] : '';
+            if ($youtube_id !== '') {
+                $node['embedUrl'] = 'https://www.youtube.com/embed/' . $youtube_id;
+            } elseif ($vimeo_id !== '') {
+                $node['embedUrl'] = 'https://player.vimeo.com/video/' . $vimeo_id;
+            } else {
+                $node['embedUrl'] = $url;
+            }
+        }
+        return $node;
+    }
+
+    /**
+     * Values saved before 2.5.3 were text-sanitized only; publish a stored URL only when it is http(s).
+     *
+     * @param mixed $value
+     */
+    private static function http_url($value): string {
+        $value = self::absolute_url(is_string($value) ? $value : '');
+        return preg_match('#^https?://[^\s"<>]+$#i', $value) ? $value : '';
+    }
+
+    /** Turn protocol-relative (//cdn/...) and root-relative (/wp-content/...) URLs into absolute ones. */
+    public static function absolute_url(string $value): string {
+        $value = trim($value);
+        if (substr($value, 0, 2) === '//') return (is_ssl() ? 'https:' : 'http:') . $value;
+        if ($value !== '' && $value[0] === '/') {
+            $home = wp_parse_url(home_url('/'));
+            if (is_array($home) && !empty($home['host'])) {
+                return ($home['scheme'] ?? 'https') . '://' . $home['host'] . (isset($home['port']) ? ':' . $home['port'] : '') . $value;
+            }
+        }
+        return $value;
+    }
+
+    private static function decode_site_text(string $text): string {
+        // Core stores titles/site names HTML-escaped; JSON-LD text must contain the literal characters.
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     private function build_content_schema(object $post, string $publisher_id, string $description, string $image_url): array {

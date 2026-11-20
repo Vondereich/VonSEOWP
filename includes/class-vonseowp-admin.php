@@ -108,8 +108,9 @@ class VonSEOWP_Admin {
         wp_enqueue_script('vonseo-admin-js', VONSEOWP_URL . 'admin/js/vonseowp-admin.js', array('jquery'), VONSEOWP_VERSION, true);
 
         wp_localize_script('vonseo-admin-js', 'vonseowp_admin_data', array(
-            'site_name' => get_bloginfo('name'),
-            'site_desc' => get_bloginfo('description'),
+            // Core stores these HTML-escaped; the llms.txt template is plain text.
+            'site_name' => html_entity_decode((string) get_bloginfo('name'), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            'site_desc' => html_entity_decode((string) get_bloginfo('description'), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
             'home_url'  => home_url(),
             'default_robots_txt' => VonSEOWP_Frontend::get_default_robots_txt(),
             'confirm_reset_robots' => __('Are you sure you want to reset robots.txt to recommended Pro rules?', 'vonseo'),
@@ -138,6 +139,8 @@ class VonSEOWP_Admin {
      * @param mixed $input Raw settings input from WordPress.
      */
     public function sanitize_settings($input): array {
+        // wp-admin/options.php unslashes $_POST before update_option(); this callback also re-runs on
+        // first save and during core title/tagline sync, so it must never unslash again.
         $sanitized = array();
         
         if (!is_array($input)) {
@@ -147,50 +150,51 @@ class VonSEOWP_Admin {
         $previous = get_option('vonseowp_settings', array());
         $previous = is_array($previous) ? $previous : array();
         $sanitized['seo_post_types'] = array_key_exists('seo_post_types', $input)
-            ? VonSEOWP_Content_Types::sanitize_selection(wp_unslash($input['seo_post_types']), $previous)
+            ? VonSEOWP_Content_Types::sanitize_selection($input['seo_post_types'], $previous)
             : VonSEOWP_Content_Types::get_saved($previous);
         $sanitized['seo_taxonomies'] = array_key_exists('seo_taxonomies', $input)
-            ? VonSEOWP_Taxonomies::sanitize_selection(wp_unslash($input['seo_taxonomies']), $previous)
+            ? VonSEOWP_Taxonomies::sanitize_selection($input['seo_taxonomies'], $previous)
             : VonSEOWP_Taxonomies::get_saved($previous);
 
         // --- General ---
         if (isset($input['separator'])) {
-            $sanitized['separator'] = sanitize_text_field(wp_unslash($input['separator']));
+            $separator = sanitize_text_field($input['separator']);
+            $sanitized['separator'] = in_array($separator, self::title_separators(), true) ? $separator : '-';
         }
         
         if (isset($input['home_title'])) {
-            $sanitized['home_title'] = sanitize_text_field(wp_unslash($input['home_title']));
+            $sanitized['home_title'] = sanitize_text_field($input['home_title']);
         }
 
         if (isset($input['home_desc'])) {
-            $sanitized['home_desc'] = sanitize_textarea_field(wp_unslash($input['home_desc']));
+            $sanitized['home_desc'] = sanitize_textarea_field($input['home_desc']);
         }
 
         if (isset($input['google_verify'])) {
-            $sanitized['google_verify'] = sanitize_text_field(wp_unslash($input['google_verify']));
+            $sanitized['google_verify'] = sanitize_text_field($input['google_verify']);
         }
 
         if (isset($input['bing_verify'])) {
-            $sanitized['bing_verify'] = sanitize_text_field(wp_unslash($input['bing_verify']));
+            $sanitized['bing_verify'] = sanitize_text_field($input['bing_verify']);
         }
 
         // --- Social ---
         if (isset($input['facebook_url'])) {
-            $sanitized['facebook_url'] = esc_url_raw(wp_unslash($input['facebook_url']));
+            $sanitized['facebook_url'] = esc_url_raw($input['facebook_url']);
         }
 
         if (isset($input['twitter_username'])) {
-            $sanitized['twitter_username'] = sanitize_text_field(wp_unslash($input['twitter_username']));
+            $sanitized['twitter_username'] = sanitize_text_field($input['twitter_username']);
         }
 
         $sanitized['enable_og'] = $this->sanitize_checkbox($input, 'enable_og');
 
         if (isset($input['default_image'])) {
-            $sanitized['default_image'] = esc_url_raw(wp_unslash($input['default_image']));
+            $sanitized['default_image'] = esc_url_raw($input['default_image']);
         }
 
         if (isset($input['breadcrumb_separator'])) {
-            $separator = sanitize_text_field(wp_unslash($input['breadcrumb_separator']));
+            $separator = sanitize_text_field($input['breadcrumb_separator']);
             $sanitized['breadcrumb_separator'] = '' !== $separator ? substr($separator, 0, 5) : '/';
         }
         // --- Sitemap ---
@@ -202,14 +206,14 @@ class VonSEOWP_Admin {
         $sanitized['enable_404_log'] = $this->sanitize_checkbox($input, 'enable_404_log');
         
         if (isset($input['redirects_list'])) {
-            $sanitized['redirects_list'] = sanitize_textarea_field(wp_unslash($input['redirects_list']));
+            $sanitized['redirects_list'] = sanitize_textarea_field($input['redirects_list']);
         }
 
         // --- Local SEO ---
         $local_fields = array('business_name', 'address', 'city', 'state', 'zip', 'country', 'phone');
         foreach ($local_fields as $field) {
             if (isset($input[$field])) {
-                $sanitized[$field] = sanitize_text_field(wp_unslash($input[$field]));
+                $sanitized[$field] = sanitize_text_field($input[$field]);
             }
         }
 
@@ -218,23 +222,22 @@ class VonSEOWP_Admin {
         $sanitized['auto_image_title'] = $this->sanitize_checkbox($input, 'auto_image_title');
 
         // --- Advanced ---
-        $sanitized['remove_category_base'] = $this->sanitize_checkbox($input, 'remove_category_base');
         $sanitized['redirect_attachments'] = $this->sanitize_checkbox($input, 'redirect_attachments');
         $sanitized['enable_indexnow'] = $this->sanitize_checkbox($input, 'enable_indexnow');
         $sanitized['enable_rss_footer'] = $this->sanitize_checkbox($input, 'enable_rss_footer');
 
         // --- Robots.txt ---
         if (isset($input['robots_txt'])) {
-            $sanitized['robots_txt'] = sanitize_textarea_field(wp_unslash($input['robots_txt']));
+            $sanitized['robots_txt'] = sanitize_textarea_field($input['robots_txt']);
         }
 
         // --- TOC ---
         $sanitized['enable_toc'] = $this->sanitize_checkbox($input, 'enable_toc');
         if (isset($input['toc_title'])) {
-            $sanitized['toc_title'] = sanitize_text_field(wp_unslash($input['toc_title']));
+            $sanitized['toc_title'] = sanitize_text_field($input['toc_title']);
         }
         if (isset($input['toc_position'])) {
-            $sanitized['toc_position'] = sanitize_text_field(wp_unslash($input['toc_position']));
+            $sanitized['toc_position'] = sanitize_text_field($input['toc_position']);
         }
         if (isset($input['toc_min_headings'])) {
             $sanitized['toc_min_headings'] = max(1, min(10, (int) $input['toc_min_headings']));
@@ -243,10 +246,15 @@ class VonSEOWP_Admin {
         // --- AI & LLM ---
         $sanitized['enable_llms_txt'] = $this->sanitize_checkbox($input, 'enable_llms_txt');
         if (isset($input['llms_txt_content'])) {
-            $sanitized['llms_txt_content'] = sanitize_textarea_field(wp_unslash($input['llms_txt_content']));
+            $sanitized['llms_txt_content'] = sanitize_textarea_field($input['llms_txt_content']);
         }
 
         return $sanitized;
+    }
+
+    /** Title separators offered in the settings UI and accepted by imports. */
+    public static function title_separators(): array {
+        return array('-', '|', "\xE2\x80\xA2", "\xE2\x80\x94");
     }
 
     private function sanitize_checkbox(array $input, string $key): int {

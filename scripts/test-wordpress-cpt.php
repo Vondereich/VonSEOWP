@@ -143,9 +143,9 @@ foreach (get_posts(array('post_type' => array('post', 'page'), 'post_status' => 
 }
 $sitemap = (new ReflectionClass('VonSEOWP_Sitemap'))->newInstanceWithoutConstructor();
 $count = new ReflectionMethod($sitemap, 'get_total_entries');
-$count->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $count->setAccessible(true);
 $xml = new ReflectionMethod($sitemap, 'output_xml');
-$xml->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $xml->setAccessible(true);
 vonseowp_cpt_check($count->invoke($sitemap) === 1, 'Noindex CPT must be excluded before counting; home remains.');
 update_post_meta($book, '_vonseowp_noindex', '0');
 $locked = vonseowp_cpt_create('vonseqc_book', array('post_password' => 'fixture-only'));
@@ -158,7 +158,7 @@ $count_started = microtime(true);
 $count->invoke($sitemap);
 $count_seconds = microtime(true) - $count_started;
 $index = new ReflectionMethod($sitemap, 'output_index');
-$index->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $index->setAccessible(true);
 ob_start();
 $index->invoke($sitemap, $count->invoke($sitemap));
 $index_xml = simplexml_load_string((string) ob_get_clean());

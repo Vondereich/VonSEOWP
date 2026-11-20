@@ -50,15 +50,12 @@ class VonSEOWP_LLM {
                 exit;
             }
 
-            $content = !empty($options['llms_txt_content']) ? $options['llms_txt_content'] : $this->get_default_template();
-
             header('Content-Type: text/plain; charset=utf-8');
             header('X-Robots-Tag: index, follow');
             header('X-Content-Type-Options: nosniff');
             nocache_headers();
-            
-            // Escaping with wp_kses_post for security audit compliance
-            echo wp_kses_post($content);
+
+            echo self::prepare_plain_text($this->get_content($options)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- text/plain + nosniff; HTML escaping would corrupt Markdown.
             exit;
         }
     }
@@ -66,14 +63,31 @@ class VonSEOWP_LLM {
     /**
      * Get default llms.txt template
      */
+    public function get_content(array $options): string {
+        return !empty($options['llms_txt_content']) ? (string) $options['llms_txt_content'] : $this->get_default_template();
+    }
+
+    /**
+     * Plain-text Markdown must keep literal '>' and '&'. Saved content is already tag-stripped by
+     * sanitize_textarea_field(); this removes any remaining markup and NUL bytes without entity-encoding.
+     */
+    public static function prepare_plain_text(string $content): string {
+        return str_replace("\0", '', wp_strip_all_tags($content));
+    }
+
+    private static function decode_site_text(string $text): string {
+        // Core stores the site title/tagline HTML-escaped; plain text needs the literal characters.
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
     private function get_default_template(): string {
-        $site_name = get_bloginfo('name');
-        $site_desc = get_bloginfo('description');
+        $site_name = self::decode_site_text((string) get_bloginfo('name'));
+        $site_desc = trim(self::decode_site_text((string) get_bloginfo('description')));
         $home_url  = home_url('/');
         $sitemap   = home_url('/sitemap.xml');
 
         $template = "# {$site_name}\n\n";
-        $template .= "> {$site_desc}\n\n";
+        if ($site_desc !== '') $template .= "> {$site_desc}\n\n";
         $template .= "## " . __('Key Resources', 'vonseo') . "\n\n";
         $template .= "- [" . __('Home Page', 'vonseo') . "]({$home_url}): " . __('Main entry point for the website.', 'vonseo') . "\n";
         $template .= "- [" . __('XML Sitemap', 'vonseo') . "]({$sitemap}): " . __('Detailed index of all public pages for crawling.', 'vonseo') . "\n\n";

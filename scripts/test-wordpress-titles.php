@@ -71,7 +71,7 @@ $settings['home_title'] = '';
 vonseowp_native_title_check(wp_title('|', false, 'right') === '', 'Empty homepage override must retain the native fallback.');
 
 $canonical = new ReflectionMethod($frontend, 'get_canonical_url');
-$canonical->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $canonical->setAccessible(true);
 $canonical_options = array('show_on_front' => 'posts', 'page_for_posts' => 0);
 foreach (array_keys($canonical_options) as $key) {
     add_filter('pre_option_' . $key, static function () use ($key) { return $GLOBALS['canonical_options'][$key]; }, 20);

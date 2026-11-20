@@ -89,7 +89,11 @@ class VonSEOWP_Breadcrumbs {
     }
 
     public static function get_items(): array {
-        if (is_front_page()) {
+        // The root of a "static page" setup with no homepage chosen is is_home() but queries no page.
+        $posts_page = (int) get_option('page_for_posts');
+        $is_posts_page = is_home() && get_option('show_on_front') === 'page' && $posts_page > 0
+            && (int) get_queried_object_id() === $posts_page;
+        if (is_front_page() || (is_home() && !$is_posts_page)) {
             return array();
         }
 
@@ -109,17 +113,17 @@ class VonSEOWP_Breadcrumbs {
                 );
             }
 
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_singular()) {
             $items = self::build_singular_items($items);
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_category() || is_tag() || is_tax()) {
             $items = self::build_term_items($items);
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_post_type_archive()) {
@@ -131,7 +135,7 @@ class VonSEOWP_Breadcrumbs {
                 );
             }
 
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_search()) {
@@ -141,7 +145,7 @@ class VonSEOWP_Breadcrumbs {
                 'url'   => '',
             );
 
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_author()) {
@@ -154,7 +158,7 @@ class VonSEOWP_Breadcrumbs {
                 );
             }
 
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_year() || is_month() || is_day()) {
@@ -163,7 +167,7 @@ class VonSEOWP_Breadcrumbs {
                 'url'   => '',
             );
 
-            return apply_filters('vonseowp_breadcrumb_items', $items);
+            return self::filter_items($items);
         }
 
         if (is_404()) {
@@ -173,7 +177,19 @@ class VonSEOWP_Breadcrumbs {
             );
         }
 
-        return apply_filters('vonseowp_breadcrumb_items', $items);
+        return self::filter_items($items);
+    }
+
+    /** A third-party filter returning a non-array must not break breadcrumbs or the head schema. */
+    private static function filter_items(array $items): array {
+        $filtered = apply_filters('vonseowp_breadcrumb_items', $items);
+        return is_array($filtered) ? $filtered : $items;
+    }
+
+    public static function is_public_ancestor(int $post_id): bool {
+        $ancestor = get_post($post_id);
+        // Password-protected pages stay listed: WordPress already shows their titles publicly.
+        return $ancestor && $ancestor->post_status === 'publish';
     }
 
     private static function build_singular_items(array $items): array {
@@ -185,6 +201,8 @@ class VonSEOWP_Breadcrumbs {
         if (is_page()) {
             $ancestors = array_reverse(get_post_ancestors($post_id));
             foreach ($ancestors as $ancestor_id) {
+                // Never reveal private, draft or pending parent pages in a public trail.
+                if (!self::is_public_ancestor((int) $ancestor_id)) continue;
                 $items[] = array(
                     'label' => get_the_title($ancestor_id),
                     'url'   => get_permalink($ancestor_id),

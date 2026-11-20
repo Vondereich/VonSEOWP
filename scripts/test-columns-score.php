@@ -39,7 +39,7 @@ function vonseowp_column_score(array $meta): int {
 
     $columns = (new ReflectionClass('VonSEOWP_Columns'))->newInstanceWithoutConstructor();
     $method = new ReflectionMethod('VonSEOWP_Columns', 'calculate_basic_score');
-    $method->setAccessible(true);
+    if (PHP_VERSION_ID < 80100) $method->setAccessible(true);
 
     return (int) $method->invoke($columns, $post_id);
 }

@@ -107,7 +107,7 @@ if (false) {
                                     <option value="•" <?php selected($vonseowp_options['separator'] ?? '-', '•'); ?>><?php esc_html_e('• (Bullet)', 'vonseo'); ?></option>
                                     <option value="—" <?php selected($vonseowp_options['separator'] ?? '-', '—'); ?>><?php esc_html_e('— (Em Dash)', 'vonseo'); ?></option>
                                 </select>
-                                <div class="von-form-desc"><?php esc_html_e('Character displayed between post title and site name.', 'vonseo'); ?></div>
+                                <div class="von-form-desc"><?php esc_html_e('Character displayed between post title and site name. The default dash keeps the separator your theme provides.', 'vonseo'); ?></div>
                             </div>
 
                             <div class="von-form-group">
@@ -314,7 +314,7 @@ if (false) {
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
-                                <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><?php esc_html_e('* Showing last 50 unique 404s.', 'vonseo'); ?></p>
+                                <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><?php esc_html_e('* Showing last 50 unique 404s. To limit database writes, repeat hits on the same URL within a minute count once and very rapid 404s may be skipped, so counts are approximate.', 'vonseo'); ?></p>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -584,7 +584,7 @@ if (false) {
                             <h4><?php esc_html_e('Public llms.txt', 'vonseo'); ?></h4>
                             <p><?php esc_html_e('When enabled on a public site, llms.txt is a public text endpoint, not a private document or an access-control mechanism. Manually curated text and links are not checked individually for password/noindex eligibility. Do not put secrets or private links there. Disabling the endpoint or making the site non-public returns a 404, but cannot erase copies already fetched by third parties.', 'vonseo'); ?></p>
                             <h4><?php esc_html_e('Retention and removal', 'vonseo'); ?></h4>
-                            <p><?php esc_html_e('Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields. Competitor cache expiry is handled by WordPress transients. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it.', 'vonseo'); ?></p>
+                            <p><?php esc_html_e('Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields and Competitor scan caches stored in the database; with a persistent object cache, cached scans instead expire within 12 hours. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it.', 'vonseo'); ?></p>
                         </div>
                     </div>
 
@@ -638,18 +638,6 @@ if (false) {
                         <div class="von-card-body">
                             <div class="von-form-group">
                                 <label class="von-switch">
-                                    <input type="checkbox" name="vonseowp_settings[remove_category_base]" value="1" <?php checked(1, $vonseowp_options['remove_category_base'] ?? 0); ?>>
-                                    <span class="von-slider"></span>
-                                </label>
-                                <span class="von-switch-label"><?php esc_html_e('Remove Category Base (Url Stub)', 'vonseo'); ?></span>
-                                <div class="von-form-desc"><?php
-                                                            /* translators: 1: URL stub, 2: Important tag */
-                                                            printf(esc_html__('Removes %1$s from category archive URLs. %2$s Go to Settings > Permalinks and just click "Save" after changing this option.', 'vonseo'), '<code>/category/</code>', '<br><strong>' . esc_html__('Important:', 'vonseo') . '</strong>');
-                                                            ?></div>
-                            </div>
-
-                            <div class="von-form-group">
-                                <label class="von-switch">
                                     <input type="checkbox" name="vonseowp_settings[redirect_attachments]" value="1" <?php checked(1, $vonseowp_options['redirect_attachments'] ?? 1); ?>>
                                     <span class="von-slider"></span>
                                 </label>
@@ -662,7 +650,7 @@ if (false) {
 
                             <div class="von-form-group">
                                 <label class="von-switch">
-                                    <input type="checkbox" name="vonseowp_settings[enable_rss_footer]" value="1" <?php checked(1, $vonseowp_options['enable_rss_footer'] ?? 1); ?>>
+                                    <input type="checkbox" name="vonseowp_settings[enable_rss_footer]" value="1" <?php checked(1, $vonseowp_options['enable_rss_footer'] ?? 0); ?>>
                                     <span class="von-slider"></span>
                                 </label>
                                 <span class="von-switch-label"><?php esc_html_e('Enable RSS Footer Protection', 'vonseo'); ?></span>

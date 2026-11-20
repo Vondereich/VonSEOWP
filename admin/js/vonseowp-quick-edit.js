@@ -27,9 +27,10 @@
             const seo_data = post_row.find('.vonseo-quick-edit-data');
             
             if (seo_data.length) {
-                const title = seo_data.data('title') || '';
-                const desc = seo_data.data('desc') || '';
-                const keywords = seo_data.data('keywords') || '';
+                // attr(), not data(): jQuery's data() converts numeric or JSON-like text into other types.
+                const title = seo_data.attr('data-title') || '';
+                const desc = seo_data.attr('data-desc') || '';
+                const keywords = seo_data.attr('data-keywords') || '';
 
                 // Populate the fields with safety fallbacks
                 edit_row.find('input[name="vonseowp_title"]').val(title);

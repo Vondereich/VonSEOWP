@@ -30,7 +30,11 @@ delete_transient('vonseowp_site_audit_results');
 // 2. Delete Post Metadata
 global $wpdb;
 // Pending administrator previews expire naturally; remove them immediately on deletion too.
-foreach (array('_transient_vonseowp_settings_import_', '_transient_timeout_vonseowp_settings_import_') as $vonseowp_preview_prefix) {
+foreach (array(
+    '_transient_vonseowp_settings_import_', '_transient_timeout_vonseowp_settings_import_',
+    // Competitor scan cache (12-hour transients keyed by URL hash).
+    '_transient_vonseowp_comp_', '_transient_timeout_vonseowp_comp_',
+) as $vonseowp_preview_prefix) {
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin-owned transient cleanup on uninstall.
     $wpdb->query($wpdb->prepare("DELETE FROM $wpdb->options WHERE option_name LIKE %s", $wpdb->esc_like($vonseowp_preview_prefix) . '%'));
 }
@@ -43,6 +47,7 @@ $vonseowp_meta_keys = array(
     '_vonseowp_schema_type',
     '_vonseowp_rating',
     '_vonseowp_rating_count',
+    '_vonseowp_reviewed_product',
     '_vonseowp_social_title',
     '_vonseowp_social_desc',
     '_vonseowp_faq',
@@ -55,10 +60,11 @@ foreach ($vonseowp_meta_keys as $vonseowp_key) {
     $wpdb->query($wpdb->prepare("DELETE FROM $wpdb->postmeta WHERE meta_key = %s", $vonseowp_key));
 }
 
-// 3. Clear any scheduled crons
+// 3. Delete Term Metadata
 foreach (array('_vonseowp_title', '_vonseowp_description', '_vonseowp_canonical', '_vonseowp_social_desc', '_vonseowp_noindex') as $vonseowp_term_key) {
     delete_metadata('term', 0, $vonseowp_term_key, '', true);
 }
 
+// 4. Clear scheduled events (daily_cleanup is a legacy hook from earlier releases).
 wp_clear_scheduled_hook('vonseowp_daily_cleanup');
 wp_unschedule_hook('vonseowp_indexnow_submit');

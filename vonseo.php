@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       VonSEO
  * Description:       A lightweight, premium SEO toolkit. Features a modern dashboard, automated JSON-LD Schema, Open Graph, Twitter Cards, and per-post SEO controls without the bloat.
- * Version:           2.5.2
+ * Version:           2.5.3
  * Requires at least: 6.0
  * Tested up to:      7.1
  * Requires PHP:      7.4
@@ -36,7 +36,7 @@ if (version_compare(PHP_VERSION, '7.4', '<')) {
     return;
 }
 
-define('VONSEOWP_VERSION', '2.5.2');
+define('VONSEOWP_VERSION', '2.5.3');
 define('VONSEOWP_PATH', plugin_dir_path(__FILE__));
 define('VONSEOWP_URL', plugin_dir_url(__FILE__));
 
@@ -57,6 +57,7 @@ class VonSEOWP {
     private function __construct() {
         add_action('plugins_loaded', array($this, 'init'));
         add_action('init', array($this, 'maybe_flush_rewrites'), 999);
+        add_action('init', array($this, 'load_bundled_translations'), 0);
         register_activation_hook(__FILE__, array($this, 'activation'));
         register_deactivation_hook(__FILE__, array($this, 'deactivation'));
     }
@@ -97,6 +98,21 @@ class VonSEOWP {
              new VonSEOWP_Competitors(); 
         }
 
+    }
+
+    /**
+     * WordPress loads translate.wordpress.org language packs from WP_LANG_DIR on its own. Copies installed
+     * from a release ZIP can also ship translations in /languages; load those only when no language pack exists.
+     */
+    public function load_bundled_translations(): void {
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+        if (!is_string($locale) || !preg_match('/^[A-Za-z]{2,3}(?:_[A-Za-z0-9]+)*$/', $locale)) return;
+        $pack = WP_LANG_DIR . '/plugins/vonseo-' . $locale;
+        if (is_readable($pack . '.mo') || is_readable($pack . '.l10n.php')) return;
+        $bundled = VONSEOWP_PATH . 'languages/vonseo-' . $locale . '.mo';
+        if (is_readable($bundled)) {
+            load_textdomain('vonseo', $bundled, $locale);
+        }
     }
 
     public function maybe_flush_rewrites(): void {

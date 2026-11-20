@@ -406,9 +406,41 @@
     };
   };
 
+  /*
+   * Competitor comparison metrics. Mirrors VonSEOWP_Competitors::text_metrics() in PHP exactly so both
+   * columns of the comparison table use the same word, sentence and syllable rules.
+   */
+  // Kept identical to VonSEOWP_Competitors::WHITESPACE in PHP.
+  const WHITESPACE =
+    /[\u0009-\u000D\u0020\u0085\u00A0\u1680\u180E\u2000-\u200B\u2028\u2029\u202F\u205F\u3000\uFEFF]+/u;
+
+  const countSyllables = (word) => {
+    // ASCII letters only, then lowercase (toLowerCase would turn "\u0130" into an ASCII "i").
+    const letters = String(word).replace(/[^A-Za-z]/g, "").toLowerCase();
+    if (!letters) return 1;
+    let count = (letters.match(/[aeiouy]+/g) || []).length;
+    if (count > 1 && /[^aeiouy]e$/.test(letters)) count -= 1;
+    return Math.max(1, count);
+  };
+
+  const textMetrics = (text) => {
+    const words = String(text || "")
+      .split(WHITESPACE)
+      .filter((token) => /[\p{L}\p{N}]/u.test(token));
+    if (!words.length) return { wordCount: 0, readingEase: 0 };
+    const sentences = (String(text).match(/[.!?]+/gu) || []).length || 1;
+    const syllables = words.reduce((total, word) => total + countSyllables(word), 0);
+    const score = 206.835 - 1.015 * (words.length / sentences) - 84.6 * (syllables / words.length);
+    return {
+      wordCount: words.length,
+      readingEase: Math.round(Math.max(0, Math.min(100, score))),
+    };
+  };
+
   return {
     analyze,
     stripHtml,
+    textMetrics,
     wordsFromText,
     countKeyword,
   };

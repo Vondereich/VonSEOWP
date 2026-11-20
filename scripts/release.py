@@ -7,7 +7,8 @@ import zipfile
 
 PLUGIN_SLUG = "vonseo"
 DIST_DIR = "dist"
-INCLUDE_DIRS = ["admin", "includes", "assets", "languages", "public"]
+# assets/ holds WordPress.org listing art (banner, icon, screenshots); no runtime code references it.
+INCLUDE_DIRS = ["admin", "includes", "languages", "public"]
 INCLUDE_FILES = [
     "vonseo.php",
     "readme.txt",
@@ -48,6 +49,12 @@ def validate_metadata(version):
     readme_tested_version = readme_tested_match.group(1) if readme_tested_match else ""
 
     changelog_has_version = f"## [{version}]" in read_text("CHANGELOG.md")
+    readme_text = read_text("readme.txt")
+    changelog_section = readme_text.split("== Changelog ==", 1)[-1].split("== Upgrade Notice ==", 1)[0]
+    readme_has_version = "== Changelog ==" in readme_text and f"= {version} =" in changelog_section
+    pot_path = os.path.join("languages", "vonseo.pot")
+    pot_match = re.search(r'"Project-Id-Version: VonSEO ([\d.]+)\\n"', read_text(pot_path)) if os.path.isfile(pot_path) else None
+    pot_version = pot_match.group(1) if pot_match else ""
     mismatches = []
     if constant_version != version:
         mismatches.append(f"VONSEOWP_VERSION={constant_version or 'missing'}")
@@ -65,6 +72,10 @@ def validate_metadata(version):
         )
     if not changelog_has_version:
         mismatches.append("CHANGELOG.md entry missing")
+    if not readme_has_version:
+        mismatches.append("readme.txt changelog entry missing")
+    if pot_version != version:
+        mismatches.append(f"languages/vonseo.pot={pot_version or 'missing'}")
 
     if mismatches:
         raise RuntimeError("Release metadata mismatch: " + ", ".join(mismatches))

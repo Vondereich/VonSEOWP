@@ -13,7 +13,7 @@ function add_filter(string $hook, callable $callback, int $priority = 10, int $a
 /** @param callable|string $callback */
 function remove_action(string $hook, $callback, int $priority = 10): void {}
 /** @param mixed $default @return mixed */
-function get_option(string $name, $default = false) { return $name === 'blog_public' ? 1 : ($name === 'vonseowp_settings' ? array() : $default); }
+function get_option(string $name, $default = false) { return $name === 'blog_public' ? 1 : ($name === 'vonseowp_settings' ? ($GLOBALS['settings'] ?? array()) : $default); }
 function get_post_types(array $args = array(), string $output = 'names'): array { return array('post' => (object) array('_builtin' => true), 'page' => (object) array('_builtin' => true)); }
 function sanitize_key(string $key): string { return strtolower($key); }
 function is_singular(): bool { return true; }
@@ -23,9 +23,11 @@ function post_password_required(object $post): bool { return $GLOBALS['locked'];
 /** @return mixed */
 function get_post_meta(int $id, string $key, bool $single = false) { return $GLOBALS['meta'][$key] ?? ''; }
 function home_url(string $path = ''): string { return 'https://example.invalid' . $path; }
-function get_bloginfo(string $key): string { return 'Public site'; }
+function get_bloginfo(string $key): string { return $GLOBALS['site_name'] ?? 'Public site'; }
 function has_site_icon(): bool { return false; }
 function has_post_thumbnail(int $id): bool { return false; }
+function has_excerpt(int $id): bool { return isset($GLOBALS['excerpt']); }
+function get_the_excerpt(int $id): string { return $GLOBALS['excerpt'] ?? ''; }
 function get_permalink(int $id = 0): string { return 'https://example.invalid/item/'; }
 function get_the_title(int $id = 0): string { return 'Public item & title'; }
 function wp_strip_all_tags(string $text): string { return strip_tags($text); }
@@ -44,9 +46,25 @@ function get_the_author_meta(string $key, ?int $id = null) {
 }
 function get_the_category(int $id): array { return array(); }
 function __(string $text, string $domain = ''): string { return $text; }
-function wp_json_encode(array $data): string { return (string) json_encode($data); }
+/** @return mixed */
+function wp_parse_url(string $url, int $component = -1) { return parse_url($url, $component); }
+function wp_parse_str(string $query, array &$result): void { parse_str($query, $result); }
+function get_site_icon_url(int $size = 512): string { return 'https://example.invalid/icon.png'; }
+function wp_json_encode(array $data, int $flags = 0): string { $GLOBALS['json_flags'] = $flags; return (string) json_encode($data, $flags); }
+/** @return object|null */
+function get_post(int $id) { return $GLOBALS['ancestor_posts'][$id] ?? null; }
+function is_404(): bool { return $GLOBALS['is_404'] ?? false; }
+function is_search(): bool { return $GLOBALS['is_search'] ?? false; }
+function is_front_page(): bool { return false; }
+function is_home(): bool { return false; }
+function get_queried_object_id(): int { return 1; }
+function get_post_ancestors(int $id): array { return array(); }
+/** @param mixed $value @return mixed */
+function apply_filters(string $hook, $value) { return array_key_exists('filter_override', $GLOBALS) ? $GLOBALS['filter_override'] : $value; }
 require dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';
+require dirname(__DIR__) . '/includes/class-vonseowp-admin.php';
+require dirname(__DIR__) . '/includes/class-vonseowp-breadcrumbs.php';
 function vonseowp_schema_check(bool $condition, string $message): void {
     $GLOBALS['assertions']++;
     if (!$condition) throw new RuntimeException($message);
@@ -119,4 +137,116 @@ $locked = true;
 foreach (vonseowp_schema_graph('Review', array_merge($rating, array('_vonseowp_reviewed_product' => 'PrivateProductSentinel'))) as $node) {
     vonseowp_schema_check(strpos((string) json_encode($node), 'PrivateProductSentinel') === false && strpos($node['@id'] ?? '', '/item/#') === false, 'Password gate must suppress singular schema fields.');
 }
+$locked = false;
+function vonseowp_schema_entity(): array {
+    foreach (vonseowp_schema_graph('') as $node) if (($node['@type'] ?? '') === 'Organization') return $node;
+    throw new RuntimeException('Organization node absent.');
+}
+// Core stores the site title HTML-escaped; a cleared Site Title field is saved as ''.
+$site_name = 'Tom &amp; Jerry';
+foreach (array(array(), array('home_title' => ''), array('home_title' => '  ')) as $settings) {
+    vonseowp_schema_check(vonseowp_schema_entity()['name'] === 'Tom & Jerry', 'Organization name must fall back to the decoded site name.');
+}
+$settings = array('home_title' => 'Brand &amp; Co');
+vonseowp_schema_check(vonseowp_schema_entity()['name'] === 'Brand & Co', 'Saved homepage title must name the Organization.');
+$settings = array('facebook_url' => 'https://www.facebook.com/example', 'twitter_username' => '@example_1');
+vonseowp_schema_check(vonseowp_schema_entity()['sameAs'] === array('https://www.facebook.com/example', 'https://x.com/example_1'),
+    'Saved social profiles must be published as Organization sameAs.');
+$settings = array('facebook_url' => 'javascript:alert(1)', 'twitter_username' => 'not a handle!');
+vonseowp_schema_check(!isset(vonseowp_schema_entity()['sameAs']), 'Invalid social profiles must not be published.');
+$settings = array();
+$site_name = 'Public site';
+$trail = VonSEOWP_Frontend::build_breadcrumb_schema(array(
+    array('label' => 'Home', 'url' => 'https://example.invalid/'),
+    array('label' => 'Parent &amp; child', 'url' => 'https://example.invalid/parent/'),
+    array('label' => 'Current &#8217;post', 'url' => 'https://example.invalid/parent/current/'),
+));
+vonseowp_schema_check(array_column($trail['itemListElement'], 'position') === array(1, 2, 3)
+    && $trail['itemListElement'][1]['name'] === 'Parent & child' && $trail['itemListElement'][2]['name'] === "Current \u{2019}post",
+    'Breadcrumb schema must follow the full visible trail with decoded names.');
+vonseowp_schema_check(VonSEOWP_Frontend::build_breadcrumb_schema(array(array('label' => 'Home', 'url' => 'https://example.invalid/'))) === array(),
+    'A one-item breadcrumb trail must not be published.');
+$search = VonSEOWP_Frontend::build_breadcrumb_schema(array(array('label' => 'Home', 'url' => 'https://example.invalid/'), array('label' => 'Search results', 'url' => '')));
+vonseowp_schema_check(!isset($search['itemListElement'][1]['item']) && count($search['itemListElement']) === 2, 'The current crumb may omit its URL.');
+$gap = VonSEOWP_Frontend::build_breadcrumb_schema(array(array('label' => 'Home', 'url' => 'https://example.invalid/'),
+    array('label' => 'Unlinked', 'url' => ''), array('label' => 'Post', 'url' => 'https://example.invalid/p/')));
+vonseowp_schema_check(array_column($gap['itemListElement'], 'name') === array('Home', 'Post')
+    && array_column($gap['itemListElement'], 'position') === array(1, 2),
+    'Only the unlinked intermediate crumb is dropped, and positions are renumbered.');
+$frontend = new VonSEOWP_Frontend();
+foreach (array(array(), array('separator' => '-'), array('separator' => '<b>')) as $settings) {
+    vonseowp_schema_check($frontend->filter_title_separator('&raquo;') === '&raquo;', 'Default or invalid separators must keep the theme separator.');
+}
+$settings = array('separator' => '|');
+vonseowp_schema_check($frontend->filter_title_separator('-') === '|', 'Saved separator must apply to document titles.');
+$settings = array();
+// VideoObject (SCH-02): files use contentUrl, player pages use embedUrl.
+$video_post = (object) array('ID' => 1, 'post_content' => 'Video post body.');
+$youtube = VonSEOWP_Frontend::build_video_schema(array('url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1', 'name' => '', 'desc' => ''), $video_post, '');
+vonseowp_schema_check(($youtube['embedUrl'] ?? '') === 'https://www.youtube.com/embed/dQw4w9WgXcQ' && !isset($youtube['contentUrl'])
+    && $youtube['thumbnailUrl'] === 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg' && $youtube['name'] === 'Public item & title'
+    && $youtube['description'] === 'Video post body.', 'YouTube pages must use embedUrl with a real thumbnail and decoded fallbacks.');
+foreach (array('https://youtu.be/dQw4w9WgXcQ', 'https://www.youtube.com/shorts/dQw4w9WgXcQ') as $short) {
+    vonseowp_schema_check((VonSEOWP_Frontend::build_video_schema(array('url' => $short), $video_post, '')['embedUrl'] ?? '') === 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        'Short YouTube URLs must resolve to the embed player: ' . $short);
+}
+$file = VonSEOWP_Frontend::build_video_schema(array('url' => 'https://cdn.example.invalid/clip.mp4', 'name' => 'Clip', 'desc' => 'About'), $video_post, 'https://example.invalid/poster.jpg');
+vonseowp_schema_check(($file['contentUrl'] ?? '') === 'https://cdn.example.invalid/clip.mp4' && !isset($file['embedUrl'])
+    && $file['thumbnailUrl'] === 'https://example.invalid/poster.jpg', 'Media files must use contentUrl and the post image.');
+$vimeo = VonSEOWP_Frontend::build_video_schema(array('url' => 'https://vimeo.com/123456'), $video_post, '');
+vonseowp_schema_check(($vimeo['embedUrl'] ?? '') === 'https://player.vimeo.com/video/123456' && !isset($vimeo['contentUrl']),
+    'Vimeo page links must become the Vimeo player URL.');
+$other = VonSEOWP_Frontend::build_video_schema(array('url' => 'https://videos.example.invalid/watch/9'), $video_post, '');
+vonseowp_schema_check(($other['embedUrl'] ?? '') === 'https://videos.example.invalid/watch/9' && !isset($other['contentUrl']) && !isset($other['thumbnailUrl']),
+    'Other player pages use embedUrl and never a fabricated favicon thumbnail.');
+foreach (array('javascript:alert(1)', 'not a url', '//example.invalid/v.mp4') as $bad) {
+    vonseowp_schema_check(VonSEOWP_Frontend::build_video_schema(array('url' => $bad), $video_post, '') === array(), 'Invalid video URLs must be skipped: ' . $bad);
+}
+// JSON-LD must hex-escape markup characters, so no stored value can close the script element.
+$json_flags = 0;
+$html_out = (function (): string {
+    $GLOBALS['meta'] = array('_vonseowp_description' => 'Close </script><script>alert(1)</script> & "quote"', '_vonseowp_schema_type' => 'Article');
+    unset($GLOBALS['vonseowp_json_ld_done']);
+    ob_start();
+    (new VonSEOWP_Frontend())->output_json_ld();
+    return (string) ob_get_clean();
+})();
+$required_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+vonseowp_schema_check(($json_flags & $required_flags) === $required_flags, 'JSON-LD must use JSON_HEX_TAG|AMP|APOS|QUOT.');
+vonseowp_schema_check(substr_count($html_out, '<script') === 1 && substr_count($html_out, '</script>') === 1,
+    'Stored values must not open or close script elements inside JSON-LD.');
+// Breadcrumb ancestors: only published parents may appear in a public trail.
+$ancestor_posts = array(
+    10 => (object) array('ID' => 10, 'post_status' => 'publish', 'post_password' => ''),
+    11 => (object) array('ID' => 11, 'post_status' => 'private', 'post_password' => ''),
+    12 => (object) array('ID' => 12, 'post_status' => 'draft', 'post_password' => ''),
+    13 => (object) array('ID' => 13, 'post_status' => 'publish', 'post_password' => 'secret'),
+);
+vonseowp_schema_check(VonSEOWP_Breadcrumbs::is_public_ancestor(10) && VonSEOWP_Breadcrumbs::is_public_ancestor(13),
+    'Published parents stay in the trail (protected titles are already public in WordPress).');
+vonseowp_schema_check(!VonSEOWP_Breadcrumbs::is_public_ancestor(11) && !VonSEOWP_Breadcrumbs::is_public_ancestor(12)
+    && !VonSEOWP_Breadcrumbs::is_public_ancestor(999), 'Private, draft and missing parents must be hidden.');
+// WordPress "AI" plugin: its duplicate description tag is suppressed, its text is a fallback.
+vonseowp_schema_check((new VonSEOWP_Frontend())->suppress_external_description('Generated text') === '', 'The AI plugin description tag must be suppressed.');
+$ai_node = vonseowp_schema_node('Article', array('_vonseowp_description' => '', 'wpai_meta_description' => 'Generated <b>summary</b>'));
+vonseowp_schema_check($ai_node['description'] === 'Generated summary', 'AI plugin descriptions must be the fallback when VonSEO has none.');
+$excerpt = 'Hand-written excerpt';
+vonseowp_schema_check(vonseowp_schema_node('Article', array('_vonseowp_description' => '', 'wpai_meta_description' => 'Generated'))['description'] === 'Hand-written excerpt',
+    'Schema descriptions follow the same chain: an excerpt outranks the AI plugin.');
+unset($GLOBALS['excerpt']);
+$own_node = vonseowp_schema_node('Article', array('_vonseowp_description' => 'Own text', 'wpai_meta_description' => 'Generated'));
+vonseowp_schema_check($own_node['description'] === 'Own text', 'A saved VonSEO description must win over the AI plugin.');
+// Breadcrumb structured data is skipped on search and 404 responses.
+foreach (array('is_404', 'is_search') as $context) {
+    $GLOBALS[$context] = true;
+    $graph = vonseowp_schema_graph('Article');
+    vonseowp_schema_check(!in_array('BreadcrumbList', array_column($graph, '@type'), true), 'No BreadcrumbList on ' . $context);
+    $GLOBALS[$context] = false;
+}
+vonseowp_schema_check(in_array('BreadcrumbList', array_column(vonseowp_schema_graph('Article'), '@type'), true), 'Singular content keeps its BreadcrumbList.');
+// A third-party breadcrumb filter returning a non-array must not break the head.
+$filter_override = 'not an array';
+vonseowp_schema_check(is_array(VonSEOWP_Breadcrumbs::get_items()) && count(VonSEOWP_Breadcrumbs::get_items()) === 2,
+    'Non-array breadcrumb filter results must fall back to the built trail.');
+unset($GLOBALS['filter_override']);
 echo 'Schema tests passed (' . $assertions . ' assertions; actual builder, modeled WordPress state)' . PHP_EOL;

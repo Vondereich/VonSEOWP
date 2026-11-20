@@ -67,7 +67,7 @@ function check_targets(string $output): void {
 
 $toc = new VonSEOWP_TOC();
 $extract = new ReflectionMethod(VonSEOWP_TOC::class, 'extract_headings');
-$extract->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $extract->setAccessible(true);
 
 $content = <<<'HTML'
 <h2>Visible One</h2>
