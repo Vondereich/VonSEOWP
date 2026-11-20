@@ -81,17 +81,10 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **TOC Settings**: Clamp new and legacy minimum heading values to 1-10.
 - **Native Robots**: Use the WordPress `wp_robots` filter instead of replacing its emitter; retain core embed restrictions and independent third-party directives without conflicting index/follow values.
 
-### Dev
-- Expanded TOC and crawler-directive regressions, added translated toggle tests and optional native WordPress password-cookie integration tests, and included TOC tests in release CI.
-- Release validation now requires both frontend TOC assets.
-
 ## [2.4.3] - 2026-09-29
 ### Fixed
 - **Analyzer HTML Parsing**: Replaced script/style filtering regexes with browser DOM parsing and a non-regex fallback tokenizer so malformed end tags cannot leak hidden content into SEO analysis.
 - **Table of Contents Parsing**: Replaced ignored-block filtering regexes with a stateful tokenizer so malformed closing tags cannot contribute false headings.
-
-### Dev
-- Added regression coverage for whitespace and attributes in browser-tolerated script/style end tags.
 
 ## [2.4.1] - 2026-09-20
 ### Fixed
@@ -100,19 +93,14 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 ### Improved
 - **WordPress 7.1 Compatibility**: Confirmed the hotfix on WordPress 7.1.1 and updated the plugin compatibility metadata to WordPress 7.1.
 
-### Dev
-- Added regression coverage for the Site Audit pagination output escaping contract and release validation for synchronized `Tested up to` headers.
-
 ## [2.4.0] - 2026-08-10
 ### Added
 - **Local Site SEO Audit**: Added a manual, local-only audit screen for technical settings and published content processed in safe 25-item batches.
 - **Complete Content Coverage**: Added Previous/Next batch navigation so large sites can audit all published posts and pages without one heavy request.
 - **Actionable Content Findings**: Reports effective metadata fallbacks, length issues, noindex usage, missing image ALT text, and missing internal or external links without sending content off-site.
-- **Audit Regression Coverage**: Added PHP fixtures for metadata fallback, link classification, batch clamping, ranges, and query bounds.
 
 ### Improved
 - **Release Contract**: Preserved the shipped `vonseo/` plugin directory and added package verification for metadata, top-level folder, main plugin file, and development-file exclusions.
-- **Release QC**: GitHub releases now run Node and PHP regression checks plus packaged PHP lint before building the ZIP.
 - **Social Card Fallback**: Square WordPress site icons now use the standard Twitter summary card instead of claiming a large landscape image.
 - **Sitemap Ownership**: WordPress core sitemaps are disabled only while the VonSEO sitemap is enabled, keeping a single advertised sitemap endpoint.
 
@@ -131,8 +119,6 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **Score Consistency**: All Posts SEO score now uses lean metadata rules aligned with the editor analyzer where practical.
 - **Editorial Guidance**: Title and description warnings now distinguish missing, short, long, and near-range values more clearly.
 
-### Dev
-- Added regression coverage for deterministic All Posts score behavior.
 ## [2.3.5] - 2026-06-05
 ### Improved
 - **Lean Frontend Meta Output**: Removed the public generator tag and wrapper comments to reduce version exposure and head markup noise.
@@ -140,10 +126,6 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **Social Image Fallback**: Uses the WordPress site icon as a fallback social image when no post image, featured image, or default social image is configured.
 - **Social Image Accuracy**: Removed fixed Open Graph image dimension tags so fallback icons are not described with incorrect dimensions.
 - **Competitor Scan Hardening**: Capped remote competitor responses and only parses HTML-like response content.
-
-### Dev
-- Added a focused frontend meta regression test for lean public output and social image fallback.
-- Removed the obsolete root activation harness and added a security regression test for repo/package hygiene.
 
 ## [2.3.4] - 2026-06-05
 ### Added
@@ -176,7 +158,6 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **Sitemap Index System**: Automated generation of `sitemap_index.xml` when post count exceeds 1,000 for improved crawling efficiency.
 - **Competitor Analysis Cache**: Implemented 12-hour transient caching for URL scans to prevent redundant scraping and improve dashboard performance.
 - **Repository Standards**: Added `.gitattributes` to standardize LF line endings across development environments.
-- **Local Analyzer Roadmap**: Integrated architecture plans for v2.3.4 (JS) and v2.4 (PHP) into the roadmap.
 
 ### Fixed
 - **Sitemap Query Conflict**: Renamed pagination parameter to `vonseowp_sitemap_page` to prevent conflicts with WordPress core post queries.
@@ -245,7 +226,6 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **I18n**: Full internationalization support across the dashboard and meta box.
 - **JS Localization**: Localized client-side strings and AI recommendations.
 - **Security**: Hardened JSON-LD output and AJAX handlers.
-- **English standardization**: Translated internal roadmap and release logs.
 
 ## [2.2.0] - 2026-03-03
 ### Added

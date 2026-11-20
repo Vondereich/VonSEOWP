@@ -1,7 +1,7 @@
 {
   "name": "vonseo",
   "version": "2.5.3",
-  "description": "Premium Lightweight SEO Toolkit for WordPress",
+  "description": "Lightweight SEO toolkit for WordPress",
   "main": "vonseo.php",
   "scripts": {
     "release": "python scripts/release.py",

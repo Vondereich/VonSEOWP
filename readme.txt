@@ -8,43 +8,42 @@ Stable tag: 2.5.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Surgical SEO. Zero Bloat. Born from the high-performance VonCMS ecosystem.
+Lightweight SEO toolkit: metadata, schema, XML sitemaps, breadcrumbs, table of contents and local content analysis.
 
 == Description ==
 
-VonSEO isn't just another SEO plugin; it’s a **high-performance publishing engine**. Originally forged within the enterprise-grade **VonCMS** ecosystem, it has been meticulously adapted for WordPress publishers who refuse to compromise on speed, security, and database hygiene.
+VonSEO is a lightweight SEO plugin for WordPress. It stores its data in native WordPress options and post/term metadata, runs content analysis in the browser, and sends no telemetry.
 
-Stop turning your WordPress dashboard into a heavy SaaS marketing platform. It's time for **Performance-First SEO**.
+= Content SEO =
 
-### Why Choose VonSEO?
+*   SEO title, meta description, focus keywords and noindex for posts, pages and selected public custom post types.
+*   Social title, description and image for Open Graph and X (Twitter) cards, with Facebook and X previews in the editor.
+*   Local content analysis with an SEO score, title and description length checks, keyword placement, headings, image ALT text and links.
+*   Quick Edit fields and SEO columns in post lists.
+*   SEO title, description, canonical URL, social description and noindex for categories, tags and selected public taxonomies.
 
-Most SEO plugins become increasingly heavy over time, trading performance for oversized dashboards, telemetry, and marketing layers. VonSEO rejects the bloat.
+= Structured data =
 
-*   **Zero-Waste Architecture**: No custom database tables. We use native WordPress `post_meta` and `wp_options` for maximum speed and compatibility.
-*   **Enterprise Heritage**: Built with the same performance DNA as VonCMS.
-*   **Privacy as a Feature**: No tracking or telemetry. Editor analysis and Site Audit stay local; optional IndexNow notifications and manual Competitor scans make the outbound requests described below.
-*   **No Paywalls**: What you see is what you get. No hidden “Pro” tabs or forced upgrades.
+*   Organization or local business details and WebSite markup.
+*   Article, NewsArticle, BlogPosting, WebPage, Product, Product Review and Service per post.
+*   FAQ and Video markup from editor fields, and BreadcrumbList from the breadcrumb trail.
 
-### The Professional Toolkit
+= Technical SEO =
 
-#### 1. Modern SEO Workspace
-A clean, focused editorial workflow designed for speed and usability.
-*   **Compact Sidebar Interface**: Optimize content without leaving the editor.
-*   **Real-Time Google Preview**: See exactly how your site looks in the wild.
-*   **Smart Metadata Assistance**: Faster editorial workflows without the server load.
-*   **Competitor SEO Math**: Live metric comparison against any URL.
+*   XML sitemap with a sitemap index and batches of up to 1,000 URLs.
+*   Canonical URLs, robots directives through the WordPress robots API, and Google and Bing verification tags.
+*   Editable robots.txt and a curated llms.txt file.
+*   Redirect rules, attachment page redirects and an optional 404 log.
+*   Optional IndexNow notifications for Bing and Yandex.
 
-#### 2. Advanced Technical Engine
-*   **Dynamic Sitemap Indexing**: Automated scaling with `sitemap_index.xml` and 1,000-post pagination.
-*   **IndexNow Notifications**: Opt in to notify Bing and Yandex about eligible published updates using native WordPress cron.
-*   **Surgical JSON-LD Schema**: Pure, optimized structured data (Article, FAQ, Video, Review, Breadcrumbs).
-*   **SEO Table of Contents (TOC)**: Lightweight, anchor-based TOC with zero external dependencies.
+= Site tools =
 
-#### 3. Safety & System Health
-*   **System Health Monitor**: Real-time technical diagnostics for your PHP environment and permalinks.
-*   **Manual Site SEO Audit**: Local technical and content checks with safe Previous/Next navigation across 25-item batches.
-*   **Redirect & Robots Manager**: Lightweight control over site navigation and crawling instructions.
-*   **Production-Ready Security**: Strict Nonce verification, Capability checks, and Sanitization at every layer.
+*   Table of contents, automatic or by shortcode.
+*   Breadcrumbs by shortcode or theme function.
+*   Manual Site Audit of technical settings and published content in batches of 25.
+*   Manual Competitor comparison of word count, headings, images and reading ease.
+*   Automatic image ALT and title attributes from attachment titles, and an optional RSS footer link.
+*   Settings export and import with a preview before changes are saved.
 
 == Installation ==
 
@@ -191,17 +190,14 @@ This is a public, curated text endpoint, not an access-control feature or automa
 *   Fixed: Packaged and conditionally loaded TOC assets with accessible, translated show/hide controls and corrected dark-mode styles.
 *   Fixed: Clamped saved and legacy TOC minimum heading counts to 1-10.
 *   Fixed: Integrated robots directives with the native WordPress filter, retaining embed noindex and independent crawler restrictions with one robots tag.
-*   Dev: Expanded TOC, toggle, robots, and asset regressions and added them to release checks.
 
 = 2.4.3 =
 *   Fixed: Replaced analyzer script/style filtering regexes with browser DOM parsing and a safe non-DOM fallback.
 *   Fixed: Hardened Table of Contents parsing against browser-tolerated closing tags in ignored content blocks.
-*   Dev: Added regression coverage for malformed script and style end tags accepted by browser HTML parsers.
 
 = 2.4.1 =
 *   Fixed: Escaped the final formatted Site Audit batch pagination label for WordPress Coding Standards compliance.
 *   Improved: Confirmed compatibility with WordPress 7.1 and updated the Tested up to metadata.
-*   Dev: Added regression coverage for the pagination output escaping contract.
 
 = 2.4.0 =
 *   New: Manual, local-only Site SEO Audit with safe 25-item batch navigation across all published posts and pages.
@@ -214,17 +210,14 @@ This is a public, curated text endpoint, not an access-control feature or automa
 = 2.3.6 =
 *   Improved: All Posts SEO score now uses lean metadata rules aligned with the editor analyzer where practical.
 *   Improved: Title and description guidance now distinguishes missing, short, long, and near-range values more clearly.
-*   Dev: Added regression coverage for deterministic All Posts score behavior.
 = 2.3.5 =
 *   Improved: Removed the public generator tag and wrapper comments to keep frontend head output lean.
 *   Improved: Added a WordPress site icon fallback for social image tags when no post/default image is configured.
 *   Improved: Removed fixed Open Graph image dimension tags to avoid inaccurate dimensions on fallback images.
-*   Dev: Added frontend meta regression test coverage.
 
 = 2.3.4 =
 *   New: Local editor-only content analyzer for keyword density, heading structure, image ALT coverage, first-paragraph keyword usage, and link presence.
 *   Improved: SEO Health score now uses explicit deterministic rules while staying lightweight and private.
-*   Dev: Added focused analyzer test coverage.
 
 = 2.3.3 =
 *   Fixed: Settings pages now return to the active tab after saving instead of falling back to General.

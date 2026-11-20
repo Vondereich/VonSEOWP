@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       VonSEO
- * Description:       A lightweight, premium SEO toolkit. Features a modern dashboard, automated JSON-LD Schema, Open Graph, Twitter Cards, and per-post SEO controls without the bloat.
+ * Description:       Lightweight SEO toolkit: metadata, schema, XML sitemaps, breadcrumbs, table of contents and local content analysis.
  * Version:           2.5.3
  * Requires at least: 6.0
  * Tested up to:      7.1

@@ -1,105 +1,75 @@
-# VonSEOWP: The High-Performance SEO Engine
+# VonSEO
 
-> **Surgical SEO. Zero Bloat. Born from VonCMS.**
+VonSEO is a lightweight SEO plugin for WordPress. It stores its data in native WordPress options and post/term metadata, runs content analysis in the browser, and sends no telemetry.
 
-VonSEOWP isn't just another SEO plugin; it’s a high-performance publishing engine. Originally forged within the enterprise-grade **VonCMS** ecosystem, it has been meticulously adapted for WordPress publishers who refuse to compromise on speed, security, and database hygiene.
+**Requirements:** WordPress 6.0 or later, PHP 7.4 or later.
 
-Stop turning your WordPress dashboard into a heavy SaaS marketing platform. It's time for **Performance-First SEO**.
+## Features
 
----
+### Content SEO
+- SEO title, meta description, focus keywords and noindex for posts, pages and selected public custom post types.
+- Social title, description and image for Open Graph and X (Twitter) cards, with Facebook and X previews in the editor.
+- Local content analysis with an SEO score, title and description length checks, keyword placement, headings, image ALT text and links.
+- Quick Edit fields and SEO columns in post lists.
+- SEO title, description, canonical URL, social description and noindex for categories, tags and selected public taxonomies.
 
-## ⚡ Why VonSEOWP?
+### Structured data
+- Organization or local business details and WebSite markup.
+- Article, NewsArticle, BlogPosting, WebPage, Product, Product Review and Service per post.
+- FAQ and Video markup from editor fields, and BreadcrumbList from the breadcrumb trail.
 
-Most SEO plugins become increasingly heavy over time, trading performance for oversized dashboards, telemetry, and marketing layers. VonSEOWP rejects the bloat.
+### Technical SEO
+- XML sitemap with a sitemap index and batches of up to 1,000 URLs.
+- Canonical URLs, robots directives through the WordPress robots API, and Google and Bing verification tags.
+- Editable robots.txt and a curated llms.txt file.
+- Redirect rules, attachment page redirects and an optional 404 log.
+- Optional IndexNow notifications for Bing and Yandex.
 
-- **Zero-Waste Architecture**: No custom database tables. We use native WordPress options and post/term metadata.
-- **Enterprise Heritage**: Built with the same performance DNA as VonCMS.
-- **Privacy as a Feature**: No tracking or telemetry. Editor analysis and Site Audit stay local; optional IndexNow notifications and manual Competitor scans make disclosed outbound requests. See the external-services section in [readme.txt](readme.txt).
-- **Supported Platform**: Requires **WordPress 6.0+** and **PHP 7.4+**, with document-title support for modern and legacy themes.
+### Site tools
+- Table of contents, automatic or by shortcode.
+- Breadcrumbs by shortcode or theme function.
+- Manual Site Audit of technical settings and published content in batches of 25.
+- Manual Competitor comparison of word count, headings, images and reading ease.
+- Automatic image ALT and title attributes from attachment titles, and an optional RSS footer link.
+- Settings export and import with a preview before changes are saved.
 
----
+## Installation
 
-## 🛠️ The Professional Toolkit
+1. Upload the `vonseo` folder to `/wp-content/plugins/`, or install the ZIP from **Plugins > Add New**.
+2. Activate the plugin.
+3. Open **VonSEO** in the admin menu and save your settings.
 
-### 1. The Modern SEO Workspace
-A clean, focused editorial workflow that stays out of your way until you need it.
-- **Compact Sidebar Interface**: Optimize content without leaving the editor.
-- **Real-Time Google Preview**: See exactly how your site looks in the wild.
-- **Smart Metadata Assistance**: Faster editorial workflows without the server load.
-- **Selected Content Types**: Apply SEO tools to posts, pages and opted-in public custom post types.
-- **Taxonomy Archive SEO**: Edit SEO titles, descriptions, canonicals, social descriptions and noindex on category, tag and selected public-taxonomy screens.
-- **Settings Portability**: Export supported site settings as JSON and review validated imports before confirming. Site-specific tokens, IndexNow consent/key and content metadata are excluded.
-- **Competitor SEO Math**: Live metric comparison against any URL (with 12-hour transient caching).
+## Privacy
 
-### 2. Advanced Technical Engine
-- **Dynamic Sitemap Indexing**: `sitemap_index.xml` with batches of up to 1,000 URLs across selected content and eligible nonempty taxonomy archives.
-- **IndexNow Integration**: Explicit opt-in notifications for eligible published URLs, deferred and rechecked using native WordPress cron.
-- **Surgical JSON-LD Schema**: Pure, optimized structured data (Article, FAQ, Video, Review, Breadcrumbs).
-- **SEO Table of Contents (TOC)**: Lightweight, anchor-based TOC with zero external dependencies.
-
-### 3. Safety & Health
-- **System Health Monitor**: Real-time technical diagnostics for your environment.
-- **Manual Site SEO Audit**: Local technical and content checks with safe Previous/Next navigation across 25-item batches.
-- **Redirect & Robots Manager**: Lightweight control over your site's navigation and crawling instructions.
-- **4-Layer Defense**: Strict Nonce verification, Capability checks, Sanitization, and Escaping at every layer.
-
----
-
-## 🏁 Performance Philosophy
-
-VonSEOWP is engineered with a lightweight-first architecture using native WordPress storage and minimal frontend overhead.
-
-- **Lightweight by Default**: Minimal frontend requests.
-- **Native Storage**: Maximum compatibility with migrations and backups.
-- **Developer-First**: Clean code, hardened IDE stubs, and predictable hooks.
-
----
-
-## 🚀 Installation & Requirements
-
-1. **Upload** the `vonseo` folder to `/wp-content/plugins/`.
-2. **Activate** and save your settings.
-3. **Enjoy** a faster, cleaner WordPress.
-
-**Requirements:**
-- **WordPress**: 6.0+ (Required)
-- **PHP**: 7.4+ (Required)
-
----
+VonSEO has no telemetry or analytics tracking. Content analysis and Site Audit run locally. Two optional features make outbound requests: IndexNow notifications, and Competitor scans that an editor starts manually. The external-services section of [readme.txt](readme.txt) describes both.
 
 ## FAQ
 
-**Where is the analyzer?**
-Open an enabled post, page or custom post type editor and use the VonSEO Content Intelligence sidebar/metabox. It is not a public frontend script.
+**Where is the content analyzer?**
+In the VonSEO sidebar/metabox when editing an enabled post, page or custom post type. It does not run on the public frontend.
 
 **Does the analyzer send draft content outside WordPress?**
-No. Content analysis runs locally in your browser. Optional IndexNow notifications and manual Competitor scans make the disclosed requests in [readme.txt](readme.txt).
+No. It runs in your browser.
 
 **Does it support custom post types?**
-Yes. Select eligible public types in SEO Content Types to enable editor tools, metadata, schema, Quick Edit, Site Audit and sitemap coverage. Attachments and non-public types are excluded.
+Yes. Select eligible public types under SEO Content Types to enable the editor tools, metadata, schema, Quick Edit, Site Audit and sitemap coverage. Attachments and non-public types are excluded.
 
-**Can Site Audit check thousands of posts?**
-Yes. Previous/Next navigation processes published content in 25-item batches instead of loading everything in one request.
-
-**Does SEO Title work with older themes?**
-Yes, through the modern document-title API and legacy `wp_title()`, including Twenty Eleven. Legacy themes can still append their site name. Empty overrides preserve native titles, and password-protected SEO titles stay hidden until access is authorized.
+**Does the SEO title work with older themes?**
+Yes. VonSEO supports the modern document-title API and the legacy `wp_title()` API used by themes such as Twenty Eleven.
 
 **Does IndexNow guarantee indexing?**
-No. It is an optional notification service, off by default unless previously enabled. Eligible canonical URLs are queued using native WordPress cron; search engines decide whether to index them.
+No. It is optional and off by default. Search engines decide whether to crawl and index a URL.
 
 **Does VonSEO create custom database tables?**
-No. It uses native WordPress options and post meta.
-
-**Is there a hidden Pro layer?**
-No. The plugin is built as a lightweight toolkit without forced upgrades or paywalled admin tabs.
-
-**Does it support large sites?**
-Yes. The sitemap system supports sitemap indexing and paginated sitemap output.
+No. It uses WordPress options and post/term metadata.
 
 **What happens when I remove the plugin?**
-Deactivation keeps your data. Deletion removes VonSEO's stored settings and SEO metadata, so keep a backup. Both actions clear queued IndexNow events.
+Deactivation keeps your data. Deleting the plugin removes VonSEO's settings and SEO metadata, so take a backup first.
 
----
+## Changelog
 
-## ⚖️ License
-Licensed under **GPLv3 or later**. Built by publishers, for publishers.
+See [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+GPLv3 or later.
