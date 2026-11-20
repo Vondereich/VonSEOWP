@@ -3,7 +3,7 @@
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
 ## [2.5.3] - 2026-11-20
-### Changed Output (review after upgrading)
+### Changed
 - **Title Separator**: The saved separator now applies to modern document titles through `document_title_separator`. In 2.5.2 the setting had no effect, so sites that saved a non-dash separator will see new `<title>` text. The default dash leaves the theme's separator untouched.
 - **Social Titles**: `og:title`/`twitter:title` now use the same override as the document title: the homepage title on the front page, the posts page or archive SEO title, or a post's saved SEO title. Posts and pages of selected content types without one use their post title. For these pages og:title no longer carries core's assembled "Title – Site Name" text (`og:site_name` carries the brand); other archives, search pages and unselected content types still use the document title.
 - **Posts Page**: With a static front page and a separate posts page, that page no longer reuses the homepage SEO title. It uses its own saved SEO title (with a "Page N" suffix on later pages), description, social fields and image while it is published, or else the native title and the site description.

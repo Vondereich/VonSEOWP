@@ -271,4 +271,4 @@ This is a public, curated text endpoint, not an access-control feature or automa
 == Upgrade Notice ==
 
 = 2.5.3 =
-Stability, compatibility and security fixes. After upgrading, review titles and descriptions: the Title Separator now works, post og:title drops the site name, the posts page uses its own SEO fields, and excerpts precede generated text.
+Stability, compatibility and security release. The Title Separator, social titles, posts page metadata and description fallbacks now follow VonSEO settings. See the changelog for details.
