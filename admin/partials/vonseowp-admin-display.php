@@ -314,7 +314,7 @@ if (false) {
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
-                                <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><?php esc_html_e('* Showing last 50 unique 404s. Repeat hits on the same URL within a minute are counted once.', 'vonseo'); ?></p>
+                                <p style="margin-top: 10px; font-size: 0.9em; color: #666;"><?php esc_html_e('* Showing last 50 unique 404s. To limit database writes, repeat hits on the same URL within a minute count once and very rapid 404s may be skipped, so counts are approximate.', 'vonseo'); ?></p>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -584,7 +584,7 @@ if (false) {
                             <h4><?php esc_html_e('Public llms.txt', 'vonseo'); ?></h4>
                             <p><?php esc_html_e('When enabled on a public site, llms.txt is a public text endpoint, not a private document or an access-control mechanism. Manually curated text and links are not checked individually for password/noindex eligibility. Do not put secrets or private links there. Disabling the endpoint or making the site non-public returns a 404, but cannot erase copies already fetched by third parties.', 'vonseo'); ?></p>
                             <h4><?php esc_html_e('Retention and removal', 'vonseo'); ?></h4>
-                            <p><?php esc_html_e('Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields and cached Competitor scans. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it.', 'vonseo'); ?></p>
+                            <p><?php esc_html_e('Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields and Competitor scan caches stored in the database; with a persistent object cache, cached scans instead expire within 12 hours. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it.', 'vonseo'); ?></p>
                         </div>
                     </div>
 

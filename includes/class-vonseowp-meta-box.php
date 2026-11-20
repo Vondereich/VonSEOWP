@@ -122,7 +122,8 @@ class VonSEOWP_Meta_Box {
 
         // Social image is published in og:image and JSON-LD; store only an http(s) URL.
         if (isset($_POST['vonseowp_image']) && is_string($_POST['vonseowp_image'])) {
-            update_post_meta($post_id, '_vonseowp_image', esc_url_raw(wp_unslash($_POST['vonseowp_image']), array('http', 'https')));
+            // Relative and protocol-relative values are made absolute so they can be published.
+            update_post_meta($post_id, '_vonseowp_image', VonSEOWP_Frontend::absolute_url(esc_url_raw(wp_unslash($_POST['vonseowp_image']), array('http', 'https'))));
         }
 
         $fields = array('title', 'description', 'keywords', 'schema_type', 'rating', 'rating_count', 'reviewed_product', 'social_title', 'social_desc');

@@ -36,8 +36,9 @@ class VonSEOWP_Competitors {
             wp_send_json_error(array('message' => __('Invalid URL', 'vonseo')));
         }
 
-        // v2: metrics now share the editor's text rules and non-2xx pages are rejected; ignore older caches.
-        $cache_key = 'vonseowp_comp_v2_' . md5($url);
+        // v3: metrics share the editor's text rules, read the main content area and non-2xx pages are
+        // rejected; ignore caches written by older releases.
+        $cache_key = 'vonseowp_comp_v3_' . md5($url);
         $results = get_transient($cache_key);
 
         if (false === $results) {
@@ -56,6 +57,9 @@ class VonSEOWP_Competitors {
 
     private const MAX_REDIRECTS = 3;
 
+    /** Total seconds for a scan including redirects, below the usual 30-second PHP limit. */
+    private const TIME_BUDGET = 20;
+
     /**
      * wp_safe_remote_get() with each redirect hop followed here, so every hop passes is_allowed_target()
      * as well as core's own private/loopback checks.
@@ -63,12 +67,17 @@ class VonSEOWP_Competitors {
      * @return array|WP_Error
      */
     private function fetch(string $url) {
+        $deadline = time() + self::TIME_BUDGET;
         for ($hop = 0; $hop <= self::MAX_REDIRECTS; $hop++) {
             if (!self::is_allowed_target($url)) {
                 return new WP_Error('blocked_host', __('The competitor URL points to a local or reserved network address.', 'vonseo'));
             }
+            $remaining = $deadline - time();
+            if ($remaining < 1) {
+                return new WP_Error('timeout', __('The competitor URL took too long to respond.', 'vonseo'));
+            }
             $response = wp_safe_remote_get($url, array(
-                'timeout' => 15,
+                'timeout' => min(15, $remaining),
                 'redirection' => 0,
                 'limit_response_size' => 1024 * 1024,
                 'user-agent' => 'VonSEOWP-Bot/1.0 (Premium SEO Toolkit)'
@@ -88,7 +97,9 @@ class VonSEOWP_Competitors {
     /**
      * Rejects non-HTTP(S) URLs, IPv6 literals and hosts resolving to link-local, CGNAT, private, loopback
      * or reserved addresses. Older WordPress releases do not block link-local (cloud metadata) or CGNAT
-     * ranges in wp_safe_remote_get(), and core never checks IPv6 (AAAA) records.
+     * ranges in wp_safe_remote_get(), and core never checks IPv6 (AAAA) records. As in core, this site's
+     * own host and hosts allowed through the core 'http_request_host_is_external' filter are permitted.
+     * DNS is resolved again by the HTTP client, so this narrows but cannot fully close DNS rebinding.
      */
     public static function is_allowed_target(string $url): bool {
         $parts = wp_parse_url($url);
@@ -96,19 +107,29 @@ class VonSEOWP_Competitors {
             return false;
         }
         $host = strtolower(trim((string) $parts['host'], '[]'));
-        if ($host === 'localhost' || substr($host, -10) === '.localhost' || strpos($host, ':') !== false) return false;
+        $home_host = strtolower((string) wp_parse_url(home_url('/'), PHP_URL_HOST));
+        if ($home_host !== '' && $host === $home_host) return true;
+        if (self::is_blocked_host($host)) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core's own allowance filter for wp_safe_remote_*().
+            return (bool) apply_filters('http_request_host_is_external', false, $host, $url);
+        }
+        return true;
+    }
+
+    private static function is_blocked_host(string $host): bool {
+        if ($host === 'localhost' || substr($host, -10) === '.localhost' || strpos($host, ':') !== false) return true;
         if (filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            return !self::is_reserved_ipv4($host);
+            return self::is_reserved_ipv4($host);
         }
         $ipv4 = function_exists('gethostbynamel') ? gethostbynamel($host) : false;
         foreach (is_array($ipv4) ? $ipv4 : array() as $ip) {
-            if (self::is_reserved_ipv4($ip)) return false;
+            if (self::is_reserved_ipv4($ip)) return true;
         }
         $ipv6 = function_exists('dns_get_record') ? @dns_get_record($host, DNS_AAAA) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Lookup failures are expected for IPv4-only hosts.
         foreach (is_array($ipv6) ? $ipv6 : array() as $record) {
-            if (isset($record['ipv6']) && self::is_reserved_ipv6((string) $record['ipv6'])) return false;
+            if (isset($record['ipv6']) && self::is_reserved_ipv6((string) $record['ipv6'])) return true;
         }
-        return true;
+        return false;
     }
 
     public static function is_reserved_ipv4(string $ip): bool {
@@ -129,12 +150,21 @@ class VonSEOWP_Competitors {
         if ($packed === false || strlen($packed) !== 16) return true;
         $first = ord($packed[0]);
         $second = ord($packed[1]);
-        if ($packed === str_repeat(chr(0), 15) . chr(1) || $packed === str_repeat(chr(0), 16)) return true; // ::1, ::
-        if (($first & 0xfe) === 0xfc) return true;                 // fc00::/7 unique local
-        if ($first === 0xfe && ($second & 0xc0) === 0x80) return true; // fe80::/10 link-local
-        if ($first === 0xff) return true;                          // multicast
-        if (substr($packed, 0, 12) === str_repeat(chr(0), 10) . chr(255) . chr(255)) {   // ::ffff:a.b.c.d
+        $zero = chr(0);
+        if (substr($packed, 0, 12) === str_repeat($zero, 12)) return true;               // ::/96 (::, ::1, ::a.b.c.d)
+        if (($first & 0xfe) === 0xfc) return true;                                        // fc00::/7 unique local
+        if ($first === 0xfe && ($second & 0xc0) === 0x80) return true;                    // fe80::/10 link-local
+        if ($first === 0xff) return true;                                                 // ff00::/8 multicast
+        if (substr($packed, 0, 4) === chr(0x20) . chr(0x01) . chr(0x0d) . chr(0xb8)) return true; // 2001:db8::/32 documentation
+        if (substr($packed, 0, 8) === chr(0x01) . str_repeat($zero, 7)) return true;      // 100::/64 discard
+        if (substr($packed, 0, 12) === str_repeat($zero, 10) . chr(255) . chr(255)) {      // ::ffff:a.b.c.d mapped
             return self::is_reserved_ipv4((string) inet_ntop(substr($packed, 12)));
+        }
+        if (substr($packed, 0, 12) === chr(0) . chr(0x64) . chr(0xff) . chr(0x9b) . str_repeat($zero, 8)) { // 64:ff9b::/96 NAT64
+            return self::is_reserved_ipv4((string) inet_ntop(substr($packed, 12)));
+        }
+        if ($first === 0x20 && $second === 0x02) {                                         // 2002::/16 6to4
+            return self::is_reserved_ipv4((string) inet_ntop(substr($packed, 2, 4)));
         }
         return false;
     }
@@ -167,6 +197,10 @@ class VonSEOWP_Competitors {
             return new WP_Error('empty_body', __('Could not retrieve page content', 'vonseo'));
         }
 
+        if (!class_exists('DOMDocument') || !class_exists('DOMXPath')) {
+            return new WP_Error('missing_dom', __('Competitor scans need the PHP DOM extension (DOMDocument).', 'vonseo'));
+        }
+
         // Use DOMDocument for parsing
         $dom = new DOMDocument();
         libxml_use_internal_errors(true);
@@ -174,17 +208,21 @@ class VonSEOWP_Competitors {
         libxml_clear_errors();
 
         $xpath = new DOMXPath($dom);
+        $content = self::content_root($xpath);
+        $count = static function (string $query) use ($xpath, $content): int {
+            return $content ? $xpath->query('.//' . $query, $content)->length : 0;
+        };
 
-        $metrics = self::text_metrics(self::visible_text($dom));
+        $metrics = self::text_metrics(self::visible_text($dom, $content));
 
         return array(
             'title' => $this->get_node_text($xpath, '//title'),
             'description' => $this->get_meta_content($xpath, 'description'),
-            'h1_count' => $xpath->query('//h1')->length,
-            'h2_count' => $xpath->query('//h2')->length,
-            'h3_count' => $xpath->query('//h3')->length,
-            'image_count' => $xpath->query('//img')->length,
-            'image_alt_count' => $xpath->query('//img[normalize-space(@alt)!=""]')->length,
+            'h1_count' => $count('h1'),
+            'h2_count' => $count('h2'),
+            'h3_count' => $count('h3'),
+            'image_count' => $count('img'),
+            'image_alt_count' => $count('img[normalize-space(@alt)!=""]'),
             'word_count' => $metrics['word_count'],
             'reading_ease' => $metrics['reading_ease'],
         );
@@ -206,10 +244,23 @@ class VonSEOWP_Competitors {
         'ol', 'p', 'pre', 'section', 'summary', 'table', 'td', 'th', 'tr', 'ul');
 
     /**
-     * Rendered body text: non-rendered elements are dropped and block boundaries become spaces, so
+     * The article content to compare with the editor's post content: the page's <main>, else its single
+     * <article>, else <body>. This keeps navigation, sidebars and footers out where the page marks them up.
+     */
+    public static function content_root(DOMXPath $xpath): ?DOMNode {
+        foreach (array('//main', '//article', '//body') as $query) {
+            $nodes = $xpath->query($query);
+            if ($nodes && $nodes->length === 1) return $nodes->item(0);
+            if ($query === '//body' && $nodes && $nodes->length > 0) return $nodes->item(0);
+        }
+        return null;
+    }
+
+    /**
+     * Rendered text: non-rendered elements are dropped and block boundaries become spaces, so
      * <p>a</p><p>b</p> stays two words while inline markup such as <b>Wor</b>d stays one.
      */
-    public static function visible_text(DOMDocument $dom): string {
+    public static function visible_text(DOMDocument $dom, ?DOMNode $root = null): string {
         foreach (array('script', 'style', 'noscript', 'template') as $tag) {
             $nodes = $dom->getElementsByTagName($tag);
             for ($index = $nodes->length - 1; $index >= 0; $index--) {
@@ -226,18 +277,25 @@ class VonSEOWP_Competitors {
                 $node->parentNode->insertBefore($dom->createTextNode(' '), $node->nextSibling);
             }
         }
+        if ($root) return (string) $root->textContent;
         $body = $dom->getElementsByTagName('body');
         return $body->length > 0 ? (string) $body->item(0)->textContent : '';
     }
 
     /**
-     * Shared comparison metrics. Mirrors VonSEOWPAnalyzer.textMetrics() in admin/js/vonseowp-analyzer.js
-     * exactly, so the "You" and "Competitor" columns use identical rules.
+     * Whitespace used to split words. Kept identical to WHITESPACE in admin/js/vonseowp-analyzer.js; PCRE and
+     * JavaScript disagree on \s for U+0085, U+180E and U+FEFF, so the class is spelled out.
+     */
+    public const WHITESPACE = '[\x{09}-\x{0D}\x{20}\x{85}\x{A0}\x{1680}\x{180E}\x{2000}-\x{200B}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]+';
+
+    /**
+     * Shared comparison metrics. Mirrors VonSEOWPAnalyzer.textMetrics() in admin/js/vonseowp-analyzer.js,
+     * so the "You" and "Competitor" columns use the same word, sentence and syllable rules.
      *
      * @return array{word_count: int, reading_ease: int}
      */
     public static function text_metrics(string $text): array {
-        $tokens = preg_split('/(*UCP)\s+/u', $text);
+        $tokens = preg_split('/' . self::WHITESPACE . '/u', $text);
         $words = array_values(array_filter(is_array($tokens) ? $tokens : array(), static function ($token): bool {
             return preg_match('/[\p{L}\p{N}]/u', (string) $token) === 1;
         }));
@@ -251,7 +309,8 @@ class VonSEOWP_Competitors {
     }
 
     private static function count_syllables(string $word): int {
-        $letters = (string) preg_replace('/[^a-z]/', '', strtolower($word));
+        // ASCII letters only, then lowercase: identical to the editor regardless of locale or Unicode case rules.
+        $letters = strtolower((string) preg_replace('/[^A-Za-z]/', '', $word));
         if ($letters === '') return 1;
         $count = (int) preg_match_all('/[aeiouy]+/', $letters);
         if ($count > 1 && preg_match('/[^aeiouy]e$/', $letters)) $count--;

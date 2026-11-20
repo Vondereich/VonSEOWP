@@ -22,6 +22,8 @@ function remove_action(string $hook, $callback, int $priority = 10): void {}
 /** @param mixed $default @return mixed */
 function get_option(string $name, $default = false) {
     if ($name === 'vonseowp_settings') return $GLOBALS['settings'];
+    if ($name === 'show_on_front') return $GLOBALS['posts_page_id'] > 0 ? 'page' : 'posts';
+    if ($name === 'page_on_front') return $GLOBALS['posts_page_id'] > 0 ? 1 : 0;
     return $name === 'page_for_posts' ? $GLOBALS['posts_page_id'] : $default;
 }
 function home_url(string $path = ''): string { return 'https://example.invalid/subdir' . $path; }
@@ -39,6 +41,8 @@ function post_password_required(object $post): bool { return $GLOBALS['locked'];
 function get_post_meta(int $id, string $key, bool $single = false) { return $GLOBALS['meta'][$key] ?? ''; }
 /** @return object|null */
 function get_post(int $id) { return $id > 0 ? (object) array('ID' => $id, 'post_type' => 'page', 'post_status' => $GLOBALS['posts_page_status'] ?? 'publish') : null; }
+function __(string $text, string $domain = ''): string { return $text; }
+function get_queried_object_id(): int { return $GLOBALS['posts_page_id']; }
 function esc_html(string $text): string { return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false); }
 require dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';

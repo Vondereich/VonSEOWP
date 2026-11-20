@@ -134,26 +134,28 @@ This is a public, curated text endpoint, not an access-control feature or automa
 == Changelog ==
 
 = 2.5.3 =
-* Fixed llms.txt output so Markdown blockquotes, ampersands and URLs are no longer turned into HTML entities, and decoded the site title and tagline in the default template.
+* Changed: the saved Title Separator now applies to document titles (the default dash keeps the theme's separator).
+* Changed: og:title and twitter:title use the homepage, posts page, archive or saved SEO title, else the post title for selected content types, instead of core's "Title - Site Name" text. Other archives and search pages still use the document title.
+* Changed: with a static front page, the posts page uses its own SEO title (with a page number on later pages), description and social fields, or else the native title and site description.
+* Changed: descriptions fall back from the saved SEO description to the excerpt, then a WordPress "AI" plugin description, then the content. JSON-LD and Site Audit use the same order.
+* Changed: breadcrumb structured data follows the visible trail and is omitted on the front page, search and 404 pages, and for one-item trails.
+* Fixed llms.txt output so Markdown blockquotes, ampersands and URLs are no longer turned into HTML entities.
 * Fixed settings that contain backslashes losing them on save and during Site Title/Tagline synchronization.
 * Fixed uninstall leaving Product Review metadata and cached Competitor scans behind.
 * Fixed an empty Organization name when the Site Title field is cleared, and published saved Facebook/X profiles as Organization sameAs.
-* Connected the Title Separator setting to document titles; the default dash keeps the theme's separator. Restricted it to the offered choices.
-* Retired the inactive Remove Category Base control and aligned the RSS footer control with its OFF default.
-* Breadcrumb structured data now follows the visible breadcrumb trail and is omitted for one-item trails and search/404 pages.
-* Competitor scans now reject non-2xx pages, count only visible text, use the same word and reading-ease rules as the editor, and drop the incomparable score row. A missing PHP DOM extension is shown in the editor.
-* Parsed editor content inertly for local suggestions and comparisons, and replaced "AI" labels on local heuristics with "Suggest".
+* Retired the inactive Remove Category Base control and showed the RSS footer control OFF by default, matching its behavior.
+* Competitor scans now reject non-2xx pages, read the page's main content, use the same word and reading-ease rules as the editor, and drop the incomparable score row. A missing PHP DOM extension is shown and enforced.
+* Video schema uses player URLs for YouTube and Vimeo and contentUrl only for media files, with a real thumbnail instead of favicon.ico.
+* Fixed a duplicate meta description when the WordPress "AI" plugin is active.
+* Fixed breadcrumb structured data disappearing because of one unlinked item, and the site root using the posts page title when no homepage is chosen.
+* Relative and protocol-relative social images are published as absolute URLs.
+* Fixed Quick Edit turning numeric or JSON-like SEO values into other types, the llms.txt reset button inserting HTML entities or filler text, and the keyword density message showing a double percent sign.
 * Removed the request-time lastmod from sitemap index entries.
-* Video schema now uses embedUrl for YouTube/Vimeo pages and contentUrl only for media files, with a real thumbnail instead of favicon.ico.
-* Fixed Quick Edit turning numeric or JSON-like SEO values into other types, and the llms.txt reset button inserting HTML entities or filler text.
-* With a static front page, the posts page now uses its own SEO title and description instead of the homepage values.
-* Social titles on posts and pages now use the SEO title or post title, matching the page instead of a differently assembled document title.
-* Fixed a duplicate meta description when the WordPress "AI" plugin is active; its generated descriptions are now used as a fallback.
-* Kept the optional 404 log out of autoloaded options and limited repeat writes for the same URL to once a minute.
-* Fixed the keyword density message showing a double percent sign.
+* The optional 404 log is no longer autoloaded and limits database writes during 404 floods; hit counts are approximate.
+* Security hardening: hid private/draft parent pages from breadcrumbs; checked every Competitor redirect and blocked link-local, CGNAT and local or embedded IPv6 targets within a 20-second budget; stored social images as http(s) URLs only; hex-escaped JSON-LD; required a published posts page before using its SEO fields.
+* Parsed editor content inertly, and replaced "AI" labels on local heuristics with "Suggest".
 * Added a translation template and loading for bundled translations when no language pack is installed.
 * Removed WordPress.org listing images and duplicate assets from the plugin package.
-* Security hardening: hid private/draft parent pages from breadcrumbs, checked every Competitor redirect and blocked link-local, CGNAT and local IPv6 targets, stored social images as http(s) URLs only, hex-escaped JSON-LD output, and required a published posts page before using its SEO fields.
 
 = 2.5.2 =
 * Added versioned JSON export/import for supported site settings, with validated uploads, change previews and explicit confirmation.
@@ -265,3 +267,8 @@ This is a public, curated text endpoint, not an access-control feature or automa
 
 = 2.0.0 =
 *   NEW: Full Professional Suite release with Sitemaps and Redirection.
+
+== Upgrade Notice ==
+
+= 2.5.3 =
+Stability, compatibility and security fixes. After upgrading, review titles and descriptions: the Title Separator now works, post og:title drops the site name, the posts page uses its own SEO fields, and excerpts precede generated text.

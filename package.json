@@ -22,7 +22,8 @@
     "test:settings-transfer": "php scripts/test-settings-transfer.php",
     "test:schema": "php scripts/test-schema.php",
     "test:titles": "php scripts/test-titles.php",
-    "test:taxonomies": "php scripts/test-taxonomies.php"
+    "test:taxonomies": "php scripts/test-taxonomies.php",
+    "test:social-meta": "php scripts/test-social-meta.php"
   },
   "keywords": [
     "seo",

@@ -53,6 +53,7 @@ jobs:
           npm run test:schema
           npm run test:titles
           npm run test:taxonomies
+          npm run test:social-meta
 
       - name: Lint Packaged PHP
         run: |

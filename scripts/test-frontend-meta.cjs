@@ -10,11 +10,7 @@ const sitemapPath = path.join(__dirname, '..', 'includes', 'class-vonseowp-sitem
 const sitemapSource = fs.readFileSync(sitemapPath, 'utf8');
 
 assert.ok(source.includes('!post_password_required($post)'), 'Post metadata must respect the native password-cookie state');
-assert.equal((source.match(/if \(\$this->can_output_post_metadata\(\$post\)\)/g) || []).length, 5, 'Title, meta, social title, social fields and article schema must share the visibility guard');
-assert.ok(
-  /\$title = trim\(\(string\) get_post_meta\(\$post->ID, '_vonseowp_title', true\)\);[\s\S]{0,200}get_the_title\(\$post->ID\)[\s\S]{0,120}if \(\$title === ''\) \$title = wp_get_document_title\(\);/.test(source),
-  'Social titles for content must use the SEO title or post title, falling back to the document title only elsewhere',
-);
+assert.equal((source.match(/if \(\$this->can_output_post_metadata\(\$post\)\)/g) || []).length, 4, 'Title, meta, social fields and article schema must share the visibility guard');
 
 assert.ok(
   !source.includes('Premium SEO'),

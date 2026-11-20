@@ -65,11 +65,20 @@ function wp_safe_remote_get(string $url, array $args) {
 /** @return mixed */
 function wp_parse_url(string $url, int $component = -1) { return parse_url($url, $component); }
 class WP_Http {
+    /** Mirrors core for the cases used here: absolute, root-relative and path-relative locations. */
     public static function make_absolute_url(string $location, string $base): string {
         if (preg_match('#^https?://#i', $location)) return $location;
         $parts = parse_url($base);
-        return $parts['scheme'] . '://' . $parts['host'] . '/' . ltrim($location, '/');
+        $origin = $parts['scheme'] . '://' . $parts['host'];
+        if ($location[0] === '/') return $origin . $location;
+        $dir = preg_replace('#/[^/]*$#', '/', $parts['path'] ?? '/');
+        return $origin . $dir . $location;
     }
+}
+function home_url(string $path = ''): string { return 'https://own-site.invalid' . $path; }
+/** @param mixed $value @return mixed */
+function apply_filters(string $hook, $value, ...$args) {
+    return $hook === 'http_request_host_is_external' ? in_array($args[0] ?? '', $GLOBALS['allowed_external'] ?? array(), true) : $value;
 }
 class WP_Error {
     private string $message;
@@ -139,7 +148,7 @@ $remote = array('code' => 200, 'body' => $page);
 $response = vonseowp_comp_request($valid);
 vonseowp_comp_check($response->success && $response->data['word_count'] === 6 && $response->data['h1_count'] === 1,
     'Successful pages must count visible words only and keep adjacent blocks separate: ' . json_encode($response->data));
-vonseowp_comp_check(strpos(end($cache_keys), 'vonseowp_comp_v2_') === 0 && count($cache_writes) === 1,
+vonseowp_comp_check(strpos(end($cache_keys), 'vonseowp_comp_v3_') === 0 && count($cache_writes) === 1,
     'Metric changes must use a new cache key version.');
 unset($remote);
 $cache_miss = false;
@@ -147,7 +156,8 @@ $network_calls = 0;
 // Shared metric parity with the editor (admin/js/vonseowp-analyzer.js textMetrics()).
 $samples = array('', '   ', 'One.', 'The quick brown fox jumps over the lazy dog. It was a fine day!',
     'Saya suka makan nasi lemak. Sedap sekali!', 'Café déjà vu — naïve résumé... 2026 is here?', "Line one
-line two	three. Done");
+line two	three. Done",
+    "a\u{FEFF}b", "a\u{0085}b", "a\u{180E}b c", "\u{0130}stanbul is big. Ok", "x\u{3000}y\u{00A0}z");
 $node = getenv('NODE_BINARY') ?: 'node';
 $script = 'const a=require(' . json_encode(dirname(__DIR__) . '/admin/js/vonseowp-analyzer.js') . ');'
     . 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync(0,"utf8")).map(t=>a.textMetrics(t))));';
@@ -179,6 +189,14 @@ foreach (array(
     vonseowp_comp_check(VonSEOWP_Competitors::text_metrics(vonseowp_comp_visible($html))['word_count'] === $words,
         'Visible text must split only at block boundaries: ' . $html);
 }
+$scoped = new DOMDocument();
+libxml_use_internal_errors(true);
+$scoped->loadHTML('<?xml encoding="UTF-8"><html><body><nav><h2>Menu</h2>Home About Contact</nav><main><h1>Title</h1><p>Only these four words</p></main><footer>Copyright notice text</footer></body></html>');
+libxml_clear_errors();
+$root = VonSEOWP_Competitors::content_root(new DOMXPath($scoped));
+vonseowp_comp_check($root !== null && $root->nodeName === 'main'
+    && VonSEOWP_Competitors::text_metrics(VonSEOWP_Competitors::visible_text($scoped, $root))['word_count'] === 5,
+    'Competitor text must come from <main> when present, excluding navigation and footer.');
 // The editor-side block list must match the server-side list exactly.
 $metabox = (string) file_get_contents(dirname(__DIR__) . '/admin/js/vonseowp-metabox.js');
 preg_match('/const BLOCK_TAGS =\s*((?:"[^"]*"\s*\+?\s*)+);/', $metabox, $js_tags);
@@ -191,10 +209,16 @@ foreach (array('http://169.254.169.254/latest/meta-data/', 'http://100.64.0.1/',
     'http://[::1]/', 'http://[fd00::1]/', 'http://localhost/', 'http://app.localhost/', 'ftp://example.com/', 'http://224.0.0.1/') as $blocked) {
     vonseowp_comp_check(!VonSEOWP_Competitors::is_allowed_target($blocked), 'Reserved targets must be rejected: ' . $blocked);
 }
+vonseowp_comp_check(VonSEOWP_Competitors::is_allowed_target('https://own-site.invalid/page'), 'The site\'s own host is allowed, as in core.');
+$allowed_external = array('127.0.0.1');
+vonseowp_comp_check(VonSEOWP_Competitors::is_allowed_target('http://127.0.0.1/'), 'Core\'s http_request_host_is_external allowance must be honoured.');
+$allowed_external = array();
 foreach (array('http://8.8.8.8/', 'https://93.184.215.14/page') as $public) {
     vonseowp_comp_check(VonSEOWP_Competitors::is_allowed_target($public), 'Public IPv4 targets must be allowed: ' . $public);
 }
-foreach (array('fe80::1' => true, 'fc12::1' => true, '::ffff:169.254.1.1' => true, '::ffff:8.8.8.8' => false, '2001:4860:4860::8888' => false) as $ip => $reserved) {
+foreach (array('fe80::1' => true, 'fc12::1' => true, '::ffff:169.254.1.1' => true, '::ffff:8.8.8.8' => false, '2001:4860:4860::8888' => false,
+    '::127.0.0.1' => true, '::' => true, '::1' => true, '64:ff9b::7f00:1' => true, '64:ff9b::808:808' => false,
+    '2002:7f00:1::' => true, '2002:808:808::' => false, '2001:db8::1' => true, '100::1' => true, 'ff02::1' => true) as $ip => $reserved) {
     vonseowp_comp_check(VonSEOWP_Competitors::is_reserved_ipv6($ip) === $reserved, 'IPv6 classification failed: ' . $ip);
 }
 $cache_miss = true;
@@ -209,11 +233,11 @@ vonseowp_comp_check(!$response->success && $fetched === array('http://8.8.8.8/st
     'A redirect into a reserved network must be refused before the second request.');
 $fetched = array();
 $remote = static function (string $url): array {
-    return $url === 'http://8.8.8.8/a' ? array('code' => 301, 'location' => '/b', 'body' => '')
+    return $url === 'http://8.8.8.8/dir/a' ? array('code' => 301, 'location' => 'b', 'body' => '')
         : array('code' => 200, 'body' => '<html><body><p>Two words</p></body></html>');
 };
-$response = vonseowp_comp_request(array('post_id' => '101', 'url' => 'http://8.8.8.8/a'));
-vonseowp_comp_check($response->success && $fetched === array('http://8.8.8.8/a', 'http://8.8.8.8/b') && $response->data['word_count'] === 2,
+$response = vonseowp_comp_request(array('post_id' => '101', 'url' => 'http://8.8.8.8/dir/a'));
+vonseowp_comp_check($response->success && $fetched === array('http://8.8.8.8/dir/a', 'http://8.8.8.8/dir/b') && $response->data['word_count'] === 2,
     'Safe relative redirects must still be followed.');
 $fetched = array();
 $remote = static function (string $url): array { return array('code' => 302, 'location' => $url . 'x', 'body' => ''); };
