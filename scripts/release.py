@@ -7,8 +7,7 @@ import zipfile
 
 PLUGIN_SLUG = "vonseo"
 DIST_DIR = "dist"
-# assets/ holds WordPress.org listing art (banner, icon, screenshots); no runtime code references it.
-INCLUDE_DIRS = ["admin", "includes", "languages", "public"]
+INCLUDE_DIRS = ["admin", "includes", "assets", "languages", "public"]
 INCLUDE_FILES = [
     "vonseo.php",
     "readme.txt",

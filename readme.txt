@@ -144,7 +144,7 @@ This is a public, curated text endpoint, not an access-control feature or automa
 * Fixed video schema URLs and thumbnails, relative social image URLs and the sitemap index lastmod.
 * Hardened structured data escaping and editor content parsing.
 * Disabled 404 log autoloading and limited writes during heavy 404 traffic.
-* Added a translation template and reduced the plugin package size.
+* Added a translation template.
 
 = 2.5.2 =
 * Added versioned JSON export/import for supported site settings, with validated uploads, change previews and explicit confirmation.

@@ -28,7 +28,6 @@ All notable changes to the VonSEOWP plugin will be documented in this file.
 - **Editor Tools**: Keep Quick Edit values as typed, parse editor content without loading media or scripts, label local heuristics "Suggest", and show keyword density with a single percent sign.
 - **Sitemap Index**: Remove inaccurate `lastmod` values.
 - **404 Log**: Disable autoloading and limit writes during heavy 404 traffic.
-- **Package Size**: Exclude WordPress.org listing images from the plugin package.
 
 ## [2.5.2] - 2026-11-11
 ### Added
