@@ -25,7 +25,7 @@ foreach (array('_maybe_update_core', '_maybe_update_plugins', '_maybe_update_the
 do_action('admin_init');
 vonseowp_final_check(has_filter('sanitize_option_vonseowp_settings') !== false, 'Native registered sanitizer must be active.');
 $flags = array('enable_og', 'enable_sitemap', 'sitemap_posts', 'sitemap_pages', 'enable_404_log',
-    'auto_image_alt', 'auto_image_title', 'remove_category_base', 'redirect_attachments', 'enable_indexnow', 'enable_rss_footer', 'enable_toc', 'enable_llms_txt');
+    'auto_image_alt', 'auto_image_title', 'redirect_attachments', 'enable_indexnow', 'enable_rss_footer', 'enable_toc', 'enable_llms_txt');
 delete_option('vonseowp_settings');
 $passes = 0;
 $counter = static function ($input) { $GLOBALS['passes']++; return $input; };

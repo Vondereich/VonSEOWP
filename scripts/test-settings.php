@@ -55,7 +55,7 @@ require dirname(__DIR__) . '/includes/class-vonseowp-admin.php';
 $admin = new VonSEOWP_Admin();
 do_action('admin_init');
 $flags = array('enable_og', 'enable_sitemap', 'sitemap_posts', 'sitemap_pages', 'enable_404_log',
-    'auto_image_alt', 'auto_image_title', 'remove_category_base', 'redirect_attachments', 'enable_indexnow',
+    'auto_image_alt', 'auto_image_title', 'redirect_attachments', 'enable_indexnow',
     'enable_rss_footer', 'enable_toc', 'enable_llms_txt');
 $raw = array('seo_post_types' => array('post', 'page'), 'home_title' => 'Old title', 'home_desc' => 'Old tagline');
 $once = $admin->sanitize_settings($raw);
@@ -81,7 +81,30 @@ update_option('vonseowp_settings', $saved);
 vonseowp_settings_check(get_option('blogname') === 'Plugin title' && get_option('blogdescription') === 'Plugin tagline', 'Plugin-to-core synchronization must remain functional.');
 update_option('blogname', 'Final title');
 foreach ($flags as $flag) vonseowp_settings_check(get_option('vonseowp_settings')[$flag] === 1, 'Core sync must preserve explicit ON: ' . $flag);
+// options.php passes unslashed values; first-save double sanitization and core sync must keep backslashes.
+unset($options['vonseowp_settings']);
+$backslash = array('seo_post_types' => array('post', 'page'), 'home_title' => 'AC\\DC title',
+    'robots_txt' => "User-agent: *\nDisallow: /a\\b", 'llms_txt_content' => 'C:\\docs\\llms', 'redirects_list' => '/old\\x -> /new');
+update_option('vonseowp_settings', $backslash);
+$saved = get_option('vonseowp_settings');
+foreach (array('home_title', 'robots_txt', 'llms_txt_content', 'redirects_list') as $key) {
+    vonseowp_settings_check($saved[$key] === $backslash[$key], 'First save must preserve backslashes: ' . $key);
+}
+update_option('blogdescription', 'Tagline after backslash save');
+$saved = get_option('vonseowp_settings');
+foreach (array('robots_txt', 'llms_txt_content', 'redirects_list') as $key) {
+    vonseowp_settings_check($saved[$key] === $backslash[$key], 'Core tagline sync must preserve backslashes: ' . $key);
+}
+vonseowp_settings_check(!array_key_exists('remove_category_base', $admin->sanitize_settings(array('remove_category_base' => 1))),
+    'Retired Category Base control must not be saved.');
+foreach (array('|' => '|', "\xE2\x80\xA2" => "\xE2\x80\xA2", '-' => '-', '<b>' => '-', '>>' => '-', '' => '-') as $input => $expected) {
+    vonseowp_settings_check($admin->sanitize_settings(array('separator' => (string) $input))['separator'] === $expected,
+        'Title separator must be restricted to the offered choices: ' . $input);
+}
 $help = (string) file_get_contents(dirname(__DIR__) . '/admin/partials/vonseowp-admin-display.php');
+vonseowp_settings_check(strpos($help, 'remove_category_base') === false, 'Retired Category Base control must not render.');
+vonseowp_settings_check(strpos($help, "\$vonseowp_options['enable_rss_footer'] ?? 0") !== false,
+    'RSS footer UI default must match the OFF runtime default.');
 foreach (array('How to Use VonSEO', 'Category and Tag SEO', 'SEO & Indexing Disclaimer', 'Privacy & Data Policy',
     'does not guarantee', 'not background telemetry', '12-hour expiry', 'public text endpoint',
     'up to 50 requested URLs', 'does not store visitor IP addresses', 'sessionStorage only') as $copy) {

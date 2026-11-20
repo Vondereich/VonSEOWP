@@ -37,6 +37,8 @@ function get_bloginfo(string $show = ''): string { return $GLOBALS['site_name'];
 function post_password_required(object $post): bool { return $GLOBALS['locked']; }
 /** @return mixed */
 function get_post_meta(int $id, string $key, bool $single = false) { return $GLOBALS['meta'][$key] ?? ''; }
+/** @return object|null */
+function get_post(int $id) { return $id > 0 ? (object) array('ID' => $id, 'post_type' => 'page', 'post_status' => $GLOBALS['posts_page_status'] ?? 'publish') : null; }
 function esc_html(string $text): string { return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false); }
 require dirname(__DIR__) . '/includes/class-vonseowp-content-types.php';
 require dirname(__DIR__) . '/includes/class-vonseowp-frontend.php';
@@ -90,7 +92,7 @@ $singular = true;
 $meta['_vonseowp_title'] = $site_name;
 vonseowp_title_check($frontend->filter_legacy_title('Native | ', '|', 'right') === 'Site &amp; Name | ', 'Site-name deduplication must not alter singular overrides.');
 $canonical = new ReflectionMethod($frontend, 'get_canonical_url');
-$canonical->setAccessible(true);
+if (PHP_VERSION_ID < 80100) $canonical->setAccessible(true);
 vonseowp_title_check($canonical->invoke($frontend) === 'https://example.invalid/subdir/article/', 'Singular canonicals must retain their permalink.');
 $singular = false;
 $front = $home = true;
@@ -111,4 +113,29 @@ $pagination_url = 'https://example.invalid/subdir/category/news/page/2/';
 vonseowp_title_check($canonical->invoke($frontend) === $pagination_url, 'Other archive pagination must remain unchanged.');
 $singular = true;
 vonseowp_title_check($canonical->invoke($frontend) === 'https://example.invalid/subdir/article/', 'Archive pagination state must not replace a singular permalink.');
+// Static front page + separate posts page: the posts page is its own page, not a second homepage.
+$singular = false;
+$front = false;
+$home = true;
+$posts_page_id = 2;
+$paged = 1;
+$settings = array('home_title' => 'Home & SEO', 'seo_post_types' => array('post', 'page'));
+$meta = array('_vonseowp_title' => '');
+vonseowp_title_check($frontend->filter_document_title('Blog') === 'Blog', 'A separate posts page must not reuse the homepage title.');
+vonseowp_title_check($frontend->filter_legacy_title('Blog | ', '|', 'right') === 'Blog | ', 'Legacy posts-page titles must stay native without their own SEO title.');
+$meta['_vonseowp_title'] = 'Latest articles';
+vonseowp_title_check($frontend->filter_document_title('Blog') === 'Latest articles', 'A separate posts page must use its own saved SEO title.');
+$locked = true;
+vonseowp_title_check($frontend->filter_document_title('Blog') === 'Blog', 'A protected posts page must not expose its saved SEO title.');
+$locked = false;
+$settings['seo_post_types'] = array('post');
+vonseowp_title_check($frontend->filter_document_title('Blog') === 'Blog', 'Pages excluded from SEO tools must keep the native posts-page title.');
+foreach (array('private', 'draft') as $posts_page_status) {
+    $settings['seo_post_types'] = array('post', 'page');
+    vonseowp_title_check($frontend->filter_document_title('Blog') === 'Blog', 'A non-public posts page must not publish its SEO fields: ' . $posts_page_status);
+}
+$posts_page_status = 'publish';
+$front = true;
+$settings['seo_post_types'] = array('post', 'page');
+vonseowp_title_check($frontend->filter_document_title('Home') === 'Home & SEO', 'The front page keeps the homepage override.');
 echo 'Title tests passed (' . $assertions . ' assertions).' . PHP_EOL;

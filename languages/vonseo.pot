@@ -1,0 +1,1950 @@
+# Copyright (C) 2026 Vondereich
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: VonSEO 2.5.3\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-20 12:44+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Domain: vonseo\n"
+
+#: admin/partials/vonseowp-admin-display.php:19
+msgid "Performance-first SEO tools for fast, clean WordPress publishing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:23
+msgid "Help & Support"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:31 admin/partials/vonseowp-meta-box-display.php:47
+msgid "General"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:34
+msgid "Social Media"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:37 admin/partials/vonseowp-admin-display.php:234 admin/partials/vonseowp-admin-display.php:449 includes/class-vonseowp-admin.php:122 includes/class-vonseowp-llm.php:93
+msgid "XML Sitemap"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:40 admin/partials/vonseowp-admin-display.php:456
+msgid "Redirects"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:43
+msgid "Local SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:46 admin/partials/vonseowp-admin-display.php:367
+msgid "Image SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:49 admin/partials/vonseowp-admin-display.php:394 admin/partials/vonseowp-admin-display.php:409 admin/partials/vonseowp-admin-display.php:409 includes/class-vonseowp-toc.php:308
+msgid "Table of Contents"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:52
+msgid "Tutorial"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:55
+msgid "Advanced"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:58
+msgid "Import / Export"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:61
+msgid "Robots.txt"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:64
+msgid "Bot Optimization"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:71
+msgid "Independent SEO tool"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:72
+msgid "Keep VonSEO Free"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:73
+msgid "Support ongoing maintenance and free updates for VonSEO."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:78 admin/partials/vonseowp-admin-display.php:599
+msgid "Buy me a coffee"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:97
+msgid "Site Identity"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:98
+msgid "Configure how your site appears in search results."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:103
+msgid "Separator Character"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:105
+msgid "- (Dash)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:106
+msgid "| (Pipe)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:107
+msgid "• (Bullet)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:108
+msgid "— (Em Dash)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:110
+msgid "Character displayed between post title and site name. The default dash keeps the separator your theme provides."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:115
+msgid "Site Title"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:116
+msgid "Recommended length: ~60 characters."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:119
+msgid "My Awesome Site"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:125
+msgid "Site Tagline"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:126
+msgid "Describe your site in 1-2 concise sentences."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:131
+msgid "Synchronized with WordPress General Settings."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:138
+msgid "Webmaster Tools"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:139
+msgid "Verify your site with Google and Bing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:143
+msgid "Google Verification Code"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:147
+msgid "Bing Verification Code"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:151
+msgid "SEO Content Types"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:160 admin/partials/vonseowp-admin-display.php:177
+msgid "Unavailable"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:169
+msgid "SEO Taxonomies"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:193
+msgid "Social Profiles"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:197
+msgid "Facebook URL"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:201
+msgid "Twitter Username"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:209
+msgid "Open Graph Settings"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:217
+msgid "Enable Open Graph Meta Data"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:218
+msgid "Adds tags for Facebook, LinkedIn, etc."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:222
+msgid "Default Image URL"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:224
+msgid "Used if the post has no featured image."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:242
+msgid "Enable XML Sitemap"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:246
+msgid "Your sitemap is located at:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:249
+msgid "Include Post Types"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:253
+msgid "Posts"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:258
+msgid "Pages"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:269
+msgid "Redirection Manager"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:270
+msgid "Format:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:270
+msgid "(one per line)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:278
+msgid "Enable 404 Error Logging"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:281
+msgid "Redirect Rules"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:293
+msgid "Recent 404 Errors"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:299
+msgid "URL"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:300
+msgid "Hits"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:301
+msgid "Last Seen"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:317
+msgid "* Showing last 50 unique 404s. Repeat hits on the same URL within a minute are counted once."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:327
+msgid "Local Business Info"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:328
+msgid "Populate your Organization Schema with location data."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:332
+msgid "Business Name"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:336
+msgid "Address"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:337
+msgid "123 SEO Street"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:340
+msgid "City"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:344
+msgid "State / Province"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:348
+msgid "Zip / Postal Code"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:352
+msgid "Country"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:356
+msgid "Phone Number"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:368
+msgid "Automatically optimize image attributes."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:376
+msgid "Auto-Generate ALT Tags"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:377
+msgid "Uses filename (e.g., \"my-image.jpg\" -> \"My Image\") if ALT is missing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:384
+msgid "Auto-Generate Title Tags"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:395
+msgid "Automatically generate a table of contents for your posts."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:403
+msgid "Enable Automatic TOC"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:404
+msgid "Automatically injects a TOC into your posts."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:408
+msgid "TOC Title"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:413
+msgid "TOC Position"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:415
+msgid "Before first heading (Recommended)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:416
+msgid "At the very top"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:421
+msgid "Minimum Headings"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:423
+msgid "Only show TOC if the post has at least this many headings."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:427 admin/partials/vonseowp-admin-display.php:621
+msgid "Shortcode"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:429
+msgid "Use this shortcode to place the TOC anywhere in your content."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:440
+msgid "How to Use VonSEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:441
+msgid "Setup, publishing and archive SEO."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:446
+msgid "1. XML Sitemaps"
+msgstr ""
+
+#. translators: 1: XML Sitemap tab name, 2: Sitemap URL
+#: admin/partials/vonseowp-admin-display.php:449
+#, php-format
+msgid "Enable it in the %1$s tab, then open %2$s to check the output. Submit that URL in your search-engine webmaster tools. A sitemap supports discovery but does not guarantee indexing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:453
+msgid "2. Redirection Manager"
+msgstr ""
+
+#. translators: 1: Redirects tab name, 2: Example format
+#: admin/partials/vonseowp-admin-display.php:456
+#, php-format
+msgid "Enable 404 logging in the %1$s tab when needed. Add a redirect using %2$s, save, then test the old URL. Choose a relevant replacement and avoid redirect chains."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:460
+msgid "3. Content Analysis"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:461
+msgid "Choose SEO Content Types in General and save. Open an enabled post, page or custom post type, then enter a focus keyword and review the VonSEO fields. Save the content to persist your SEO title, description and social overrides."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:464
+msgid "4. Local SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:465
+msgid "Enter accurate business details in Local SEO only if they apply to your site. These details can appear in public structured data; do not enter private contact information."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:468
+msgid "5. Image SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:469
+msgid "Auto-Generate ALT Tags uses the filename when ALT text is missing. Review image descriptions yourself: a filename fallback cannot determine what an image actually shows."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:472
+msgid "6. Category and Tag SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:473
+msgid "Choose SEO Taxonomies in General and save. Categories and tags are selected by default. Open Posts > Categories or Posts > Tags, then add or edit a term. Set its SEO Title, Meta Description and optional Social Description, then save the term. Selected custom taxonomies use their own WordPress term screen."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:476
+msgid "7. Canonical and Noindex"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:477
+msgid "Leave an archive Canonical URL empty for its native URL. Use an override only when another absolute HTTP(S) URL is the preferred page. Overrides apply to page one; paginated archives keep their own canonicals. Noindex and explicit-canonical terms are excluded from the sitemap, as are empty terms. Noindex is a crawler instruction, not access control."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:480
+msgid "8. Site Audit"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:481
+msgid "Open VonSEO > SEO Audit and run the audit. Use Previous/Next to review 25 published content items per batch. This is a local settings/content check, not a search-engine ranking or indexing report; taxonomy term editors are not part of this audit list."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:484
+msgid "9. Optional IndexNow"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:485
+msgid "Enable IndexNow in Advanced only if you want external URL notifications. Eligible published content is queued for at least 60 seconds and rechecked before delivery; WordPress cron or site traffic can delay it. Password-protected, noindex and unpublished content is excluded. Term-archive saves do not send IndexNow notifications."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:488
+msgid "10. Table of Contents"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:489
+msgid "Configure the heading threshold and position in Table of Contents, or insert the [vonseo_toc] shortcode. The post editor can disable automatic insertion for individual content. Preview the page and check the heading links before publishing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:492
+msgid "11. Import / Export Settings"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:493
+msgid "Export supported site settings as JSON in Import / Export. Upload a VonSEO JSON file, review the changes, then confirm. Site Title and Tagline also update WordPress General Settings. Tokens, IndexNow consent/key, posts, term metadata and media files are excluded; URLs are not rewritten. Keep exports private and review destination URLs before confirming."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:494
+msgid "Import previews use local WordPress transient storage and are restricted to the administrator who uploaded the file. Access expires after 10 minutes; WordPress transient cleanup removes expired entries. Confirmation or cancellation removes the preview. No import file is saved to the Media Library or sent to an external service."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:503
+msgid "Setup Checklist"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:507
+msgid "Set your homepage title and description."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:508
+msgid "Select your SEO Content Types and SEO Taxonomies, then save."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:509
+msgid "Add your social media profiles."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:510
+msgid "Enable and inspect the XML sitemap; review archive canonical/noindex choices."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:511
+msgid "Configure local business info if you have a physical location."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:518
+msgid "Pro Tips"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:522
+msgid "Check Canonicals:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:522
+msgid "Prefer native self-referencing URLs unless you intentionally choose another canonical. Search engines decide whether to accept canonical hints."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:525
+msgid "Review 404s:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:525
+msgid "Inspect logged errors and redirect only when a relevant replacement exists. Some missing URLs should remain 404 responses."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:528
+msgid "Alt Text Matters:"
+msgstr ""
+
+#. translators: 1: Example filename, 2: Example converted text
+#: admin/partials/vonseowp-admin-display.php:530
+#, php-format
+msgid "Always use descriptive filenames for images. Our Image SEO will turn %1$s into %2$s automatically!"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:539
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:543
+msgid "Where is my sitemap?"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:544
+msgid "Your sitemap is generated dynamically at /sitemap.xml. No physical file is created, keeping your server clean."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:547
+msgid "Does a high SEO score guarantee rankings?"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:548
+msgid "No. The score summarizes local editorial checks. Use it to review useful titles, descriptions, structure and links, not as a ranking prediction or a reason to repeat keywords unnaturally."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:551
+msgid "Will this slow down my site?"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:552
+msgid "VonSEO uses native WordPress storage and bounded audit/sitemap batches. Actual performance depends on your hosting, content, theme and other plugins."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:559
+msgid "SEO & Indexing Disclaimer"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:562
+msgid "VonSEO provides technical and editorial SEO tools. Installing or using this plugin does not guarantee that your website or any page will be crawled, indexed, ranked or displayed by Google or any other search engine. No indexing deadline, ranking position, traffic increase or rich result is promised."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:563
+msgid "Sitemaps, metadata, structured data, canonical hints and optional IndexNow notifications support SEO workflows; they do not force search engines to accept or index a URL. Search engines independently decide what to crawl, index and show. VonSEO scores are internal editorial checks, not Google scores or proof of indexing."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:564
+msgid "Google Search Essentials"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:570
+msgid "Privacy & Data Policy"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:573
+msgid "Local data and public output"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:574
+msgid "VonSEO has no built-in telemetry or analytics tracking. It stores settings in WordPress options and SEO fields in post/term metadata, without custom database tables. Content analysis runs in your browser and Site Audit runs on your WordPress server. Public metadata, schema and business details are readable by visitors and crawlers; publish only information intended for the public."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:575
+msgid "Optional local diagnostics and browser preferences"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:576
+msgid "If you enable 404 logging, VonSEO stores up to 50 requested URLs locally, with a hit count and last-hit time. URLs can include query strings and personal information; avoid sensitive URL parameters. This log does not store visitor IP addresses or user-agent strings. Turning logging off stops new entries but does not erase existing ones; deleting the plugin removes the local 404 log. The settings screen uses browser sessionStorage only to remember the active settings tab, not to identify visitors or send tracking data."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:577
+msgid "Optional IndexNow requests"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:578
+msgid "IndexNow defaults to off unless you previously enabled it. When enabled, your server sends eligible canonical content URLs, site hostname, verification key and key-file location to Bing and Yandex. Those services also receive ordinary HTTP request information such as the server IP address. Draft text, post bodies and SEO descriptions are not sent. Turn IndexNow off in Advanced to stop future notifications; deactivation also clears queued events. A delivered request cannot be recalled."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:579
+msgid "IndexNow documentation"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:579
+msgid "Microsoft privacy"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:579
+msgid "Yandex privacy"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:580
+msgid "Manual Competitor scans"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:581
+msgid "Only an authorized editor can request a Competitor scan for enabled content. Your server fetches the URL that editor enters; the destination can see the requested URL, server IP address and normal request headers. Editor drafts are not uploaded to that destination or an AI service. Results use a WordPress transient with a 12-hour expiry. The destination website has its own privacy policy."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:582
+msgid "Manual validation and external links"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:583
+msgid "Schema testing buttons open Google or Schema.org and pass a page URL, falling back to the current editor URL if a permalink is unavailable. The external service receives normal browser request information; inspect the URL before submitting confidential addresses. Documentation and donation links also lead to third-party sites with their own privacy policies. These are user-initiated links, not background telemetry."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:584
+msgid "Public llms.txt"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:585
+msgid "When enabled on a public site, llms.txt is a public text endpoint, not a private document or an access-control mechanism. Manually curated text and links are not checked individually for password/noindex eligibility. Do not put secrets or private links there. Disabling the endpoint or making the site non-public returns a 404, but cannot erase copies already fetched by third parties."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:586
+msgid "Retention and removal"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:587
+msgid "Deactivation retains saved settings and SEO fields. Deleting VonSEO runs its settings and metadata cleanup, including taxonomy SEO fields and cached Competitor scans. Site backups, hosting/server logs and data already received by external services are outside this cleanup. Adapt your public site privacy notice to the services and hosting you actually use; this plugin notice does not replace it."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:594
+msgid "Support independent development"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:595
+msgid "Support VonSEO development"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:596
+msgid "Your support helps fund maintenance, compatibility testing, and future updates."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:610
+msgid "Breadcrumbs Generator"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:611
+msgid "Display clean breadcrumbs in posts, pages, or theme templates using the new built-in generator."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:615
+msgid "Breadcrumb Separator"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:617
+msgid "Short values like \"/\", \">\", or \"|\" work best."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:626
+msgid "Theme Function"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:635
+msgid "URL Structure & Permalinks"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:636
+msgid "Advanced URL manipulation tools. Use with caution."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:644
+msgid "Redirect Attachment URLs"
+msgstr ""
+
+#. translators: %s: Example attachment URL
+#: admin/partials/vonseowp-admin-display.php:647
+#, php-format
+msgid "Redirects image attachment pages (e.g. %s) to the parent post. Highly recommended for SEO."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:656
+msgid "Enable RSS Footer Protection"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:657
+msgid "Auto-append a backlink to the original post in your RSS feed to prevent content theft."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:665
+msgid "IndexNow"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:666
+msgid "Deferred notifications require a working WordPress cron runner."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:674
+msgid "Enable IndexNow (Bing & Yandex)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:676
+msgid "Automatically notifies search engines about new content."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:676
+msgid "Learn more"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:678
+msgid "IndexNow Status:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:678
+msgid "Enabled"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:678
+msgid "Disabled"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:679
+msgid "Key:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:679
+msgid "Auto-Generated on save"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:689
+msgid "System Health & Compatibility"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:690
+msgid "Technical status of your SEO environment."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:697
+msgid "PHP Version"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:700
+msgid "Required: 7.4+"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:703
+msgid "Permalinks"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:705
+msgid "Plain"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:706
+msgid "Required for Sitemap & LLM"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:709
+msgid "DOM & XPath"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:711
+msgid "Available"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:711
+msgid "Missing"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:712
+msgid "Required for Competitor Analysis"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:715
+msgid "Remote Requests"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:717
+msgid "cURL Ready"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:717
+msgid "Fopen Ready"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:718
+msgid "Required for IndexNow"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:744
+msgid "Advanced Robots.txt Editor"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:745
+msgid "Control how search engine crawlers access your site."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:749
+msgid "Robots.txt Content"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:753
+msgid "This content will override the default WordPress robots.txt output."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:758
+msgid "Reset to Recommended (Pro Rules)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:766
+msgid "Robots.txt Guide"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:770
+msgid "User-agent: *"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:770
+msgid "means the rule applies to all crawlers."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:773
+msgid "Disallow: /path/"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:773
+msgid "blocks crawlers from visiting that specific folder."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:776
+msgid "Sitemap:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:776
+msgid "helping Google find your sitemap quickly is an SEO best practice."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:786
+msgid "AI & LLM Optimization (llms.txt)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:787
+msgid "Help AI models like OpenAI, Claude, and Perplexity understand your site better."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:795
+msgid "Enable llms.txt"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:796
+msgid "Expose a curated Markdown file at /llms.txt for AI crawlers."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:802
+msgid "Live View"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:808
+msgid "AEO Enabled"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:808
+msgid "AEO Disabled"
+msgstr ""
+
+#. translators: %s: Settings page link
+#: admin/partials/vonseowp-admin-display.php:815
+#, php-format
+msgid "If the page above results in a 404, please go to %s and click \"Save Changes\" to activate the new URL."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:815
+msgid "Settings > Permalinks"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:821
+msgid "llms.txt Content (Markdown)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:822
+msgid "# My Site Name..."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:825
+msgid "Use Markdown format. This helps LLMs digest your site structure efficiently."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:832
+msgid "What is llms.txt?"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:836
+msgid "AI Engine Optimization (AEO):"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:836
+msgid "Similar to SEO, but for AI search engines."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:839
+msgid "Clean Context:"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:839
+msgid "Providing Markdown instead of raw HTML saves AI \"tokens\" and prevents hallucinations."
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:845
+msgid "Reset to Recommended (AEO Template)"
+msgstr ""
+
+#: admin/partials/vonseowp-admin-display.php:851
+msgid "Save Changes"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:48
+msgid "Social"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:49 admin/partials/vonseowp-meta-box-display.php:177
+msgid "SEO Health"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:50
+msgid "Schema"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:51
+msgid "Competitors"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:59 includes/class-vonseowp-columns.php:40 includes/class-vonseowp-columns.php:144 includes/class-vonseowp-taxonomies.php:83
+msgid "SEO Title"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:60
+msgid "Suggest SEO title from this post (local, no external service)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:60 admin/partials/vonseowp-meta-box-display.php:70 admin/partials/vonseowp-meta-box-display.php:80
+msgid "Suggest"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:64 admin/partials/vonseowp-meta-box-display.php:74
+msgid "Length:"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:64
+msgid "Optimal: 45-63"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:69 includes/class-vonseowp-taxonomies.php:83
+msgid "Meta Description"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:70
+msgid "Suggest meta description from this post (local, no external service)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:74
+msgid "Optimal: 120-160"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:79
+msgid "Focus Keywords"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:80
+msgid "Suggest focus keywords from this post (local, no external service)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:82
+msgid "Keywords..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:90
+msgid "No-Index (Hide from Google)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:97
+msgid "Disable Table of Contents"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:106
+msgid "Social Title (Optional)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:108
+msgid "Same as SEO Title..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:113
+msgid "Social Description (Optional)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:115
+msgid "Same as SEO Description..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:119
+msgid "Social Image (Facebook/Twitter/WhatsApp)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:122
+msgid "Upload Image"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:137
+msgid "Facebook"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:138
+msgid "Twitter"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:178
+msgid "Optimization Level:"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:187 includes/class-vonseowp-meta-box.php:37
+msgid "Analyzing content..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:196
+msgid "Schema Type"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:198
+msgid "Default"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:199
+msgid "Article"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:200
+msgid "News Article"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:201
+msgid "Blog Posting"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:202
+msgid "Product"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:203
+msgid "Service"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:204
+msgid "Product Review"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:206
+msgid "Override default schema."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:212
+msgid "Rating (1-5)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:216
+msgid "Rating Count"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:223
+msgid "Reviewed Product Name"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:230
+msgid "FAQ Schema (JSON-LD)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:235 includes/class-vonseowp-meta-box.php:79
+msgid "Question..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:236 includes/class-vonseowp-meta-box.php:80
+msgid "Answer..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:237 includes/class-vonseowp-meta-box.php:81
+msgid "Remove"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:241
+msgid "Add FAQ"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:242
+msgid "Add Q&A for Google Search snippets."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:248
+msgid "Video Schema (JSON-LD)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:250
+msgid "Video URL (YouTube/Vimeo)..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:251
+msgid "Video Title..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:252
+msgid "Video Description..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:254
+msgid "Helps Google index your videos better."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:260
+msgid "Validation"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:262
+msgid "Test Rich Results"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:265
+msgid "Validate Schema.org"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:267
+msgid "Check for errors in Google validator."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:274
+msgid "Competitor Search Math"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:276
+msgid "URL..."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:278
+msgid "Scan Competitor"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:281
+msgid "Analyze top ranking sites."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:283
+msgid "Competitor scans need the PHP DOM extension (DOMDocument). Ask your host to enable it."
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:291
+msgid "Metric"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:292
+msgid "You"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:293
+msgid "Competitor"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:294
+msgid "Gap"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:299
+msgid "Word Count"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:305
+msgid "Headings (H1/H2/H3)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:311
+msgid "Images (Alt Tags)"
+msgstr ""
+
+#: admin/partials/vonseowp-meta-box-display.php:317
+msgid "Reading Ease"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:6
+msgid "Import / Export Settings"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:7
+msgid "Transfer supported VonSEO site settings only. Posts, term metadata, media files, verification tokens, IndexNow consent/key, logs and caches are excluded. Existing excluded settings are kept."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:8
+msgid "Exports may contain business contact details, redirect rules and site URLs. Keep them private. URLs are not rewritten for another site; review image links, robots.txt, llms.txt and redirects before importing."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:10
+msgid "The reviewed settings were imported."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:15
+msgid "Export JSON"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:22
+msgid "Settings file (.json, up to 128 KB)"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:24
+msgid "Preview Import"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:27
+msgid "The preview expired or is unavailable. Upload the file again."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:30
+msgid "Review Changes"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:31
+msgid "Only changed fields are listed. Unlisted and excluded settings remain unchanged. Site Title and Tagline also synchronize with WordPress General Settings. This preview expires after 10 minutes."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:32
+msgid "Settings changes"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:34
+msgid "Setting"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:34
+msgid "Current"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:34
+msgid "After Import"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:42
+msgid "Not saved (default)"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:47
+msgid "No settings changes."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:56
+msgid "I reviewed these changes, including site identity, public URLs and any enabled features."
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:58
+msgid "Confirm Import"
+msgstr ""
+
+#: admin/partials/vonseowp-settings-transfer.php:59
+msgid "Cancel"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:44 includes/class-vonseowp-site-audit.php:28
+msgid "Site SEO Audit"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:45
+msgid "Manual, local checks for technical settings and published content."
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:51
+msgid "Run Again"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:51
+msgid "Run Audit"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:56
+msgid "Audit batch completed and cached for 12 hours."
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:62
+msgid "No audit results yet"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:63
+msgid "Run a manual scan, then move through published content in safe batches of 25 items."
+msgstr ""
+
+#. translators: %s: audit date and time
+#: admin/partials/vonseowp-site-audit-display.php:70
+#, php-format
+msgid "Last scan: %s"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:76
+msgid "Audit summary"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:78
+msgid "Content scanned"
+msgstr ""
+
+#. translators: %d: total number of published posts and pages
+#: admin/partials/vonseowp-site-audit-display.php:92
+#, php-format
+msgid "of %d published"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:99
+msgid "Technical checks"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:101
+msgid "passed"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:104
+msgid "Content findings"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:106
+msgid "review items"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:113
+msgid "Technical SEO"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:114
+msgid "Configuration checks performed without external requests."
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:121
+msgid "Status"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:122
+msgid "Check"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:123
+msgid "Detail"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:132
+msgid "Pass"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:132
+msgid "Review"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:147
+msgid "Published Content"
+msgstr ""
+
+#. translators: %d: maximum number of posts checked per batch
+#: admin/partials/vonseowp-site-audit-display.php:152
+#, php-format
+msgid "Only posts with findings are listed. Each batch checks at most %d items, ordered by latest modification."
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:163
+msgid "No content findings in the scanned sample."
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:170
+msgid "Content"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:171
+msgid "Type"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:172
+msgid "Findings"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:173
+msgid "Action"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:179
+msgid "(no title)"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:195
+msgid "Edit"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:206
+msgid "Audit batches"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:215
+msgid "Previous 25"
+msgstr ""
+
+#. translators: 1: current batch number, 2: total number of batches
+#: admin/partials/vonseowp-site-audit-display.php:223
+#, php-format
+msgid "Batch %1$d of %2$d"
+msgstr ""
+
+#: admin/partials/vonseowp-site-audit-display.php:238
+msgid "Next 25"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:95 includes/class-vonseowp-admin.php:96
+msgid "VonSEO"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:116
+msgid "Are you sure you want to reset robots.txt to recommended Pro rules?"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:117
+msgid "Are you sure you want to reset llms.txt to the recommended AEO template?"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:119 includes/class-vonseowp-llm.php:91
+msgid "Key Resources"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:120 includes/class-vonseowp-llm.php:92
+msgid "Home Page"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:121
+msgid "Main entry point."
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:123
+msgid "Full index of pages."
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:124 includes/class-vonseowp-llm.php:94
+msgid "About"
+msgstr ""
+
+#: includes/class-vonseowp-admin.php:125
+msgid "Created for AI Engine Optimization (AEO)."
+msgstr ""
+
+#: includes/class-vonseowp-breadcrumbs.php:88
+msgid "Breadcrumbs"
+msgstr ""
+
+#: includes/class-vonseowp-breadcrumbs.php:98
+msgid "Home"
+msgstr ""
+
+#. translators: %s: search query
+#: includes/class-vonseowp-breadcrumbs.php:140
+#, php-format
+msgid "Search results for \"%s\""
+msgstr ""
+
+#. translators: %s: author name
+#: includes/class-vonseowp-breadcrumbs.php:152
+#, php-format
+msgid "Articles by %s"
+msgstr ""
+
+#: includes/class-vonseowp-breadcrumbs.php:162
+msgid "Archives"
+msgstr ""
+
+#: includes/class-vonseowp-breadcrumbs.php:171
+msgid "404 Not Found"
+msgstr ""
+
+#: includes/class-vonseowp-columns.php:41 includes/class-vonseowp-columns.php:149
+msgid "SEO Desc"
+msgstr ""
+
+#: includes/class-vonseowp-columns.php:42
+msgid "Score"
+msgstr ""
+
+#: includes/class-vonseowp-columns.php:141
+msgid "VonSEO Optimization"
+msgstr ""
+
+#: includes/class-vonseowp-columns.php:154
+msgid "Keywords"
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:30
+msgid "Unauthorized"
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:36
+msgid "Invalid URL"
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:68
+msgid "The competitor URL points to a local or reserved network address."
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:85
+msgid "The competitor URL redirected too many times."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/class-vonseowp-competitors.php:156
+#, php-format
+msgid "The competitor URL returned HTTP %d instead of a successful page."
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:162
+msgid "The competitor URL did not return HTML content"
+msgstr ""
+
+#: includes/class-vonseowp-competitors.php:167
+msgid "Could not retrieve page content"
+msgstr ""
+
+#. translators: %d: archive page number.
+#: includes/class-vonseowp-frontend.php:117
+#, php-format
+msgid "Page %d"
+msgstr ""
+
+#: includes/class-vonseowp-llm.php:92
+msgid "Main entry point for the website."
+msgstr ""
+
+#: includes/class-vonseowp-llm.php:93
+msgid "Detailed index of all public pages for crawling."
+msgstr ""
+
+#: includes/class-vonseowp-llm.php:95
+msgid "This file provides a curated summary of site content for search crawlers and specialized data agents."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:36
+msgid "Add a focus keyword to start local SEO checks."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:38
+msgid "optimal"
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:39
+msgid "acceptable"
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:40
+msgid "too short"
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:41
+msgid "too long"
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:42
+msgid "Focus keyword found in SEO Title."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:43
+msgid "Focus keyword missing from SEO Title."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:44
+msgid "Focus keyword found in Meta Description."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:45
+msgid "Focus keyword missing from Meta Description."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:46
+msgid "Focus keyword appears in the opening paragraph."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:47
+msgid "Add the focus keyword near the start of the content."
+msgstr ""
+
+#. translators: %s: keyword density percentage
+#: includes/class-vonseowp-meta-box.php:49
+#, php-format
+msgid "Keyword density looks natural (%s%%)."
+msgstr ""
+
+#. translators: %s: keyword density percentage
+#: includes/class-vonseowp-meta-box.php:51
+#, php-format
+msgid "Keyword density may need adjustment (%s%%)."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:52
+msgid "Focus keyword is missing or overused in the body content."
+msgstr ""
+
+#. translators: %d: word count
+#: includes/class-vonseowp-meta-box.php:54
+#, php-format
+msgid "Content length is good (%d words)."
+msgstr ""
+
+#. translators: %d: word count
+#: includes/class-vonseowp-meta-box.php:56
+#, php-format
+msgid "Content is a bit short (%d words). Aim for 300+."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:57
+msgid "SEO title length is optimal."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:58
+msgid "SEO title is usable but a little short."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:59
+msgid "SEO title is usable but may be truncated."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:60
+msgid "Add an SEO title for this post."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:61
+msgid "SEO title is too short to be useful."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:62
+msgid "SEO title is too long and likely to be truncated."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:63
+msgid "Meta description length is optimal."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:64
+msgid "Meta description is usable but a little short."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:65
+msgid "Meta description is usable but may be truncated."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:66
+msgid "Add a meta description for search snippets."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:67
+msgid "Meta description is too short to be useful."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:68
+msgid "Meta description is too long and likely to be truncated."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:69
+msgid "Heading structure supports the focus keyword."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:70
+msgid "Add clearer H2/H3 structure or include the focus keyword in a heading."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:71
+msgid "Add headings to structure this content."
+msgstr ""
+
+#. translators: %d: image count
+#: includes/class-vonseowp-meta-box.php:73
+#, php-format
+msgid "All detected images include ALT text (%d images)."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:74
+msgid "No images detected in the editor content."
+msgstr ""
+
+#. translators: %d: missing image ALT count
+#: includes/class-vonseowp-meta-box.php:76
+#, php-format
+msgid "Add ALT text to %d image(s)."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:77
+msgid "Content includes both internal and external links."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:78
+msgid "Add at least one useful internal or external link."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:84
+msgid "Generating..."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:85
+msgid "Scanning..."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:86
+msgid "Please enter a competitor URL."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:87
+msgid "Could not connect to the server."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:88
+msgid "Suggestion:"
+msgstr ""
+
+#. translators: %d: word count difference
+#: includes/class-vonseowp-meta-box.php:90
+#, php-format
+msgid "Your content is shorter than your competitor's. Add about %d more words to stay competitive."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:91
+msgid "Great! You have more content depth than your competitor."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:92
+msgid "Try to simplify your sentences; the competitor's content is easier to read."
+msgstr ""
+
+#: includes/class-vonseowp-meta-box.php:102
+msgid "VonSEO - Content Intelligence"
+msgstr ""
+
+#. translators: 1: Post link, 2: Blog link, 3: Blog name
+#: includes/class-vonseowp-rss.php:30
+#, php-format
+msgid "The post <a href=\"%1$s\">%1$s</a> appeared first on <a href=\"%2$s\">%3$s</a>."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:52 includes/class-vonseowp-settings-transfer.php:123
+msgid "Administrator access is required."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:55
+msgid "The settings could not be encoded."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:78
+msgid "The JSON file exceeds 128 KB."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:83
+msgid "Use a valid VonSEO settings JSON file with format version 1."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:86
+msgid "The file contains no settings."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:90
+msgid "The file contains an unsupported or excluded setting."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:103
+msgid "Enable the required public content types or taxonomies on this site before importing their selection."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:116
+msgid "A setting has an invalid type or value. No settings were changed."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:131
+msgid "The import preview could not be saved. Try again."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:155
+msgid "The preview expired or belongs to another user. Upload the file again."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:157
+msgid "Settings changed after this preview. Upload the file again to review the latest values."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:184
+msgid "The import failed and restoration could not be verified. Check your database and restore your saved export."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:186
+msgid "The import could not be saved. Previous settings were restored."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:191
+msgid "Administrator POST access is required."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:200
+msgid "Settings transfer"
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:220
+msgid "Choose a JSON file."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:226
+msgid "Choose an uploaded .json file no larger than 128 KB."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:229
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: includes/class-vonseowp-settings-transfer.php:247
+msgid "Confirm the reviewed changes before importing."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:29
+msgid "SEO Audit"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:46
+msgid "You are not allowed to run the VonSEO site audit."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:200
+msgid "Using WordPress title fallback"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:201
+msgid "No effective page title"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:202
+msgid "Effective title length needs review"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:203
+msgid "Using excerpt or content description fallback"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:204
+msgid "No effective meta description"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:205
+msgid "Effective description length needs review"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:206
+msgid "Focus keyword not set"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:207
+msgid "Marked noindex"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:208
+msgid "Image ALT text missing"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:209
+msgid "No internal link found"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:210
+msgid "No external link found"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:274
+msgid "Sitemap output is disabled or has no selected content types."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:276
+msgid "Sitemap output is suppressed while search visibility is disabled."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:278
+msgid "Pretty permalinks are required for the VonSEO sitemap route."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:285
+msgid "Search visibility"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:288
+msgid "Search engines are allowed to index this site."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:289
+msgid "WordPress is discouraging search engines from indexing this site."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:292
+msgid "Permalink structure"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:296
+msgid "Plain permalinks are active."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:299
+msgid "XML sitemap"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:304
+msgid "Homepage metadata"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:307
+msgid "Homepage title and description are available."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:308
+msgid "Add a homepage title and description."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:311
+msgid "Robots rules"
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:314
+msgid "The wildcard crawler group contains an exact Disallow: / directive. Review any Allow exceptions manually."
+msgstr ""
+
+#: includes/class-vonseowp-site-audit.php:315
+msgid "No exact Disallow: / directive was found for wildcard crawlers."
+msgstr ""
+
+#: includes/class-vonseowp-taxonomies.php:84
+msgid "Canonical URL"
+msgstr ""
+
+#: includes/class-vonseowp-taxonomies.php:84
+msgid "Social Description"
+msgstr ""
+
+#: includes/class-vonseowp-taxonomies.php:84
+msgid "Noindex"
+msgstr ""
+
+#: includes/class-vonseowp-toc.php:311
+msgid "show"
+msgstr ""
+
+#: includes/class-vonseowp-toc.php:312
+msgid "hide"
+msgstr ""
+
+#: vonseo.php:34
+msgid "VonSEO requires PHP 7.4 or higher to function properly. Please upgrade your PHP version."
+msgstr ""

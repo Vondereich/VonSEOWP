@@ -123,8 +123,9 @@ jQuery(document).ready(function ($) {
         return check.status === "good" ? messages.kw_found_intro : messages.kw_missing_intro;
       case "keyword_density": {
         const density = Math.round((meta.density || 0) * 10) / 10;
-        if (check.status === "good") return messages.density_good.replace("%s", density);
-        if (check.status === "warn") return messages.density_warn.replace("%s", density);
+        // The PHP strings are printf-style, so a literal percent sign is escaped as %%.
+        if (check.status === "good") return messages.density_good.replace("%s", density).replace("%%", "%");
+        if (check.status === "warn") return messages.density_warn.replace("%s", density).replace("%%", "%");
         return messages.density_bad;
       }
       case "content_length":
@@ -201,7 +202,7 @@ jQuery(document).ready(function ($) {
               : "dismiss";
         let li = $("<li>").addClass("item " + i.status);
         li.append($("<span>").addClass("dashicons dashicons-" + icon));
-        li.append(" " + formatAnalysisMessage(i));
+        li.append(document.createTextNode(" " + formatAnalysisMessage(i)));
         $list.append(li);
       });
     }
@@ -273,7 +274,7 @@ jQuery(document).ready(function ($) {
       const content = getPostContent();
 
       // Create a virtual DOM to parse HTML
-      const $html = $("<div>").html(content);
+      const $html = parseInert(content);
 
       // Text Cleaning Helper
       const cleanText = (txt) => txt.replace(/\s+/g, " ").trim();
@@ -548,15 +549,15 @@ jQuery(document).ready(function ($) {
   const renderCompetitorComparison = (comp) => {
     const $results = $("#von-competitor-results");
 
-    // 1. Get User Metrics
-    const content = getPostContent();
-    const textOnly = $("<div>").html(content).text();
-    const userWords = textOnly.split(/\s+/).filter((w) => w.length > 3).length;
-    const userH1 = $("<div>").html(content).find("h1").length;
-    const userH2 = $("<div>").html(content).find("h2").length;
-    const userH3 = $("<div>").html(content).find("h3").length;
-    const userImg = $("<div>").html(content).find("img").length;
-    const userReading = runAnalysisAndGetReadingScore(textOnly); // Simplified for now
+    // 1. Get User Metrics (same text rules as the server-side competitor scan)
+    const $doc = parseInert(getPostContent());
+    const metrics = window.VonSEOWPAnalyzer.textMetrics(visibleText($doc));
+    const userWords = metrics.wordCount;
+    const userH1 = $doc.find("h1").length;
+    const userH2 = $doc.find("h2").length;
+    const userH3 = $doc.find("h3").length;
+    const userImg = $doc.find("img").length;
+    const userReading = metrics.readingEase;
 
     // 2. Update Table
     updateMetricRow("word_count", userWords, comp.word_count);
@@ -568,14 +569,9 @@ jQuery(document).ready(function ($) {
     updateMetricRow("images", userImg, comp.image_count);
     updateMetricRow("reading_ease", userReading, comp.reading_ease);
 
-    // SEO Math Score (Based on Word Count & Structure proximity)
-    let userScore = parseInt($("#overall-score-circle").text()) || 0;
-    let compScore = calculateCompScore(comp);
-    updateMetricRow("seo_score", userScore, compScore);
-
     const $advice = $("#von-comp-advice");
     $advice.empty();
-    $advice.append("<strong>" + vonseowp_metabox_data.ai.advice_prefix + "</strong> ");
+    $advice.append($("<strong>").text(vonseowp_metabox_data.ai.advice_prefix), " ");
 
     let msg = "";
     if (userWords < comp.word_count) {
@@ -601,7 +597,7 @@ jQuery(document).ready(function ($) {
     const $gapCell = $row.find(".val-gap");
     $gapCell.text((gap > 0 ? "+" : "") + gap).removeClass("good bad");
 
-    if (id === "reading_ease" || id === "seo_score") {
+    if (id === "reading_ease") {
       $gapCell.addClass(gap >= 0 ? "good" : "bad");
     } else {
       // For word counts etc, closer or more is usually better
@@ -609,21 +605,25 @@ jQuery(document).ready(function ($) {
     }
   };
 
-  const calculateCompScore = (c) => {
-    let s = 50; // Starting point
-    if (c.word_count > 600) s += 20;
-    if (c.h1_count === 1) s += 10;
-    if (c.image_count > 2) s += 10;
-    if (c.reading_ease > 60) s += 10;
-    return Math.min(100, s);
+  // Parse editor HTML into an inert document: no script execution, no image or media requests.
+  const parseInert = (html) => {
+    const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+    return $(doc.body || doc.createElement("body"));
   };
 
-  const runAnalysisAndGetReadingScore = (text) => {
-    // Simplified FK approximation as in PHP
-    const words = text.split(/\s+/).length;
-    if (!words) return 0;
-    const sentences = (text.match(/[.!?]/g) || []).length || 1;
-    return Math.round(100 - words / sentences); // Very simplified for JS
+  // Mirrors VonSEOWP_Competitors::visible_text(): drop non-rendered elements and turn block
+  // boundaries into spaces, so <p>a</p><p>b</p> is two words while <b>Wor</b>d stays one.
+  const BLOCK_TAGS =
+    "address, article, aside, blockquote, br, dd, details, div, dl, dt, figcaption, figure, footer, form, " +
+    "h1, h2, h3, h4, h5, h6, header, hr, li, main, nav, ol, p, pre, section, summary, table, td, th, tr, ul";
+  const visibleText = ($root) => {
+    $root.find("script, style, noscript, template").remove();
+    const root = $root.get(0);
+    root.querySelectorAll(BLOCK_TAGS).forEach((node) => {
+      node.before(" ");
+      node.after(" ");
+    });
+    return root.textContent || "";
   };
 
   // --- IMAGE UPLOAD LOGIC ---

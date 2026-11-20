@@ -104,4 +104,35 @@ vonseowp_redirect_check(vonseowp_redirect_target('/subdir/books/foo/', '/subdir/
 $options['permalink_structure'] = '';
 vonseowp_redirect_check(vonseowp_redirect_target('/subdir/foo/', '/subdir/foo/?p=101') === '/subdir/foo/?p=101',
     'Do not predict permalink canonical rebound when pretty permalinks are disabled.');
+// Optional 404 log: repeat hits on a logged URL are written at most once a minute, never autoloaded.
+$is_404 = true;
+$writes = array();
+function is_404(): bool { return $GLOBALS['is_404']; }
+function esc_url_raw(string $url): string { return $url; }
+function current_time(string $type): string { return gmdate('Y-m-d H:i:s'); }
+/** @param mixed $value */
+function update_option(string $name, $value, $autoload = null): bool {
+    $GLOBALS['writes'][] = array($name, $autoload);
+    $GLOBALS['options'][$name] = $value;
+    return true;
+}
+$options['vonseowp_settings'] = array('enable_404_log' => 1);
+$logger = new VonSEOWP_Redirects();
+$_SERVER['REQUEST_URI'] = '/subdir/missing/';
+$logger->log_404_error();
+$logger->log_404_error();
+$logger->log_404_error();
+vonseowp_redirect_check(count($writes) === 1 && $writes[0] === array('vonseowp_404_log', false)
+    && $options['vonseowp_404_log']['/subdir/missing/']['count'] === 1, 'A 404 flood on one URL must cause one non-autoloaded write per minute.');
+$options['vonseowp_404_log']['/subdir/missing/']['ts'] -= 61;
+$logger->log_404_error();
+vonseowp_redirect_check(count($writes) === 2 && $options['vonseowp_404_log']['/subdir/missing/']['count'] === 2, 'Repeat hits after the throttle window must be counted.');
+$_SERVER['REQUEST_URI'] = '/subdir/other-missing/';
+$logger->log_404_error();
+vonseowp_redirect_check(count($writes) === 3 && isset($options['vonseowp_404_log']['/subdir/other-missing/']), 'New URLs must always be logged.');
+$options['vonseowp_404_log'] = array('/subdir/legacy/' => array('count' => 4, 'last_hit' => '2026-01-01 00:00:00'));
+$_SERVER['REQUEST_URI'] = '/subdir/legacy/';
+$logger->log_404_error();
+vonseowp_redirect_check($options['vonseowp_404_log']['/subdir/legacy/']['count'] === 5, 'Entries saved before the throttle must keep counting.');
+$is_404 = false;
 echo 'Redirect tests passed (' . $assertions . ' assertions)' . PHP_EOL;

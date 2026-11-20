@@ -2,6 +2,43 @@
 
 All notable changes to the VonSEOWP plugin will be documented in this file.
 
+## [2.5.3] - 2026-11-20
+### Fixed
+- **llms.txt Plain Text**: Stop HTML-encoding the `text/plain` endpoint, which turned Markdown blockquotes into `&gt;` and `&` into `&amp;`. Decode the stored site title/tagline in the default template and omit an empty tagline line.
+- **Settings Backslashes**: Remove the sanitizer's second `wp_unslash()` (wp-admin/options.php already unslashes), so first-save double sanitization and Site Title/Tagline synchronization no longer strip backslashes. Settings import no longer pre-slashes values.
+- **Uninstall Cleanup**: Delete `_vonseowp_reviewed_product` post meta and cached Competitor transients.
+- **Organization Schema**: Fall back to the decoded site name when the Site Title field is cleared; publish saved Facebook URL and X handle as `sameAs`; decode site names in WebSite/Organization JSON-LD.
+- **Title Separator (SET-01)**: Apply the saved separator through `document_title_separator`; the default dash leaves theme separators untouched. Accept only the offered choices.
+- **Retired Category Base (SET-01)**: Remove the inactive Remove Category Base control and stop saving it until collision-safe rewrite behavior exists.
+- **RSS Default (SET-02)**: Align the RSS footer control with its OFF runtime default.
+- **Breadcrumb Schema**: Build BreadcrumbList from the same trail and `vonseowp_breadcrumb_items` filter as visible breadcrumbs, including ancestors and archives; omit one-item trails, invalid intermediate items and noindex search/404 responses.
+- **Competitor Comparison (MET-01/MET-02)**: Reject non-2xx responses, read only rendered body text, splitting words at block boundaries but not inside inline markup, share word/sentence/syllable rules between PHP and the editor, remove the incomparable SEO Math Score row, invalidate older metric caches and show a missing DOM extension state.
+- **Sitemap Index**: Omit request-time `lastmod` values that reported every batch as freshly modified.
+- **Video Schema (SCH-02)**: Use `embedUrl` for YouTube/Vimeo and other player pages, `contentUrl` only for direct media files; derive YouTube thumbnails or use the post image/site icon instead of a fabricated `favicon.ico`; skip invalid URLs.
+- **Quick Edit**: Read SEO values with `attr()` so jQuery `data()` no longer converts numeric or JSON-like text.
+- **llms.txt Reset**: Decode the site title/tagline in the admin template and omit the tagline line and placeholder text when it is empty.
+- **Posts Page Metadata**: With a static front page, the separate posts page no longer reuses the homepage SEO title/description; it uses its own saved SEO title, description, social fields and image, or the native title.
+- **Social Titles**: Use the SEO title or post title for `og:title`/`twitter:title` on content instead of core's assembled document title, which could differ from a legacy theme's `<title>` and had core rewrite the site name's capitalization.
+- **AI Plugin Compatibility**: Suppress the duplicate `<meta name="description">` printed by the WordPress "AI" plugin's Meta Description experiment (via its `wpai_meta_description` filter) and use its generated description as the fallback after a saved VonSEO description, in meta tags, JSON-LD and Site Audit.
+- **404 Log**: Store the optional log with autoload disabled, and write repeat hits on an already-logged URL at most once a minute.
+- **SEO Health Messages**: Show keyword density as "3.7%" instead of "3.7%%", and render analysis messages as text.
+
+### Security
+- **Breadcrumb Privacy**: Leave private, draft and pending parent pages out of visible breadcrumbs and BreadcrumbList.
+- **Competitor Network Guard**: Follow redirects in the plugin and check every hop; reject link-local (cloud metadata), CGNAT, private, loopback, reserved and IPv6 local/link-local targets, which older WordPress releases do not block, and stop after three redirects.
+- **Social Image URLs**: Store the per-post social image with `esc_url_raw()` restricted to http/https, and publish older stored values only when they are http(s) URLs.
+- **JSON-LD Encoding**: Hex-escape `<`, `>`, `&`, `'` and `"` in structured data so no stored value can close the script element.
+- **Posts Page Status**: Use the posts page's SEO fields only while that page is published.
+
+### Improved
+- **Inert Editor Parsing**: Parse editor HTML with `DOMParser` for local suggestions and comparisons, so content never runs scripts or loads media in the admin.
+- **Wording**: Replace "AI" labels on local heuristics with "Suggest", following the roadmap guardrail.
+- **Translations**: Ship `languages/vonseo.pot`; load bundled translations only when no WordPress.org language pack is installed.
+- **Package Size (PKG-01)**: Exclude WordPress.org listing art from the plugin ZIP and remove duplicate and orphaned asset files.
+
+### Dev
+- Regressions for llms.txt plain-text output, uninstall key coverage, backslash persistence, separator choices, Organization name/sameAs, breadcrumb and video schema, posts-page titles, 404 log throttling, visible-text extraction, non-2xx competitor pages, and PHP/JS metric parity.
+
 ## [2.5.2] - 2026-11-11
 ### Added
 - **Settings Portability**: Export supported site settings as versioned JSON, preview validated imports and require confirmation before saving. Preserve excluded settings and reject expired or outdated previews. Verification tokens, IndexNow consent/key, logs, media and per-content metadata are not transferred.

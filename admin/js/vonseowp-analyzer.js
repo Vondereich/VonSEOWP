@@ -406,9 +406,36 @@
     };
   };
 
+  /*
+   * Competitor comparison metrics. Mirrors VonSEOWP_Competitors::text_metrics() in PHP exactly so both
+   * columns of the comparison table use the same word, sentence and syllable rules.
+   */
+  const countSyllables = (word) => {
+    const letters = String(word).toLowerCase().replace(/[^a-z]/g, "");
+    if (!letters) return 1;
+    let count = (letters.match(/[aeiouy]+/g) || []).length;
+    if (count > 1 && /[^aeiouy]e$/.test(letters)) count -= 1;
+    return Math.max(1, count);
+  };
+
+  const textMetrics = (text) => {
+    const words = String(text || "")
+      .split(/\s+/u)
+      .filter((token) => /[\p{L}\p{N}]/u.test(token));
+    if (!words.length) return { wordCount: 0, readingEase: 0 };
+    const sentences = (String(text).match(/[.!?]+/gu) || []).length || 1;
+    const syllables = words.reduce((total, word) => total + countSyllables(word), 0);
+    const score = 206.835 - 1.015 * (words.length / sentences) - 84.6 * (syllables / words.length);
+    return {
+      wordCount: words.length,
+      readingEase: Math.round(Math.max(0, Math.min(100, score))),
+    };
+  };
+
   return {
     analyze,
     stripHtml,
+    textMetrics,
     wordsFromText,
     countKeyword,
   };

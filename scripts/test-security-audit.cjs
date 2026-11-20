@@ -106,4 +106,46 @@ assert(
   "Uninstall must remove cached site audit results.",
 );
 
+// Every plugin-owned post meta key read or written in runtime code must be removed on uninstall.
+const runtimeFiles = [];
+const walk = (dir) => {
+  for (const entry of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
+    const relative = path.posix.join(dir, entry.name);
+    if (entry.isDirectory()) walk(relative);
+    else if (/\.php$/.test(entry.name)) runtimeFiles.push(relative);
+  }
+};
+["includes", "admin"].forEach(walk);
+const termOnlyKeys = new Set(["_vonseowp_canonical"]);
+const postMetaKeys = new Set();
+for (const file of runtimeFiles) {
+  for (const match of read(file).matchAll(/'(_vonseowp_[a-z_]+)'/g)) postMetaKeys.add(match[1]);
+}
+const uninstallPostKeys = new Set(
+  [...(uninstall.match(/\$vonseowp_meta_keys\s*=\s*array\(([\s\S]*?)\);/) || ["", ""])[1].matchAll(/'(_vonseowp_[a-z_]+)'/g)].map((m) => m[1]),
+);
+for (const key of postMetaKeys) {
+  if (termOnlyKeys.has(key)) continue;
+  assert(uninstallPostKeys.has(key), `Uninstall must delete post meta key ${key}.`);
+}
+for (const key of ["_vonseowp_title", "_vonseowp_description", "_vonseowp_canonical", "_vonseowp_social_desc", "_vonseowp_noindex"]) {
+  assert(uninstall.includes(`'${key}'`), `Uninstall must delete term meta key ${key}.`);
+}
+assert(
+  /_transient_vonseowp_comp_/.test(uninstall) && /_transient_timeout_vonseowp_comp_/.test(uninstall),
+  "Uninstall must remove cached Competitor scan transients.",
+);
+
+const metaBox = read("includes/class-vonseowp-meta-box.php");
+assert(
+  /esc_url_raw\([^;]*\$_POST\['vonseowp_image'\][^;]*array\('http', 'https'\)\)/.test(metaBox),
+  "The social image must be stored with esc_url_raw() restricted to http/https.",
+);
+
+const llm = read("includes/class-vonseowp-llm.php");
+assert(
+  !/wp_kses_post\s*\(/.test(llm) && /text\/plain/.test(llm) && /nosniff/.test(llm),
+  "llms.txt must stay text/plain with nosniff and must not HTML-encode Markdown via wp_kses_post().",
+);
+
 console.log("Security audit regression tests passed");

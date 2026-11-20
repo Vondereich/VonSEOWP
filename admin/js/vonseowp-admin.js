@@ -100,16 +100,16 @@ jQuery(document).ready(function ($) {
     )
       return;
 
-    const siteName = vonseowp_admin_data.site_name || "My Site";
-    const siteDesc =
-      vonseowp_admin_data.site_desc || "A website about something awesome.";
-    const homeUrl = vonseowp_admin_data.home_url || window.location.origin;
+    const siteName = vonseowp_admin_data.site_name || window.location.hostname;
+    const siteDesc = String(vonseowp_admin_data.site_desc || "").trim();
+    const homeUrl = String(
+      vonseowp_admin_data.home_url || window.location.origin,
+    ).replace(/\/+$/, "");
 
     const llmTemplate = [
       "# " + siteName,
       "",
-      "> " + siteDesc,
-      "",
+      ...(siteDesc ? ["> " + siteDesc, ""] : []),
       "## " + vonseowp_admin_data.llm_template.key_resources,
       "",
       "- [" +

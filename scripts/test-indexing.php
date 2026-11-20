@@ -59,6 +59,36 @@ if (($argv[1] ?? '') === 'llm-denied') {
     (new VonSEOWP_LLM())->render_llms_txt();
     throw new RuntimeException('The renderer must terminate the denied response.');
 }
+if (($argv[1] ?? '') === 'llm-public' || ($argv[1] ?? '') === 'llm-default') {
+    function wp_strip_all_tags(string $text): string { return trim(strip_tags($text)); }
+    // Core stores the site title/tagline HTML-escaped.
+    function get_bloginfo(string $key): string { return $key === 'name' ? 'Tom &amp; Jerry&#039;s' : 'Cats &gt; dogs'; }
+    function __(string $text, string $domain = ''): string { return $text; }
+    /** @param mixed $value @return mixed */
+    function apply_filters(string $hook, $value) { return $value; }
+    $options['vonseowp_settings'] = array('enable_llms_txt' => 1,
+        'llms_txt_content' => $argv[1] === 'llm-public' ? "# Site\n\n> Summary & more\n\n- [Search](https://example.test/?s=a&b=c): 3 > 2" : '');
+    (new VonSEOWP_LLM())->render_llms_txt();
+    throw new RuntimeException('The renderer must terminate the public response.');
+}
+/** @return array{0: string, 1: string, 2: int} */
+function vonseowp_indexing_run(string $mode): array {
+    $process = proc_open(array(PHP_BINARY, __FILE__, $mode), array(0 => array('pipe', 'r'), 1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes);
+    if (!is_resource($process)) throw new RuntimeException('Cannot run ' . $mode . ' test.');
+    fclose($pipes[0]);
+    $output = (string) stream_get_contents($pipes[1]);
+    $errors = (string) stream_get_contents($pipes[2]);
+    fclose($pipes[1]); fclose($pipes[2]);
+    return array($output, $errors, proc_close($process));
+}
+list($llm_output, $llm_errors, $llm_status) = vonseowp_indexing_run('llm-public');
+vonseowp_indexing_check($llm_status === 0 && $llm_errors === ''
+    && $llm_output === "# Site\n\n> Summary & more\n\n- [Search](https://example.test/?s=a&b=c): 3 > 2",
+    'Public llms.txt must emit literal Markdown without HTML entities: ' . $llm_output);
+list($llm_output, $llm_errors, $llm_status) = vonseowp_indexing_run('llm-default');
+vonseowp_indexing_check($llm_status === 0 && $llm_errors === '' && strpos($llm_output, "# Tom & Jerry's\n\n> Cats > dogs\n") === 0
+    && strpos($llm_output, '&amp;') === false && strpos($llm_output, '&gt;') === false,
+    'Default llms.txt must decode the stored site title/tagline into plain text: ' . $llm_output);
 $posts[1] = (object) array('ID' => 1, 'post_type' => 'post', 'post_status' => 'publish', 'post_password' => '');
 $engine = new VonSEOWP_IndexNow();
 (new VonSEOWP_LLM());

@@ -176,6 +176,12 @@ class VonSEOWP_Breadcrumbs {
         return apply_filters('vonseowp_breadcrumb_items', $items);
     }
 
+    public static function is_public_ancestor(int $post_id): bool {
+        $ancestor = get_post($post_id);
+        // Password-protected pages stay listed: WordPress already shows their titles publicly.
+        return $ancestor && $ancestor->post_status === 'publish';
+    }
+
     private static function build_singular_items(array $items): array {
         $post_id = get_queried_object_id();
         if (!$post_id) {
@@ -185,6 +191,8 @@ class VonSEOWP_Breadcrumbs {
         if (is_page()) {
             $ancestors = array_reverse(get_post_ancestors($post_id));
             foreach ($ancestors as $ancestor_id) {
+                // Never reveal private, draft or pending parent pages in a public trail.
+                if (!self::is_public_ancestor((int) $ancestor_id)) continue;
                 $items[] = array(
                     'label' => get_the_title($ancestor_id),
                     'url'   => get_permalink($ancestor_id),

@@ -4,7 +4,7 @@ Tags: seo, toc, schema, sitemap, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -132,6 +132,28 @@ When an authorized editor requests a Competitor scan, the WordPress server fetch
 This is a public, curated text endpoint, not an access-control feature or automatic protected-post export. Publish only material intended for public reading. When search-engine visibility is off, or the feature is disabled, both the rewritten endpoint and its query alias return an uncached 404 with noindex/nofollow instead of curated/default text.
 
 == Changelog ==
+
+= 2.5.3 =
+* Fixed llms.txt output so Markdown blockquotes, ampersands and URLs are no longer turned into HTML entities, and decoded the site title and tagline in the default template.
+* Fixed settings that contain backslashes losing them on save and during Site Title/Tagline synchronization.
+* Fixed uninstall leaving Product Review metadata and cached Competitor scans behind.
+* Fixed an empty Organization name when the Site Title field is cleared, and published saved Facebook/X profiles as Organization sameAs.
+* Connected the Title Separator setting to document titles; the default dash keeps the theme's separator. Restricted it to the offered choices.
+* Retired the inactive Remove Category Base control and aligned the RSS footer control with its OFF default.
+* Breadcrumb structured data now follows the visible breadcrumb trail and is omitted for one-item trails and search/404 pages.
+* Competitor scans now reject non-2xx pages, count only visible text, use the same word and reading-ease rules as the editor, and drop the incomparable score row. A missing PHP DOM extension is shown in the editor.
+* Parsed editor content inertly for local suggestions and comparisons, and replaced "AI" labels on local heuristics with "Suggest".
+* Removed the request-time lastmod from sitemap index entries.
+* Video schema now uses embedUrl for YouTube/Vimeo pages and contentUrl only for media files, with a real thumbnail instead of favicon.ico.
+* Fixed Quick Edit turning numeric or JSON-like SEO values into other types, and the llms.txt reset button inserting HTML entities or filler text.
+* With a static front page, the posts page now uses its own SEO title and description instead of the homepage values.
+* Social titles on posts and pages now use the SEO title or post title, matching the page instead of a differently assembled document title.
+* Fixed a duplicate meta description when the WordPress "AI" plugin is active; its generated descriptions are now used as a fallback.
+* Kept the optional 404 log out of autoloaded options and limited repeat writes for the same URL to once a minute.
+* Fixed the keyword density message showing a double percent sign.
+* Added a translation template and loading for bundled translations when no language pack is installed.
+* Removed WordPress.org listing images and duplicate assets from the plugin package.
+* Security hardening: hid private/draft parent pages from breadcrumbs, checked every Competitor redirect and blocked link-local, CGNAT and local IPv6 targets, stored social images as http(s) URLs only, hex-escaped JSON-LD output, and required a published posts page before using its SEO fields.
 
 = 2.5.2 =
 * Added versioned JSON export/import for supported site settings, with validated uploads, change previews and explicit confirmation.

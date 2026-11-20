@@ -57,7 +57,7 @@ $vonseowp_permalink = get_permalink($post->ID);
         <div class="von-sidebar-section">
             <div class="label-row">
                 <label><?php esc_html_e('SEO Title', 'vonseo'); ?></label>
-                <button type="button" class="von-btn-ai compact" id="von-ai-gen-title"><?php esc_html_e('AI', 'vonseo'); ?></button>
+                <button type="button" class="von-btn-ai compact" id="von-ai-gen-title" title="<?php esc_attr_e('Suggest SEO title from this post (local, no external service)', 'vonseo'); ?>"><?php esc_html_e('Suggest', 'vonseo'); ?></button>
             </div>
             <input type="text" name="vonseowp_title" id="vonseowp_title" value="<?php echo esc_attr($vonseowp_seo_title); ?>" placeholder="<?php echo esc_attr($vonseowp_default_title); ?>" class="von-input-sm">
             <div class="von-progress-mini"><div class="bar" id="title-bar"></div></div>
@@ -67,7 +67,7 @@ $vonseowp_permalink = get_permalink($post->ID);
         <div class="von-sidebar-section">
             <div class="label-row">
                 <label><?php esc_html_e('Meta Description', 'vonseo'); ?></label>
-                <button type="button" class="von-btn-ai compact" id="von-ai-gen-desc"><?php esc_html_e('AI', 'vonseo'); ?></button>
+                <button type="button" class="von-btn-ai compact" id="von-ai-gen-desc" title="<?php esc_attr_e('Suggest meta description from this post (local, no external service)', 'vonseo'); ?>"><?php esc_html_e('Suggest', 'vonseo'); ?></button>
             </div>
             <textarea name="vonseowp_description" id="vonseowp_description" rows="3" class="von-input-sm"><?php echo esc_textarea($vonseowp_seo_desc); ?></textarea>
             <div class="von-progress-mini"><div class="bar" id="desc-bar"></div></div>
@@ -77,7 +77,7 @@ $vonseowp_permalink = get_permalink($post->ID);
         <div class="von-sidebar-section">
             <div class="label-row">
                 <label><?php esc_html_e('Focus Keywords', 'vonseo'); ?></label>
-                <button type="button" class="von-btn-ai compact" id="von-ai-gen-keywords"><?php esc_html_e('AI', 'vonseo'); ?></button>
+                <button type="button" class="von-btn-ai compact" id="von-ai-gen-keywords" title="<?php esc_attr_e('Suggest focus keywords from this post (local, no external service)', 'vonseo'); ?>"><?php esc_html_e('Suggest', 'vonseo'); ?></button>
             </div>
             <input type="text" name="vonseowp_keywords" id="vonseowp_keywords" value="<?php echo esc_attr($vonseowp_seo_keywords); ?>" placeholder="<?php esc_attr_e('Keywords...', 'vonseo'); ?>" class="von-input-sm">
         </div>
@@ -274,9 +274,14 @@ $vonseowp_permalink = get_permalink($post->ID);
             <label><?php esc_html_e('Competitor Search Math', 'vonseo'); ?></label>
             <div class="von-image-upload-wrap">
                 <input type="url" id="von-competitor-url" placeholder="<?php esc_attr_e('URL...', 'vonseo'); ?>" class="von-input-sm">
-                <button type="button" class="von-upload-icon-btn" id="von-scan-competitor" title="<?php esc_attr_e('Scan Competitor', 'vonseo'); ?>"><span class="dashicons dashicons-search"></span></button>
+                <?php $vonseowp_competitor_ready = class_exists('DOMDocument') && class_exists('DOMXPath'); ?>
+                <button type="button" class="von-upload-icon-btn" id="von-scan-competitor" title="<?php esc_attr_e('Scan Competitor', 'vonseo'); ?>" <?php disabled(!$vonseowp_competitor_ready); ?>><span class="dashicons dashicons-search"></span></button>
             </div>
+            <?php if ($vonseowp_competitor_ready) : ?>
             <div class="von-field-hint"><?php esc_html_e('Analyze top ranking sites.', 'vonseo'); ?></div>
+            <?php else : ?>
+            <div class="von-field-hint"><?php esc_html_e('Competitor scans need the PHP DOM extension (DOMDocument). Ask your host to enable it.', 'vonseo'); ?></div>
+            <?php endif; ?>
         </div>
 
         <div id="von-competitor-results" style="display:none;">
@@ -314,17 +319,11 @@ $vonseowp_permalink = get_permalink($post->ID);
                         <td class="val-comp">--</td>
                         <td class="val-gap">--</td>
                     </tr>
-                    <tr data-metric="seo_score">
-                        <td><?php esc_html_e('SEO Math Score', 'vonseo'); ?></td>
-                        <td class="val-user">--</td>
-                        <td class="val-comp">--</td>
-                        <td class="val-gap">--</td>
-                    </tr>
                 </tbody>
             </table>
             
             <div class="von-ai-recommendation" id="von-comp-advice">
-                <!-- AI recommendation will appear here -->
+                <!-- Local comparison suggestion appears here -->
             </div>
         </div>
     </div>

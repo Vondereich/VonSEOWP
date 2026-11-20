@@ -6,6 +6,9 @@ if (!defined('ABSPATH')) exit;
 
 class VonSEOWP_Redirects {
 
+    /** Seconds before a repeat 404 on the same URL is written again. */
+    private const LOG_THROTTLE = 60;
+
     private $redirects = array();
     private $log_404 = false;
     private $redirect_attachments = true;
@@ -191,15 +194,24 @@ class VonSEOWP_Redirects {
             $current_uri = substr($current_uri, 0, 200) . '...';
         }
 
+        // Repeat hits on an already-logged URL are recorded at most once a minute, so 404 floods
+        // do not turn every request into a database write.
+        $now = time();
+        if (isset($log[$current_uri]['ts']) && is_int($log[$current_uri]['ts']) && $now - $log[$current_uri]['ts'] < self::LOG_THROTTLE) {
+            return;
+        }
+
         // Add new entry
         if (!isset($log[$current_uri])) {
             $log[$current_uri] = array(
                 'count' => 1,
-                'last_hit' => current_time('mysql')
+                'last_hit' => current_time('mysql'),
+                'ts' => $now,
             );
         } else {
-            $log[$current_uri]['count']++;
+            $log[$current_uri]['count'] = (int) ($log[$current_uri]['count'] ?? 0) + 1;
             $log[$current_uri]['last_hit'] = current_time('mysql');
+            $log[$current_uri]['ts'] = $now;
         }
 
         // Limit log size
@@ -211,6 +223,7 @@ class VonSEOWP_Redirects {
             array_shift($log);
         }
 
-        update_option('vonseowp_404_log', $log);
+        // Only the settings screen reads this log; keep it out of the autoloaded options on every request.
+        update_option('vonseowp_404_log', $log, false);
     }
 }
